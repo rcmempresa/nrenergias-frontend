@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, MessageSquare, Link as LinkIcon } from 'lucide-react';
+import { Truck, ShieldCheck, BadgePercent, CreditCard } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 
@@ -11,26 +11,27 @@ const Problems = () => {
 
   const problems = [
     {
-      icon: <Clock className="h-10 w-10 text-blue-500" />,
-      title: "Clientes a faltar aos compromissos",
-      description: "Agendamentos esquecidos resultam em horários vazios e perda de receita para o seu negócio."
+      icon: <Truck className="h-10 w-10 text-blue-500" />,
+      title: "Entregas Rápidas",
+      description: "Receba os seus produtos em casa com rapidez e segurança, em todo o país."
     },
     {
-      icon: <MessageSquare className="h-10 w-10 text-blue-500" />,
-      title: "Tempo perdido com mensagens manuais",
-      description: "Horas desperdiçadas a responder às mesmas perguntas e a confirmar agendamentos manualmente."
+      icon: <ShieldCheck className="h-10 w-10 text-blue-500" />,
+      title: "Garantia de Qualidade",
+      description: "Trabalhamos apenas com marcas de confiança e produtos certificados."
     },
     {
-      icon: <span className="text-blue-500 text-3xl font-bold">€</span>,
-      title: "Dificuldade em cobrar e vender online",
-      description: "Processos de pagamento complicados que afastam clientes e dificultam as suas vendas."
+      icon: <BadgePercent className="h-10 w-10 text-blue-500" />,
+      title: "Promoções Especiais",
+      description: "Descontos exclusivos e campanhas semanais para aproveitar o melhor preço."
     },
     {
-      icon: <LinkIcon className="h-10 w-10 text-blue-500" />,
-      title: "Ferramentas que não se comunicam",
-      description: "Sistemas isolados que exigem inserção manual de dados e causam inconsistências."
+      icon: <CreditCard className="h-10 w-10 text-blue-500" />,
+      title: "Pagamentos Seguros",
+      description: "Pague com confiança: aceitamos MB Way, cartão, referência multibanco e mais."
     }
   ];
+  
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -63,9 +64,9 @@ const Problems = () => {
           transition={{ duration: 0.6 }}
           ref={ref}
         >
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Desafios que o seu negócio enfrenta</h2>
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4"> Porquê comprar connosco?</h2>
           <p className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto">
-            Reconhece estes problemas no seu dia a dia? Eles estão a custar tempo e dinheiro à sua empresa.
+            Somos mais do que uma loja. Oferecemos qualidade, confiança e atendimento de excelência.
           </p>
         </motion.div>
 
@@ -104,9 +105,11 @@ const Problems = () => {
           animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-primary-500">Nós resolvemos isso para si!</h3>
+         <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-primary-500">
+            A tecnologia que precisa, ao seu alcance.
+          </h3>
           <p className="mt-4 text-base md:text-lg text-gray-700 max-w-2xl mx-auto">
-            A nossa equipa especializada desenvolve soluções personalizadas que eliminam estes problemas e transformam a operação do seu negócio.
+            Descubra uma vasta seleção de eletrodomésticos e gadgets, com entrega rápida e apoio sempre que precisar.
           </p>
         </motion.div>
       </div>

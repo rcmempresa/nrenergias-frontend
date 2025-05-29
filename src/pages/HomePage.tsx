@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { FaWhatsapp, FaFacebookMessenger } from 'react-icons/fa';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
 import FeaturedProducts from '../components/FeaturedProducts';
@@ -14,17 +15,15 @@ import Footer from '../components/Footer';
 const HomePage = () => {
   const location = useLocation();
 
-  // Handle scrolling to sections when navigating from other pages
   useEffect(() => {
-    // Check if we have a section to scroll to from navigation
     if (location.state && location.state.scrollToId) {
       const targetId = location.state.scrollToId;
       const element = document.getElementById(targetId);
       
       if (element) {
-        // Add a small delay to ensure the page is fully loaded
+        // Adicionado um pequeno delay para ter a certeza que a página foi carregada
         setTimeout(() => {
-          const yOffset = -80; // Header height offset
+          const yOffset = -80; 
           const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
           window.scrollTo({ top: y, behavior: 'smooth' });
         }, 100);
@@ -32,7 +31,6 @@ const HomePage = () => {
     }
   }, [location]);
 
-  // Also check for hash in URL directly
   useEffect(() => {
     if (location.hash) {
       const targetId = location.hash.substring(1);
@@ -50,8 +48,8 @@ const HomePage = () => {
 
   return (
     <>
-    <Header />
-      <main className="pt-20 ">
+      <Header />
+      <main className="pt-20 overflow-x-hidden">
         <Hero />
         <FeaturedProducts />
         <StatsSection />
@@ -62,6 +60,25 @@ const HomePage = () => {
         <Problems />
       </main>
       <Footer />
+      {/* Ícones de WhatsApp e Messenger */}
+    <div className="fixed bottom-4 right-4 flex flex-col space-y-3 z-50">
+    <a 
+      href="https://wa.me/962515190"  // Substitua com o número do WhatsApp
+      target="_blank"
+      rel="noopener noreferrer"
+      className="bg-green-500 text-white p-3 rounded-full hover:bg-green-600"
+    >
+      <FaWhatsapp size={30} />
+    </a>
+    <a 
+      href="https://m.me/nunorobinson"  // Substitua com o seu link de Messenger
+      target="_blank"
+      rel="noopener noreferrer"
+      className="bg-blue-600 text-white p-3 rounded-full hover:bg-blue-700"
+    >
+      <FaFacebookMessenger size={30} />
+    </a>
+  </div>
     </>
   );
 };

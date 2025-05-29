@@ -15,8 +15,8 @@ const faqs = [
     answer: "Sim, enviamos para todo o mundo! Os custos de envio serão calculados no checkout com base na sua localização."
   },
   {
-    question: "Posso rastrear o meu pedido?",
-    answer: "Com certeza! Assim que o seu pedido for enviado, enviaremos um número de rastreamento junto com um link para você acompanhar a entrega em tempo real."
+    question: "Como posso saber se um produto está disponível em stock?",
+  answer: "Todos os nossos produtos que temos listados no site temos em stock, partimos do princípio que não queremos que os nossos clientes percam tempo a aguardar pela reposição do mesmo!"
   },
   {
     question: "Posso alterar ou cancelar meu pedido após a confirmação?",
@@ -24,7 +24,7 @@ const faqs = [
   },
   {
     question: "Como posso entrar em contato para suporte?",
-    answer: "Você pode entrar em contato conosco pelo e-mail suporte@empresa.com ou pelo chat no nosso site. Nossa equipe estará pronta para ajudá-lo."
+    answer: "Você pode entrar em contato conosco pelo e-mail geral@nrenergias.pt ou pelo chat no nosso site. Nossa equipe estará pronta para ajudá-lo."
   }
 ];
 
