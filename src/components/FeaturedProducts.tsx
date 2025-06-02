@@ -6,11 +6,10 @@ import { FaShoppingCart, FaHeart, FaShareAlt } from 'react-icons/fa';
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { toast } from 'react-toastify';
 
-
 const FeaturedProducts = () => {
   const [products, setProducts] = useState([]);  
-  const [isModalOpen, setIsModalOpen] = useState(false);  // Estado para o modal
-  const [urlToCopy, setUrlToCopy] = useState('');  // Estado para o URL
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [urlToCopy, setUrlToCopy] = useState('');
 
   useEffect(() => {
     fetch('http://localhost:3000/products')  
@@ -21,42 +20,37 @@ const FeaturedProducts = () => {
 
   const limitedProducts = products.slice(0, 8); 
 
+  // Agrupar produtos em grupos de 4 para o desktop
   const chunkedProducts = [];
   for (let i = 0; i < limitedProducts.length; i += 4) {
     chunkedProducts.push(limitedProducts.slice(i, i + 4));
   }
- 
   
   const handleAddToCart = async (product) => {
     const token = localStorage.getItem('token'); 
-
     if (!token) {
       toast.info(
         <span>
           Por favor, <Link to="/login" className="text-blue-500 underline">faça login</Link> para adicionar produtos ao carrinho.
         </span>
       );
-        return;
+      return;
     }
-
     try {
         const headers = {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
         };
-
         const bodyData = {
             productId: product.id,
             quantidade: 1,
             precoUnitario: product.preco,
         };
-
         const response = await fetch('http://localhost:3000/api/carrinho/add', {
             method: 'POST',
             headers,
             body: JSON.stringify(bodyData),
         });
-
         if (response.ok) {
             toast.success('Produto adicionado ao carrinho!');
         } else {
@@ -70,7 +64,6 @@ const FeaturedProducts = () => {
 
   const handleToggleFavorite = async (product) => {
     const token = localStorage.getItem("token");
-  
     if (!token) {
       toast.info(
         <span>
@@ -79,23 +72,19 @@ const FeaturedProducts = () => {
       );
       return;
     }
-  
     try {
       const headers = {
         "Authorization": `Bearer ${token}`,
         "Content-Type": "application/json",
       };
-  
       const bodyData = {
         produto_id: product.id,
       };
-  
       const response = await fetch("http://localhost:3000/api/favoritos/add", {
         method: "POST",
         headers,
         body: JSON.stringify(bodyData),
       });
-  
       if (response.ok) {
         const data = await response.json();
         toast.success(data.message || "Produto adicionado aos favoritos!");
@@ -110,31 +99,34 @@ const FeaturedProducts = () => {
     }
   };
 
-  // Função para abrir o modal com o URL atual
   const handleShareClick = () => {
-    setUrlToCopy(window.location.href);  // Pega o URL da página atual
-    setIsModalOpen(true);  // Abre o modal
+    setUrlToCopy(window.location.href);
+    setIsModalOpen(true);
   };
 
-  // Função para copiar o URL para a área de transferência
   const handleCopyUrl = () => {
-    navigator.clipboard.writeText(urlToCopy)  // Copia o URL para a área de transferência
+    navigator.clipboard.writeText(urlToCopy)
       .then(() => alert('URL copiado com sucesso!'))
       .catch((error) => alert('Falha ao copiar URL:', error));
   };
 
-  // Função para fechar o modal
   const closeModal = () => {
     setIsModalOpen(false);
   };
 
   return (
     <section className="px-6 py-12 relative">
-      <Link to="/produtos" className="absolute top-6 right-6 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+
+
+      <h2 className="text-2xl font-bold mb-6">Produtos em Destaque</h2>
+
+      <Link 
+        to="/produtos" 
+        className="static mt-6 mb-6 md:absolute md:top-6 md:right-6 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+      >
         Ver Todos os Produtos
       </Link>
 
-      <h2 className="text-2xl font-bold mb-6">Produtos em Destaque</h2>
 
       <Carousel
         showArrows={true}
@@ -144,11 +136,13 @@ const FeaturedProducts = () => {
         interval={3000}
         transitionTime={500}
         dynamicHeight={false}
+        swipeable={true}
+        emulateTouch={true}
         renderArrowPrev={(onClickHandler, hasPrev) =>
           hasPrev && (
             <button
               onClick={onClickHandler}
-              className="absolute top-1/2 left-2 transform -translate-y-1/2 text-white bg-blue-500 rounded-full p-2 shadow-lg"
+              className="absolute top-1/2 left-2 transform -translate-y-1/2 text-white bg-blue-500 rounded-full p-2 shadow-lg z-10"
             >
               ‹
             </button>
@@ -158,7 +152,7 @@ const FeaturedProducts = () => {
           hasNext && (
             <button
               onClick={onClickHandler}
-              className="absolute top-1/2 right-2 transform -translate-y-1/2 text-white bg-blue-500 rounded-full p-2 shadow-lg"
+              className="absolute top-1/2 right-2 transform -translate-y-1/2 text-white bg-blue-500 rounded-full p-2 shadow-lg z-10"
             >
               ›
             </button>
@@ -166,11 +160,14 @@ const FeaturedProducts = () => {
         }
       >
         {chunkedProducts.map((chunk, index) => (
-          <div key={index} className="flex space-x-4 overflow-x-auto">
+          <div 
+            key={index} 
+            className="flex space-x-4 overflow-x-auto"
+          >
             {chunk.map((product) => (
               <div 
                 key={product.id} 
-                className="relative bg-white p-4 rounded-lg shadow-md w-full sm:w-1/2 md:w-1/3 lg:w-1/4"
+                className="relative bg-white p-4 rounded-lg shadow-md w-full sm:w-1/2 md:w-1/3 lg:w-1/4 flex-shrink-0"
               >
                 <motion.div
                   className="relative"
@@ -179,12 +176,10 @@ const FeaturedProducts = () => {
                   exit={{ opacity: 0, x: 100 }}
                   transition={{ duration: 0.5 }}
                 >
-                  {/* Ícones no canto superior direito */}
-                  <div className="absolute top-2 right-2 flex space-x-2">
+                  <div className="absolute top-2 right-2 flex space-x-2 z-20">
                     <button className="text-gray-500 hover:text-red-500" onClick={() => handleToggleFavorite(product)}>
                       <FaHeart size={20} />
                     </button>
-                    {/* O botão de compartilhamento que não será envolvido pelo Link */}
                     <button 
                       className="text-gray-500 hover:text-blue-500" 
                       onClick={handleShareClick}
@@ -193,7 +188,6 @@ const FeaturedProducts = () => {
                     </button>
                   </div>
 
-                  {/* Link do produto envolvente entre imagem, nome e preço */}
                   <Link 
                     to={`/produto/${product.id}`} 
                     className="block"
@@ -201,7 +195,7 @@ const FeaturedProducts = () => {
                     <img
                       src={product.imagem_url}
                       alt={product.nome}
-                      className="w-[300px] h-[300px] object-cover rounded-lg"
+                      className="w-[300px] h-[300px] object-cover rounded-lg mx-auto"
                     />
 
                     <h3 className="mt-4 text-lg font-semibold">{product.nome}</h3>
@@ -220,7 +214,6 @@ const FeaturedProducts = () => {
                     </div>
                   </Link>
 
-                  {/* Botão Adicionar ao Carrinho */}
                   <button
                     onClick={() => handleAddToCart(product)}
                     className="mt-4 flex items-center justify-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 w-full"
@@ -234,10 +227,9 @@ const FeaturedProducts = () => {
         ))}
       </Carousel>
 
-      {/* Modal de Compartilhamento */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg w-1/3">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 px-4">
+          <div className="bg-white p-6 rounded-lg max-w-md w-full">
             <h3 className="text-lg font-semibold mb-4">Compartilhar no WhatsApp</h3>
             <div className="flex items-center mb-4">
               <input
@@ -253,7 +245,6 @@ const FeaturedProducts = () => {
                 Copiar URL
               </button>
             </div>
-            {/* Ícone do WhatsApp */}
             <a 
               href={`https://wa.me/?text=${encodeURIComponent(urlToCopy)}`} 
               target="_blank" 
@@ -265,7 +256,7 @@ const FeaturedProducts = () => {
             </a>
             <button 
               onClick={closeModal}
-              className="mt-4 text-gray-500 hover:text-gray-700"
+              className="mt-4 text-gray-500 hover:text-gray-700 w-full"
             >
               Fechar
             </button>

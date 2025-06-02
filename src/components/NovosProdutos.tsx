@@ -132,8 +132,8 @@ export default function NovosProdutos() {
   // Função para copiar o URL para a área de transferência
   const handleCopyUrl = () => {
     navigator.clipboard.writeText(urlToCopy)  // Copia o URL para a área de transferência
-      .then(() => alert('URL copiado com sucesso!'))
-      .catch((error) => alert('Falha ao copiar URL:', error));
+      .then(() => toast.success('URL copiado com sucesso!'))
+      .catch((error) => toast.error('Falha ao copiar URL:', error));
   };
 
   // Função para fechar o modal
@@ -159,6 +159,7 @@ export default function NovosProdutos() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mx-auto">
           {products.slice(startIndex, startIndex + visibleProducts).map((product, index) => (
+           
             <div
               key={index}
               className="border p-4 rounded-lg shadow hover:shadow-lg transition relative"
@@ -168,6 +169,12 @@ export default function NovosProdutos() {
                   {product.discount}%
                 </span>
               )}
+               <Link
+              key={index}
+              to={`/produto/${product.id}`}
+              className="border p-4 rounded-lg shadow hover:shadow-lg transition relative block" 
+              // "block" para o link envolver todo o card
+            >
               <img
                 src={product.imagem_url}
                 alt={product.nome}
@@ -191,6 +198,7 @@ export default function NovosProdutos() {
                   ({product.reviews ?? Math.floor(Math.random() * 200 + 10)})
                 </span>
               </div>
+               </Link>
               <div className="flex space-x-3 mt-3">
                 <button 
                   onClick={() => handleAddToCart(product)}

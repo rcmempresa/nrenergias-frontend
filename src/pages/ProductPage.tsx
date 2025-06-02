@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, SlidersHorizontal, Heart, ShoppingCart, Star } from 'lucide-react';
+import { Search, SlidersHorizontal, Star } from 'lucide-react';
 import { Helmet } from 'react-helmet';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -9,18 +9,18 @@ const ProductPage = () => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [priceRange, setPriceRange] = useState([0, 50000]);
   const [category, setCategory] = useState('');
   const [sortBy, setSortBy] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [priceRange, setPriceRange] = useState(['', '']); // Strings vazias para permitir apagar 0 e 5000
   const productsPerPage = 10;
 
   useEffect(() => {
     setLoading(true);
-    fetch('http://localhost:3000/products')  
+    fetch('http://localhost:3000/products')
       .then(response => {
         if (!response.ok) {
           throw new Error('Failed to fetch products');
@@ -40,16 +40,20 @@ const ProductPage = () => {
   }, []);
 
   useEffect(() => {
-    let filtered = products.filter(product => 
+    // Converte os valores da faixa de preço para números, ou usa valores padrão se vazios
+    const minPrice = priceRange[0] === '' ? 0 : Number(priceRange[0]);
+    const maxPrice = priceRange[1] === '' ? 5000 : Number(priceRange[1]);
+
+    let filtered = products.filter(product =>
       product.nome.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      product.preco >= priceRange[0] && product.preco <= priceRange[1]
+      product.preco >= minPrice && product.preco <= maxPrice
     );
 
     if (category) {
       filtered = filtered.filter(product => product.categoria === category);
     }
 
-    // Add sorting functionality
+    // Ordenação
     if (sortBy === 'price-asc') {
       filtered.sort((a, b) => a.preco - b.preco);
     } else if (sortBy === 'price-desc') {
@@ -59,21 +63,18 @@ const ProductPage = () => {
     }
 
     setFilteredProducts(filtered);
-    setCurrentPage(1); // Reseta para primeira página ao filtrar
+    setCurrentPage(1);
   }, [searchTerm, priceRange, category, products, sortBy]);
 
-  // Calcular produtos da página atual
+  // Paginação
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
-
-  // Quantidade total de páginas
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
-  // Função para mudar de página
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
-    window.scrollTo(0, 0); // Rola para o topo da página ao mudar
+    window.scrollTo(0, 0);
   };
 
   if (loading) {
@@ -109,7 +110,6 @@ const ProductPage = () => {
           <h1 className="text-3xl font-bold">Produtos</h1>
         </div>
 
-        {/* Search and Filters */}
         {/* Search and Filters */}
         <div className="mb-8">
           <div className="flex gap-4 mb-4">
@@ -176,14 +176,29 @@ const ProductPage = () => {
                       className="w-full p-2 border rounded-lg"
                       placeholder="Min"
                       value={priceRange[0]}
-                      onChange={(e) => setPriceRange([Number(e.target.value), priceRange[1]])}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        // Permitir string vazia para limpar input
+                        if (val === '' || (Number(val) >= 0 && Number(val) <= (priceRange[1] === '' ? 5000 : Number(priceRange[1])))) {
+                          setPriceRange([val, priceRange[1]]);
+                        }
+                      }}
+                      min={0}
+                      max={priceRange[1] === '' ? 5000 : Number(priceRange[1])}
                     />
                     <input
                       type="number"
                       className="w-full p-2 border rounded-lg"
                       placeholder="Max"
                       value={priceRange[1]}
-                      onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val === '' || (Number(val) >= (priceRange[0] === '' ? 0 : Number(priceRange[0])))) {
+                          setPriceRange([priceRange[0], val]);
+                        }
+                      }}
+                      min={priceRange[0] === '' ? 0 : Number(priceRange[0])}
+                      max={5000}
                     />
                   </div>
                 </div>
@@ -218,7 +233,7 @@ const ProductPage = () => {
                         <Star
                           key={i}
                           className={`w-4 h-4 ${
-                            i < Math.floor(product.rating || 3) 
+                            i < Math.floor(product.rating || 3)
                               ? 'text-yellow-400 fill-current'
                               : 'text-gray-300'
                           }`}
@@ -236,7 +251,7 @@ const ProductPage = () => {
               </Link>
             ))
           ) : (
-            <p>No products found.</p>
+            <p>Nenhum produto encontrado.</p>
           )}
         </div>
 
@@ -250,15 +265,15 @@ const ProductPage = () => {
             >
               Anterior
             </button>
-            {[...Array(totalPages)].map((_, i) => (
+            {[...Array(totalPages)].map((_, idx) => (
               <button
-                key={i + 1}
-                onClick={() => paginate(i + 1)}
+                key={idx}
+                onClick={() => paginate(idx + 1)}
                 className={`px-3 py-1 rounded ${
-                  currentPage === i + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200'
+                  currentPage === idx + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200'
                 }`}
               >
-                {i + 1}
+                {idx + 1}
               </button>
             ))}
             <button

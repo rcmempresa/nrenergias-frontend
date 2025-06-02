@@ -54,11 +54,6 @@ export default function FAQSection() {
           </div>
         ))}
       </div>
-      <div className="mt-6 text-center">
-        <button className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition">
-          Fazer uma Pergunta
-        </button>
-      </div>
     </section>
   );
 }

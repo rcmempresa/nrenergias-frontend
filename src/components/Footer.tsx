@@ -16,14 +16,8 @@ const Footer = () => {
         </div>
 
         <div className="mt-6 flex space-x-4">
-          <a href="https://facebook.com" target="_blank" rel="noreferrer" className="text-blue-700 hover:text-blue-900">
+          <a href="https://www.facebook.com/profile.php?id=100064182873984" target="_blank" rel="noreferrer" className="text-blue-700 hover:text-blue-900">
             <FaFacebookF size={20} />
-          </a>
-          <a href="https://instagram.com" target="_blank" rel="noreferrer" className="text-blue-700 hover:text-blue-900">
-            <FaInstagram size={20} />
-          </a>
-          <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="text-blue-700 hover:text-blue-900">
-            <FaLinkedinIn size={20} />
           </a>
         </div>
       </div>
@@ -39,16 +33,18 @@ const Footer = () => {
             <li><Link to="/contacto" className="hover:underline">Contactos</Link></li>
           </ul>
         </div>
+        
 
-        {/* Produtos */}
-        <div>
-          <h3 className="text-md font-semibold mb-3">Produtos</h3>
-          <ul className="space-y-2 text-sm">
-            <li><Link to="/produtos?categoria=smartphones" className="hover:underline">Smartphones</Link></li>
-            <li><Link to="/produtos?categoria=laptops" className="hover:underline">Laptops</Link></li>
-            <li><Link to="/produtos?categoria=acessorios" className="hover:underline">Acessórios</Link></li>
-            <li><Link to="/produtos" className="hover:underline">Ver Todos</Link></li>
+         <div>
+          <h3 className="text-md font-semibold mb-3">Contactos</h3>
+          <ul className="space-y-1 text-sm">
+            <li>Telefone:291 110 483</li> 
+            <li>Email:geral@nrenergias.pt</li>
+            <li>Morada: Estrada Padre Silvano Ernesto Jardim, Porto Santo</li>
+            <li>Horário: 9h - 18h (dias úteis)</li>
           </ul>
+
+         
         </div>
 
         {/* Políticas */}
@@ -58,12 +54,19 @@ const Footer = () => {
             <li><Link to="/politica-de-privacidade" className="hover:underline">Política de Privacidade</Link></li>
             <li><Link to="/termos-e-condicoes" className="hover:underline">Termos e Condições</Link></li>
           </ul>
+          <br></br>
+          <h3 className="text-md font-semibold mb-3">Métodos de Pagamento</h3>
+           <div className="mt-4 flex space-x-2">
+            <img src="/mbway.png" alt="Mbway" className="h-6" />
+            <img src="/multibanco.png" alt="Multibanco" className="h-6" />
+            <img src="/cartao.png" alt="Cartao" className="h-6" />
+          </div>
         </div>
 
         {/* Créditos */}
         <div className="flex flex-col justify-between">
           <div>
-            <h3 className="text-md font-semibold mb-3">Desenvolvido por</h3>
+            <h3 className="text-md font-semibold mb-3">Desenvolvido pela</h3>
             <a
               href="https://1way.pt"
               target="_blank"

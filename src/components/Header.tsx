@@ -45,7 +45,7 @@ const Header = () => {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      if (searchTerm.length > 2) {
+      if (searchTerm.length > 0) {
         try {
           const response = await fetch(`http://localhost:3000/products?search=${searchTerm}`);
           if (!response.ok) {
@@ -88,14 +88,8 @@ const Header = () => {
             <option>Português</option>
           </select>
           <div className="flex space-x-2">
-            <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-blue-600">
-              <Instagram size={24} className="text-blue-700" />
-            </a>
-            <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-blue-600">
+            <a href="https://www.facebook.com/profile.php?id=100064182873984" target="_blank" rel="noopener noreferrer" className="hover:text-blue-600">
               <Facebook size={24} className="text-blue-700" />
-            </a>
-            <a href="https://www.twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-blue-600">
-              <Twitter size={24} className="text-blue-700" />
             </a>
           </div>
         </div>
@@ -176,18 +170,44 @@ const Header = () => {
 
         {/* Mobile Search - Always visible on mobile */}
         {/* Mobile Search - Always visible on mobile */}
-      <div className="md:hidden mt-4 px-4">
-        <div className="relative">
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-gray-200 rounded-full pl-10 pr-4 py-2 text-sm"
-            placeholder="Procurar Produtos..."
-          />
-          <span className="absolute left-3 top-2 text-gray-500">🔍</span>
-        </div>
+      {/* Mobile Search */}
+<div className="md:hidden mt-4 px-4">
+  <div className="relative">
+    <input
+      type="text"
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      className="w-full bg-gray-200 rounded-full pl-10 pr-4 py-2 text-sm"
+      placeholder="Procurar Produtos..."
+    />
+    <span className="absolute left-3 top-2 text-gray-500">🔍</span>
+
+    {searchResults.length > 0 && (
+      <div className="absolute w-full bg-white shadow-lg rounded-lg mt-2 z-50">
+        {searchResults.map((product) => (
+          <Link
+            key={product.id}
+            to={`/produto/${product.id}`}
+            className="flex items-center p-3 hover:bg-gray-100"
+            onClick={() => setIsMenuOpen(false)} // para fechar o menu se aberto
+          >
+            <img
+              src={product.imagem_url}
+              alt={product.nome}
+              className="h-16 w-16 object-cover rounded-md"
+            />
+            <div className="ml-4">
+              <p className="font-semibold">{product.nome}</p>
+              <p className="text-sm text-gray-600">{product.descricao}</p>
+              <p className="font-semibold text-blue-700">€{product.preco}</p>
+            </div>
+          </Link>
+        ))}
       </div>
+    )}
+  </div>
+</div>
+
       </div>
 
       {/* Desktop Navigation Bar */}

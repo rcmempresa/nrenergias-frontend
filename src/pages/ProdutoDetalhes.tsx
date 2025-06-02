@@ -132,13 +132,13 @@ const ProdutoDetalhes = () => {
 
         if (response.ok) {
             const data = await response.json();
-            alert(data.message || "Produto adicionado aos favoritos!");
+            toast.success(data.message || "Produto adicionado aos favoritos!");
         } else {
-            alert(`O produto já se encontra adicionado!`);
+            toast.success(`O produto já se encontra adicionado!`);
         }
     } catch (error) {
         console.error("Erro ao adicionar/remover favorito:", error);
-        alert("Erro ao adicionar/remover favorito");
+        toast.error("Erro ao adicionar/remover favorito");
     }
 };
 

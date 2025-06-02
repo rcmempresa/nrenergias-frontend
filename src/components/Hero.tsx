@@ -44,14 +44,19 @@ const Hero = () => {
       >
         Compre com confiança e aproveite os melhores serviços!
       </motion.p>
-      <motion.button
-        className="px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-md transition duration-300"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 0.4 }}
-      >
-        Comprar Agora
-      </motion.button>
+     
+
+      <Link to="/produtos">
+        <motion.button
+          className="px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-md transition duration-300"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 0.4 }}
+        >
+          Comprar Agora
+        </motion.button>
+      </Link>
+
 
       {/* Suporte Icons com animação 
       <div className="flex justify-center gap-10 mt-12 flex-wrap">

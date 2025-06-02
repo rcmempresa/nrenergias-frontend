@@ -63,20 +63,12 @@ const HomePage = () => {
       {/* Ícones de WhatsApp e Messenger */}
     <div className="fixed bottom-4 right-4 flex flex-col space-y-3 z-50">
     <a 
-      href="https://wa.me/962515190"  // Substitua com o número do WhatsApp
+      href="https://wa.me/962515190"
       target="_blank"
       rel="noopener noreferrer"
       className="bg-green-500 text-white p-3 rounded-full hover:bg-green-600"
     >
       <FaWhatsapp size={30} />
-    </a>
-    <a 
-      href="https://m.me/nunorobinson"  // Substitua com o seu link de Messenger
-      target="_blank"
-      rel="noopener noreferrer"
-      className="bg-blue-600 text-white p-3 rounded-full hover:bg-blue-700"
-    >
-      <FaFacebookMessenger size={30} />
     </a>
   </div>
     </>

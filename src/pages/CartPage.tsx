@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -73,13 +75,13 @@ const CartPage = () => {
 
       if (response.ok) {
         setCartItems(cartItems.filter(item => item.product_id !== productId));
-        alert(result.message);
+        toast.success(result.message);
       } else {
-        alert(result.message);
+        toast.error(result.message);
       }
     } catch (error) {
       console.error("Erro ao remover o item:", error);
-      alert('Erro ao remover o item do carrinho');
+      toast.error('Erro ao remover o item do carrinho');
     }
   };
 
@@ -108,7 +110,7 @@ const CartPage = () => {
             : item
         ));
       } else {
-        alert(updatedItem.message);
+        toast.error(updatedItem.message);
       }
     } catch (error) {
       console.error("Erro ao aumentar quantidade:", error);
@@ -139,7 +141,7 @@ const CartPage = () => {
             : item
         ));
       } else {
-        alert(updatedItem.message);
+        toast.error(updatedItem.message);
       }
     } catch (error) {
       console.error("Erro ao diminuir quantidade:", error);
@@ -150,7 +152,7 @@ const CartPage = () => {
   const handleGoToCheckout = () => {
     // 1. Verificar se o carrinho está vazio
     if (cartItems.length === 0) {
-      alert("Seu carrinho está vazio! Adicione produtos antes de continuar.");
+      toast.info("Seu carrinho está vazio! Adicione produtos antes de continuar.");
       return; // Não permite seguir para o checkout
     }
 
@@ -162,6 +164,12 @@ const CartPage = () => {
   
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
+      <Helmet>
+        <title>Carrinho | NRenergias</title>
+        <meta name="description" content="Entre em contacto com a NRenergias — estamos disponíveis para esclarecer dúvidas, fornecer orçamentos e ajudar na escolha dos melhores produtos eletrónicos e soluções sustentáveis. Atendimento em todo o país." />
+        <meta name="keywords" content="carrinho NRenergias, finalização de compra, checkout, produtos eletrónicos, soluções sustentáveis, energia solar, pagamento seguro, Portugal"/>
+        <link rel="canonical" href="https://nrenergias.pt/contacto" />
+      </Helmet>
       <Header />
       <div className=" mt-60 container mx-auto p-8 bg-white rounded-lg shadow-md mt-20">
         <h1 className="text-3xl font-bold mb-6">O teu Carrinho</h1>

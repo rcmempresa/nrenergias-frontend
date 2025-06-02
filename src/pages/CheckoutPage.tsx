@@ -1,22 +1,24 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { toast } from 'react-toastify';
 
 const CheckoutPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-
+  const [montagem, setMontagem] = useState(false);
   const { cartItems, totalPrice } = location.state || { cartItems: [], totalPrice: 0 };
-
+  const finalPrice = montagem ? totalPrice + 25 : totalPrice;
   const [address, setAddress] = useState({
     nome: '',
     rua: '',
     cidade: '',
     codigoPostal: '',
     telefone: '',
+    email: '',
   });
-
   const [paymentMethod, setPaymentMethod] = useState('mbway');
 
   const handleInputChange = (e) => {
@@ -25,38 +27,84 @@ const CheckoutPage = () => {
   };
 
   const handlePlaceOrder = async () => {
-  const { nome, rua, cidade, codigoPostal, telefone } = address;
+  const { nome, rua, cidade, codigoPostal, telefone, email } = address;
 
   // Validação básica do endereço
-  if (!nome || !rua || !cidade || !codigoPostal || !telefone) {
-    alert('Por favor, preencha todos os campos de endereço.');
+  if (!nome || !rua || !cidade || !codigoPostal || !telefone || !email) {
+    toast.info('Por favor, preencha todos os campos de endereço.');
     return;
   }
 
   try {
     const token = localStorage.getItem('token');
     if (!token) {
-      alert("Precisas de estar logado para finalizar a compra.");
+      toast.info("Precisas de estar logado para finalizar a compra.");
       navigate('/login');
       return;
     }
 
-    if (paymentMethod === 'multibanco') {
-      // Exemplo de dados para enviar para backend Multibanco
+    // 1️⃣ Cria o pedido na base de dados
+    const createOrderResponse = await fetch("http://localhost:3000/api/checkout/add", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        shipping_details: {
+          full_name: nome,
+          address: rua,
+          city: cidade,
+          zip_code: codigoPostal,
+          country: "Portugal",
+          phone: telefone
+        },
+        payment: {
+          payment_method: paymentMethod
+        },
+        order: {
+          total_amount: totalPrice
+        }
+      })
+    });
+
+    const orderResult = await createOrderResponse.json();
+
+    if (!createOrderResponse.ok) {
+      toast.error(orderResult.message || "Erro ao criar o pedido.");
+      return;
+    }
+
+    const orderId = orderResult.order_id;
+  
+
+    // 2️⃣ Cria a referência de pagamento se for necessário
+    if (paymentMethod === 'multibanco' || paymentMethod === 'mbway' || paymentMethod === 'cc') {
       const body = {
         customer: {
           name: nome,
           phone: telefone,
-          phone_indicative: "+351", // fixo para PT, ou adaptar
+          phone_indicative: "+351",
+          email : email,
         },
         value: totalPrice,
         capture: {
-          descriptive: `Compra na loja, total ${totalPrice.toFixed(2)}€`,
-          transaction_key: "chave-transacao-exemplo" // gerar dinamicamente ou remover se não usar
+          descriptive: `Compra #${orderId} - total ${totalPrice.toFixed(2)}€`,
+          transaction_key: String(orderId) // usa orderId como identificador único
         }
       };
 
-      const response = await fetch("http://localhost:3000/api/referencia/multibanco/create", {
+      // URL de acordo com o método de pagamento
+      let url = "";
+      if (paymentMethod === 'multibanco') {
+        url = "http://localhost:3000/api/referencia/multibanco/create";
+      } else if (paymentMethod === 'mbway') {
+        url = "http://localhost:3000/api/referencia/mbway/create";
+      } else if (paymentMethod === 'cc') {
+        url = "http://localhost:3000/api/referencia/cc/create";
+      }
+
+      const paymentResponse = await fetch(url, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -65,67 +113,53 @@ const CheckoutPage = () => {
         body: JSON.stringify(body)
       });
 
-      const result = await response.json();
+      const paymentResult = await paymentResponse.json();
 
-      if (response.ok && result.status === "ok") {
-        alert(`Pedido realizado com sucesso!\nEntidade: ${result.method.entity}\nReferência: ${result.method.reference}\nValor:${totalPrice.toFixed(2)}€`);
+      if (paymentResponse.ok && paymentResult.status === "ok") {
+  
+
+        // Redireciona para página de confirmação
         navigate("/pedido/confirmacao", {
           state: {
-            ...result,
+            ...paymentResult,
             totalPrice,
             nome,
+            orderId
           },
         });
       } else {
-        alert(result.message || "Erro ao criar referência Multibanco.");
+        toast.error(paymentResult.message || `Erro ao criar referência para o método ${paymentMethod}.`);
       }
 
     } else {
-      // Fluxo padrão para outras formas de pagamento
-      const response = await fetch("http://localhost:3000/api/checkout/add", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          shipping_details: {
-            full_name: nome,
-            address: rua,
-            city: cidade,
-            zip_code: codigoPostal,
-            country: "Portugal",  
-            phone: telefone
-          },
-          payment: {
-            payment_method: paymentMethod
-          },
-          order: {
-            total_amount: totalPrice
-          }
-        })
+      navigate("/pedido/confirmacao", {
+        state: {
+          orderId,
+          totalPrice,
+          nome
+        }
       });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        navigate("/pedido/confirmacao", { state: result });
-      } else {
-        alert(result.message || "Erro ao finalizar o pedido.");
-      }
     }
 
   } catch (error) {
     console.error("Erro ao finalizar pedido:", error);
-    alert("Erro ao finalizar o pedido.");
+    toast.error("Erro ao finalizar o pedido.");
   }
 };
 
   
-  
 
+
+
+  
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
+      <Helmet>
+        <title>Checkout | NRenergias</title>
+        <meta name="description" content="Entre em contacto com a NRenergias — estamos disponíveis para esclarecer dúvidas, fornecer orçamentos e ajudar na escolha dos melhores produtos eletrónicos e soluções sustentáveis. Atendimento em todo o país." />
+        <meta name="keywords" content="carrinho NRenergias, finalização de compra, checkout, produtos eletrónicos, soluções sustentáveis, energia solar, pagamento seguro, Portugal"/>
+        <link rel="canonical" href="https://nrenergias.pt/contacto" />
+      </Helmet>
       <Header />
       <div className="mt-60 container mx-auto p-8 bg-white rounded-lg shadow-md">
         <h1 className="text-3xl font-bold mb-6">Finalizar Compra</h1>
@@ -153,16 +187,33 @@ const CheckoutPage = () => {
                 ))}
                 <tr className="border-t font-bold bg-blue-100">
                   <td className="p-4 text-right" colSpan="2">Total:</td>
-                  <td className="p-4 text-right">{totalPrice.toFixed(2)}€</td>
+                  <td className="p-4 text-right">{finalPrice.toFixed(2)}€</td>
                 </tr>
               </tbody>
             </table>
+
+            {/* 🔧 Opção de montagem */}
+            <div className="mb-6 flex items-center gap-2 border border-blue-400 rounded-lg p-3 bg-blue-50 shadow-sm">
+              <input
+                type="checkbox"
+                id="montagem"
+                checked={montagem}
+                onChange={() => setMontagem(!montagem)}
+                className="w-4 h-4 accent-blue-500"
+              />
+              <label htmlFor="montagem" className="text-base font-semibold text-blue-900">
+                Quero incluir a montagem do equipamento (+25€)
+              </label>
+            </div>
+
+
 
             {/* 🧾 Formulário de Endereço */}
             <div className="mb-6">
               <h2 className="text-xl font-semibold mb-4">Endereço de Entrega</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input type="text" name="nome" placeholder="Nome completo" value={address.nome} onChange={handleInputChange} className="border p-2 rounded" />
+                <input type="email" name="email" placeholder="Email" value={address.email} onChange={handleInputChange} className="border p-2 rounded"/>
                 <input type="text" name="telefone" placeholder="Telefone" value={address.telefone} onChange={handleInputChange} className="border p-2 rounded" />
                 <input type="text" name="rua" placeholder="Rua / Avenida" value={address.rua} onChange={handleInputChange} className="border p-2 rounded" />
                 <input type="text" name="cidade" placeholder="Cidade" value={address.cidade} onChange={handleInputChange} className="border p-2 rounded" />
@@ -215,9 +266,9 @@ const CheckoutPage = () => {
                   <input
                     type="radio"
                     name="payment"
-                    value="cartao"
-                    checked={paymentMethod === 'cartao'}
-                    onChange={() => setPaymentMethod('cartao')}
+                    value="cc"
+                    checked={paymentMethod === 'cc'}
+                    onChange={() => setPaymentMethod('cc')}
                   />
                   <span >Cartão de Crédito</span>
                   {/* Imagem do Cartão de Crédito */}
