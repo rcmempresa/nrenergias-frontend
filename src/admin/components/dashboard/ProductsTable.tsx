@@ -40,7 +40,7 @@ export function ProductsTable({
     if (confirmDelete) {
       try {
         // Fazer a requisição para excluir o produto
-        const response = await fetch(`http://localhost:3000/products/eliminar/${productId}`, {
+        const response = await fetch(`${process.env.VITE_BACKEND_URL}/products/eliminar/${productId}`, {
           method: 'DELETE',
         });
 

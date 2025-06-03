@@ -47,7 +47,7 @@ const Header = () => {
     const fetchProducts = async () => {
       if (searchTerm.length > 0) {
         try {
-          const response = await fetch(`http://localhost:3000/products?search=${searchTerm}`);
+          const response = await fetch(`${process.env.VITE_BACKEND_URL}/products?search=${searchTerm}`);
           if (!response.ok) {
             throw new Error(`Erro do servidor: ${response.statusText}`);
           }

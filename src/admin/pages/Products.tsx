@@ -37,7 +37,7 @@ export function Products() {
   // Buscar produtos da API
   const fetchProducts = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/products');
+      const response = await axios.get(`${process.env.VITE_BACKEND_URL}/products`);
       setProducts(response.data);
     } catch (error) {
       setError('Erro ao carregar os produtos.');
@@ -54,7 +54,7 @@ export function Products() {
 
   const handleAddProduct = async () => {
     try {
-      const response = await axios.post('http://localhost:3000/products/adicionar', newProduct);
+      const response = await axios.post(`${process.env.VITE_BACKEND_URL}/products/adicionar`, newProduct);
       setProducts((prevProducts) => [...prevProducts, response.data]);
       setIsModalOpen(false);
       setNewProduct({

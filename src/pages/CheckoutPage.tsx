@@ -44,7 +44,7 @@ const CheckoutPage = () => {
     }
 
     // 1️⃣ Cria o pedido na base de dados
-    const createOrderResponse = await fetch("http://localhost:3000/api/checkout/add", {
+    const createOrderResponse = await fetch(`${process.env.VITE_BACKEND_URL}/api/checkout/add`, {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${token}`,
@@ -97,12 +97,13 @@ const CheckoutPage = () => {
       // URL de acordo com o método de pagamento
       let url = "";
       if (paymentMethod === 'multibanco') {
-        url = "http://localhost:3000/api/referencia/multibanco/create";
+        url = `${process.env.VITE_BACKEND_URL}/api/referencia/multibanco/create`;
       } else if (paymentMethod === 'mbway') {
-        url = "http://localhost:3000/api/referencia/mbway/create";
+        url = `${process.env.VITE_BACKEND_URL}/api/referencia/mbway/create`;
       } else if (paymentMethod === 'cc') {
-        url = "http://localhost:3000/api/referencia/cc/create";
+        url = `${process.env.VITE_BACKEND_URL}/api/referencia/cc/create`;
       }
+
 
       const paymentResponse = await fetch(url, {
         method: "POST",

@@ -23,7 +23,7 @@ const CartPage = () => {
           return;
         }
 
-        const response = await fetch("http://localhost:3000/api/carrinho/listar", {
+        const response = await fetch(`${process.env.VITE_BACKEND_URL}/api/carrinho/listar`, {
           method: "GET",
           headers: {
             "Authorization": `Bearer ${token}`,
@@ -63,7 +63,7 @@ const CartPage = () => {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const response = await fetch(`http://localhost:3000/api/carrinho/remover/${productId}`, {
+      const response = await fetch(`${process.env.VITE_BACKEND_URL}/api/carrinho/remover/${productId}`, {
         method: 'DELETE',
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -92,7 +92,7 @@ const CartPage = () => {
       const token = localStorage.getItem('token');
       if (!token) return;
   
-      const response = await fetch(`http://localhost:3000/api/carrinho/aumentar`, {
+      const response = await fetch(`${process.env.VITE_BACKEND_URL}/api/carrinho/aumentar`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -123,7 +123,7 @@ const CartPage = () => {
       const token = localStorage.getItem('token');
       if (!token) return;
   
-      const response = await fetch(`http://localhost:3000/api/carrinho/diminuir`, {
+      const response = await fetch(`${process.env.VITE_BACKEND_URL}/api/carrinho/diminuir`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,

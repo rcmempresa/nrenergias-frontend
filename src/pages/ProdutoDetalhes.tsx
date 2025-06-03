@@ -40,13 +40,13 @@ const ProdutoDetalhes = () => {
 
 
   useEffect(() => {
-    fetch(`http://localhost:3000/products/${id}`)
+    fetch(`${process.env.VITE_BACKEND_URL}/products/${id}`)
       .then((response) => response.json())
       .then((data) => setProduto(data))
       .catch((error) => console.error("Erro ao carregar produto:", error));
 
     // Carregar produtos relacionados (exemplo de produtos da mesma categoria)
-    fetch(`http://localhost:3000/products?categoria=${produto?.categoria}`)
+    fetch(`${process.env.VITE_BACKEND_URL}/products?categoria=${produto?.categoria}`)
       .then((response) => response.json())
       .then((data) => setProdutosRelacionados(data))
       .catch((error) => console.error("Erro ao carregar produtos relacionados:", error));
@@ -85,7 +85,7 @@ const ProdutoDetalhes = () => {
             precoUnitario: product.preco,
         };
 
-        const response = await fetch('http://localhost:3000/api/carrinho/add', {
+        const response = await fetch(`${process.env.VITE_BACKEND_URL}/api/carrinho/add`, {
             method: 'POST',
             headers,
             body: JSON.stringify(bodyData),
@@ -124,7 +124,7 @@ const ProdutoDetalhes = () => {
             produto_id: product.id, 
         };
 
-        const response = await fetch("http://localhost:3000/api/favoritos/add", {
+        const response = await fetch(`${process.env.VITE_BACKEND_URL}/api/favoritos/add`, {
             method: "POST",
             headers,
             body: JSON.stringify(bodyData),

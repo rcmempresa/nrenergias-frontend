@@ -14,7 +14,7 @@ export default function NovosProdutos() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch("http://localhost:3000/products");
+        const res = await fetch(`${process.env.VITE_BACKEND_URL}/products`);
         const data = await res.json();
         setProducts(data);
       } catch (err) {
@@ -64,7 +64,7 @@ export default function NovosProdutos() {
             precoUnitario: product.preco,
         };
 
-        const response = await fetch('http://localhost:3000/api/carrinho/add', {
+        const response = await fetch(`${process.env.VITE_BACKEND_URL}/api/carrinho/add`, {
             method: 'POST',
             headers,
             body: JSON.stringify(bodyData),
@@ -103,7 +103,7 @@ export default function NovosProdutos() {
           produto_id: product.id,
         };
     
-        const response = await fetch("http://localhost:3000/api/favoritos/add", {
+        const response = await fetch(`${process.env.VITE_BACKEND_URL}/api/favoritos/add`, {
           method: "POST",
           headers,
           body: JSON.stringify(bodyData),
