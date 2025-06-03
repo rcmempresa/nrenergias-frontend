@@ -44,7 +44,7 @@ const CheckoutPage = () => {
     }
 
     // 1️⃣ Cria o pedido na base de dados
-    const createOrderResponse = await fetch(`${process.env.VITE_BACKEND_URL}/api/checkout/add`, {
+    const createOrderResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/checkout/add`, {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${token}`,
