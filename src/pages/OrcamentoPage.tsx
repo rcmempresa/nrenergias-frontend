@@ -171,7 +171,7 @@ const OrcamentoPage = () => {
     try {
       // Here you would normally send the data to your backend
       // For now, we'll just simulate a successful submission
-      const response = await axios.post(`${process.env.VITE_BACKEND_URL}/api/orcamento`, formData);
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/orcamento`, formData);
 
       
 

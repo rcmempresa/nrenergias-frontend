@@ -12,7 +12,7 @@ const FeaturedProducts = () => {
   const [urlToCopy, setUrlToCopy] = useState('');
 
   useEffect(() => {
-    fetch(`${process.env.VITE_BACKEND_URL}/products`)  
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/products`)  
       .then(response => response.json())
       .then(data => setProducts(data))  
       .catch(error => console.error('Erro ao buscar produtos:', error));
@@ -46,7 +46,7 @@ const FeaturedProducts = () => {
             quantidade: 1,
             precoUnitario: product.preco,
         };
-        const response = await fetch(`${process.env.VITE_BACKEND_URL}/api/carrinho/add`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/carrinho/add`, {
             method: 'POST',
             headers,
             body: JSON.stringify(bodyData),
@@ -80,7 +80,7 @@ const FeaturedProducts = () => {
       const bodyData = {
         produto_id: product.id,
       };
-      const response = await fetch(`${process.env.VITE_BACKEND_URL}/api/favoritos/add`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/favoritos/add`, {
         method: "POST",
         headers,
         body: JSON.stringify(bodyData),

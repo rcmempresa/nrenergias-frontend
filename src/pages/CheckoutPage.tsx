@@ -97,11 +97,11 @@ const CheckoutPage = () => {
       // URL de acordo com o método de pagamento
       let url = "";
       if (paymentMethod === 'multibanco') {
-        url = `${process.env.VITE_BACKEND_URL}/api/referencia/multibanco/create`;
+        url = `${import.meta.env.VITE_BACKEND_URL}/api/referencia/multibanco/create`;
       } else if (paymentMethod === 'mbway') {
-        url = `${process.env.VITE_BACKEND_URL}/api/referencia/mbway/create`;
+        url = `${import.meta.env.VITE_BACKEND_URL}/api/referencia/mbway/create`;
       } else if (paymentMethod === 'cc') {
-        url = `${process.env.VITE_BACKEND_URL}/api/referencia/cc/create`;
+        url = `${import.meta.env.VITE_BACKEND_URL}/api/referencia/cc/create`;
       }
 
 

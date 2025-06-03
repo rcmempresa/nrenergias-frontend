@@ -12,8 +12,8 @@ export function Orders() {
   // ⚠️ Exemplo simples de "mock" para transformar user_id -> customer.name/email
   const fetchOrders = async () => {
     const [ordersRes, usersRes] = await Promise.all([
-      fetch(`${process.env.VITE_BACKEND_URL}/api/encomendas/listar`),
-      fetch(`${process.env.VITE_BACKEND_URL}/api/users/listar`), // Supomos que tens esta rota
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/encomendas/listar`),
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users/listar`), // Supomos que tens esta rota
     ]);
   
     const [ordersData, usersData] = await Promise.all([

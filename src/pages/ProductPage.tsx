@@ -20,7 +20,7 @@ const ProductPage = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`${process.env.VITE_BACKEND_URL}/products`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/products`)
       .then(response => {
         if (!response.ok) {
           throw new Error('Failed to fetch products');

@@ -9,7 +9,7 @@ export function Customers() {
   useEffect(() => {
     // Fetch dos dados da API
     const fetchCustomers = async () => {
-      const response = await fetch(`${process.env.VITE_BACKEND_URL}/api/users/listar`);
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users/listar`);
       const data = await response.json();
       setCustomers(data);
     };
