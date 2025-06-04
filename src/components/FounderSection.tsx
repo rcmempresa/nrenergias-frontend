@@ -55,7 +55,7 @@ const FounderSection: React.FC = () => {
               isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
             }`}
           >
-            <h2 className="text-3xl font-bold text-gray-800 mb-2">O Nosso Fundador</h2>
+            <h2 className="text-3xl font-bold text-gray-800 mb-2">Fundador</h2>
             <div className="w-20 h-1 bg-blue-600 mb-6"></div>
             <h3 className="text-xl font-semibold text-blue-600 mb-4">Nuno Robinson</h3>
             <p className="text-gray-600 mb-6 leading-relaxed">

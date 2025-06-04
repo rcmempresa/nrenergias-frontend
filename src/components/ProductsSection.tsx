@@ -73,7 +73,7 @@ const ProductsSection: React.FC = () => {
     <section ref={sectionRef} className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">Nossos Produtos</h2>
+          <h2 className="text-3xl font-bold text-gray-800 mb-2"> Os Nossos Produtos</h2>
           <div className="w-20 h-1 bg-blue-600 mx-auto mb-6"></div>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Oferecemos uma ampla gama de produtos eletrónicos e elétricos, 
