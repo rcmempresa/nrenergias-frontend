@@ -23,9 +23,9 @@ const FeaturesSection = () => {
   ];
 
   return (
-    <div className="flex justify-between items-center px-10 py-6 bg-white text-gray-700">
+    <div className="flex flex-col md:flex-row justify-between items-center px-6 py-6 bg-white text-gray-700 space-y-4 md:space-y-0 md:space-x-6">
       {features.map((feature, index) => (
-        <div key={index} className="flex items-center space-x-3">
+        <div key={index} className="flex items-center space-x-3 w-full md:w-auto">
           <span className="text-3xl">{feature.icon}</span>
           <div>
             <h3 className="font-bold text-lg">{feature.title}</h3>
