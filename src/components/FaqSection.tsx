@@ -4,29 +4,36 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 const faqs = [
   {
     question: "Quais métodos de pagamento vocês aceitam?",
-    answer: "Aceitamos Visa, MasterCard, PayPal e Apple Pay. Todas as transações são seguras e criptografadas para garantir a proteção dos seus dados."
+    answer:
+      "Aceitamos MB Way, Multibanco e Cartão de Crédito. Todas as transações são seguras e criptografadas para garantir a proteção dos seus dados.",
   },
   {
     question: "Quanto tempo leva para o envio do produto?",
-    answer: "O envio geralmente leva de 5 a 7 dias úteis para pedidos nacionais e de 10 a 15 dias úteis para pedidos internacionais."
+    answer:
+      "O envio geralmente leva de 5 a 7 dias úteis para pedidos em Portugal continental.",
   },
   {
     question: "Vocês oferecem envio internacional?",
-    answer: "Sim, enviamos para todo o mundo! Os custos de envio serão calculados no checkout com base na sua localização."
+    answer:
+      "Atualmente, não oferecemos envio internacional. Os nossos envios são apenas para Portugal.",
   },
   {
     question: "Como posso saber se um produto está disponível em stock?",
-  answer: "Todos os nossos produtos que temos listados no site temos em stock, partimos do princípio que não queremos que os nossos clientes percam tempo a aguardar pela reposição do mesmo!"
+    answer:
+      "Todos os produtos listados no site estão disponíveis em stock. Não queremos que nossos clientes percam tempo a aguardar reposição!",
   },
   {
     question: "Posso alterar ou cancelar meu pedido após a confirmação?",
-    answer: "Após a confirmação do pedido, não é possível realizar alterações. No entanto, se houver um erro no pedido, entre em contato conosco o quanto antes para que possamos tentar solucionar o problema."
+    answer:
+      "Após a confirmação do pedido, não é possível realizar alterações. No entanto, se houver algum erro, entre em contato conosco o quanto antes para que possamos tentar resolver.",
   },
   {
     question: "Como posso entrar em contato para suporte?",
-    answer: "Você pode entrar em contato conosco pelo e-mail geral@nrenergias.pt ou pelo chat no nosso site. Nossa equipe estará pronta para ajudá-lo."
-  }
+    answer:
+      "Pode entrar em contato conosco pelo e-mail geral@nrenergias.pt ou pelo chat disponível no nosso site. Nossa equipe está pronta para ajudar!",
+  },
 ];
+
 
 export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState(null);
