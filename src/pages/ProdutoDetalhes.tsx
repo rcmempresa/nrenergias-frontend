@@ -69,7 +69,7 @@ const ProdutoDetalhes = () => {
     const token = localStorage.getItem('token'); 
 
     if (!token) {
-        alert('Token não encontrado, você precisa fazer login!');
+        toast.info('Token não encontrado, você precisa fazer login!');
         return;
     }
 

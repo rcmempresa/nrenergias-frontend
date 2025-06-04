@@ -10,7 +10,7 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
   const [montagem, setMontagem] = useState(false);
   const { cartItems, totalPrice } = location.state || { cartItems: [], totalPrice: 0 };
-  const finalPrice = montagem ? totalPrice + 25 : totalPrice;
+  const finalPrice = montagem ? totalPrice + 250 : totalPrice;
   const [address, setAddress] = useState({
     nome: '',
     rua: '',
@@ -203,7 +203,7 @@ const CheckoutPage = () => {
                 className="w-4 h-4 accent-blue-500"
               />
               <label htmlFor="montagem" className="text-base font-semibold text-blue-900">
-                Quero incluir a montagem do equipamento (+25€)
+                Quero incluir a montagem do equipamento (+250€)
               </label>
             </div>
 

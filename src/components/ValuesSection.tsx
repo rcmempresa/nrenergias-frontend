@@ -68,7 +68,7 @@ const ValuesSection: React.FC = () => {
     >
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold mb-2">Nossos Valores</h2>
+          <h2 className="text-3xl font-bold mb-2">Os Nossos Valores</h2>
           <div className="w-20 h-1 bg-blue-500 mx-auto mb-6"></div>
           <p className="max-w-2xl mx-auto text-gray-300">
             Os valores que nos definem e guiam todas as nossas ações e decisões, 

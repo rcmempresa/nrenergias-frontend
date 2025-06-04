@@ -138,10 +138,10 @@ const SobreNosPage = () => {
           </div>
         </section>
         <motion.section className="text-center py-16 bg-blue-800 text-white rounded-2xl" initial="hidden" animate="visible" variants={fadeUp}>
-          <h2 className="text-3xl font-bold mb-4">Pronto para transformar sua energia?</h2>
-          <p className="text-lg mb-6">Entre em contacto connosco e descubra como a NRenergias pode ajudar você a economizar e proteger o planeta.</p>
+          <h2 className="text-3xl font-bold mb-4">Pronto para ter utilizar equipamento de ponta?</h2>
+          <p className="text-lg mb-6">Entre em contacto connosco e descubra como a NRenergias pode ajudar você a instalar e utilizar os nossos produtos!</p>
           <a href="/contacto" className="inline-block px-8 py-3 bg-white text-blue-800 font-semibold rounded-full hover:bg-gray-100 transition">
-            Fale Connosco
+            ENTRE EM CONTACTO
           </a>
         </motion.section>
       </main>

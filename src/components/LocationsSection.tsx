@@ -52,10 +52,10 @@ const LocationsSection: React.FC = () => {
     <section ref={sectionRef} className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">Nossas Lojas</h2>
+          <h2 className="text-3xl font-bold text-gray-800 mb-2">A nossa loja</h2>
           <div className="w-20 h-1 bg-blue-600 mx-auto mb-6"></div>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Visite-nos numa das nossas lojas para experimentar os nossos produtos 
+            Visite-nos para experimentar os nossos produtos 
             e receber consultoria especializada dos nossos profissionais.
           </p>
         </div>
