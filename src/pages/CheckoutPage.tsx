@@ -87,9 +87,9 @@ const CheckoutPage = () => {
           phone_indicative: "+351",
           email : email,
         },
-        value: totalPrice,
+        value: finalPrice,
         capture: {
-          descriptive: `Compra #${orderId} - total ${totalPrice.toFixed(2)}€`,
+          descriptive: `Compra #${orderId} - total ${finalPrice.toFixed(2)}€`,
           transaction_key: String(orderId) // usa orderId como identificador único
         }
       };
@@ -203,7 +203,7 @@ const CheckoutPage = () => {
                 className="w-4 h-4 accent-blue-500"
               />
               <label htmlFor="montagem" className="text-base font-semibold text-blue-900">
-                Quero incluir a montagem do equipamento (+250€)
+                Quero incluir a montagem do equipamento até 3 metros de tubo de cobre(+250€)
               </label>
             </div>
 
