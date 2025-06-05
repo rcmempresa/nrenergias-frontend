@@ -10,7 +10,12 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
   const [montagem, setMontagem] = useState(false);
   const { cartItems, totalPrice } = location.state || { cartItems: [], totalPrice: 0 };
-  const finalPrice = montagem ? totalPrice + 250 : totalPrice;
+  
+  // 💰 Aplica taxas adicionais
+  let finalPrice = montagem ? totalPrice + 250 : totalPrice;
+  const isLowValueOrder = finalPrice < 100;
+  if (isLowValueOrder) finalPrice += 5;
+
   const [address, setAddress] = useState({
     nome: '',
     rua: '',
@@ -19,7 +24,9 @@ const CheckoutPage = () => {
     telefone: '',
     email: '',
   });
+
   const [paymentMethod, setPaymentMethod] = useState('mbway');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -27,132 +34,123 @@ const CheckoutPage = () => {
   };
 
   const handlePlaceOrder = async () => {
-  const { nome, rua, cidade, codigoPostal, telefone, email } = address;
+    const { nome, rua, cidade, codigoPostal, telefone, email } = address;
 
-  // Validação básica do endereço
-  if (!nome || !rua || !cidade || !codigoPostal || !telefone || !email) {
-    toast.info('Por favor, preencha todos os campos de endereço.');
-    return;
-  }
-
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      toast.info("Precisas de estar logado para finalizar a compra.");
-      navigate('/login');
+    if (!nome || !rua || !cidade || !codigoPostal || !telefone || !email) {
+      toast.info('Por favor, preencha todos os campos de endereço.');
       return;
     }
 
-    // 1️⃣ Cria o pedido na base de dados
-    const createOrderResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/checkout/add`, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        shipping_details: {
-          full_name: nome,
-          address: rua,
-          city: cidade,
-          zip_code: codigoPostal,
-          country: "Portugal",
-          phone: telefone
-        },
-        payment: {
-          payment_method: paymentMethod
-        },
-        order: {
-          total_amount: totalPrice
-        }
-      })
-    });
-
-    const orderResult = await createOrderResponse.json();
-
-    if (!createOrderResponse.ok) {
-      toast.error(orderResult.message || "Erro ao criar o pedido.");
-      return;
-    }
-
-    const orderId = orderResult.order_id;
-  
-
-    // 2️⃣ Cria a referência de pagamento se for necessário
-    if (paymentMethod === 'multibanco' || paymentMethod === 'mbway' || paymentMethod === 'cc') {
-      const body = {
-        customer: {
-          name: nome,
-          phone: telefone,
-          phone_indicative: "+351",
-          email : email,
-        },
-        value: finalPrice,
-        capture: {
-          descriptive: `Compra #${orderId} - total de  ${finalPrice.toFixed(2)}€`,
-          transaction_key: String(orderId) // usa orderId como identificador único
-        }
-      };
-
-      // URL de acordo com o método de pagamento
-      let url = "";
-      if (paymentMethod === 'multibanco') {
-        url = `${import.meta.env.VITE_BACKEND_URL}/api/referencia/multibanco/create`;
-      } else if (paymentMethod === 'mbway') {
-        url = `${import.meta.env.VITE_BACKEND_URL}/api/referencia/mbway/create`;
-      } else if (paymentMethod === 'cc') {
-        url = `${import.meta.env.VITE_BACKEND_URL}/api/referencia/cc/create`;
+    setIsSubmitting(true);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.info("Precisas de estar logado para finalizar a compra.");
+        navigate('/login');
+        return;
       }
 
-
-      const paymentResponse = await fetch(url, {
+      // 1️⃣ Cria o pedido na base de dados
+      const createOrderResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/checkout/add`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(body)
+        body: JSON.stringify({
+          shipping_details: {
+            full_name: nome,
+            address: rua,
+            city: cidade,
+            zip_code: codigoPostal,
+            country: "Portugal",
+            phone: telefone
+          },
+          payment: {
+            payment_method: paymentMethod
+          },
+          order: {
+            total_amount: finalPrice
+          }
+        })
       });
 
-      const paymentResult = await paymentResponse.json();
+      const orderResult = await createOrderResponse.json();
 
-      if (paymentResponse.ok && paymentResult.status === "ok") {
-  
-
-        // Redireciona para página de confirmação
-        navigate("/pedido/confirmacao", {
-          state: {
-            ...paymentResult,
-            finalPrice,
-            nome,
-            orderId
-          },
-        });
-      } else {
-        toast.error(paymentResult.message || `Erro ao criar referência para o método ${paymentMethod}.`);
+      if (!createOrderResponse.ok) {
+        toast.error(orderResult.message || "Erro ao criar o pedido.");
+        return;
       }
 
-    } else {
-      navigate("/pedido/confirmacao", {
-        state: {
-          orderId,
-          finalPrice,
-          nome
+      const orderId = orderResult.order_id;
+
+      // 2️⃣ Cria a referência de pagamento
+      if (paymentMethod === 'multibanco' || paymentMethod === 'mbway' || paymentMethod === 'cc') {
+        const body = {
+          customer: {
+            name: nome,
+            phone: telefone,
+            phone_indicative: "+351",
+            email: email,
+          },
+          value: finalPrice,
+          capture: {
+            descriptive: `Compra #${orderId} - total de  ${finalPrice.toFixed(2)}€`,
+            transaction_key: String(orderId)
+          }
+        };
+
+        let url = "";
+        if (paymentMethod === 'multibanco') {
+          url = `${import.meta.env.VITE_BACKEND_URL}/api/referencia/multibanco/create`;
+        } else if (paymentMethod === 'mbway') {
+          url = `${import.meta.env.VITE_BACKEND_URL}/api/referencia/mbway/create`;
+        } else if (paymentMethod === 'cc') {
+          url = `${import.meta.env.VITE_BACKEND_URL}/api/referencia/cc/create`;
         }
-      });
+
+        const paymentResponse = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(body)
+        });
+
+        const paymentResult = await paymentResponse.json();
+
+        if (paymentResponse.ok && paymentResult.status === "ok") {
+          navigate("/pedido/confirmacao", {
+            state: {
+              ...paymentResult,
+              finalPrice,
+              nome,
+              orderId
+            },
+          });
+        } else {
+          toast.error(paymentResult.message || `Erro ao criar referência para o método ${paymentMethod}.`);
+        }
+
+      } else {
+        navigate("/pedido/confirmacao", {
+          state: {
+            orderId,
+            finalPrice,
+            nome
+          }
+        });
+      }
+
+    } catch (error) {
+      console.error("Erro ao finalizar pedido:", error);
+      toast.error("Erro ao finalizar o pedido.");
+    } finally {
+      setIsSubmitting(false);
     }
+  };
 
-  } catch (error) {
-    console.error("Erro ao finalizar pedido:", error);
-    toast.error("Erro ao finalizar o pedido.");
-  }
-};
-
-  
-
-
-
-  
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <Helmet>
@@ -161,15 +159,17 @@ const CheckoutPage = () => {
         <meta name="keywords" content="carrinho NRenergias, finalização de compra, checkout, produtos eletrónicos, soluções sustentáveis, energia solar, pagamento seguro, Portugal"/>
         <link rel="canonical" href="https://nrenergias.pt/contacto" />
       </Helmet>
+
       <Header />
+
       <div className="mt-60 container mx-auto p-8 bg-white rounded-lg shadow-md">
         <h1 className="text-3xl font-bold mb-6">Finalizar Compra</h1>
 
-        {/* 🛒 Resumo do carrinho */}
         {cartItems.length === 0 ? (
           <p className="text-gray-500">O teu carrinho está vazio.</p>
         ) : (
           <>
+            {/* 🛒 Resumo do carrinho */}
             <table className="w-full mb-6 border-collapse">
               <thead>
                 <tr className="border-b">
@@ -186,14 +186,22 @@ const CheckoutPage = () => {
                     <td className="p-4 text-right">{parseFloat(item.preco_total).toFixed(2)}€</td>
                   </tr>
                 ))}
-                {finalPrice < totalPrice && (
-                    <tr className="bg-yellow-100 text-sm text-gray-800">
-                      <td className="p-4 text-right" colSpan="2">
-                        Taxa de encomendas inferiores a 100€
-                      </td>
-                      <td className="p-4 text-right">+5,00€</td>
-                    </tr>
-                  )}
+                {montagem && (
+                  <tr className="bg-blue-100 text-sm text-gray-800">
+                    <td className="p-4 text-right" colSpan="2">
+                      Montagem do equipamento
+                    </td>
+                    <td className="p-4 text-right">+250,00€</td>
+                  </tr>
+                )}
+                {isLowValueOrder && (
+                  <tr className="bg-yellow-100 text-sm text-gray-800">
+                    <td className="p-4 text-right" colSpan="2">
+                      Taxa de encomendas inferiores a 100€
+                    </td>
+                    <td className="p-4 text-right">+5,00€</td>
+                  </tr>
+                )}
                 <tr className="border-t font-bold bg-blue-100">
                   <td className="p-4 text-right" colSpan="2">Total:</td>
                   <td className="p-4 text-right">{finalPrice.toFixed(2)}€</td>
@@ -211,18 +219,16 @@ const CheckoutPage = () => {
                 className="w-4 h-4 accent-blue-500"
               />
               <label htmlFor="montagem" className="text-base font-semibold text-blue-900">
-                Quero incluir a montagem do equipamento até 3 metros de tubo de cobre(+250€)
+                Quero incluir a montagem do equipamento até 3 metros de tubo de cobre (+250€)
               </label>
             </div>
-
-
 
             {/* 🧾 Formulário de Endereço */}
             <div className="mb-6">
               <h2 className="text-xl font-semibold mb-4">Endereço de Entrega</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input type="text" name="nome" placeholder="Nome completo" value={address.nome} onChange={handleInputChange} className="border p-2 rounded" />
-                <input type="email" name="email" placeholder="Email" value={address.email} onChange={handleInputChange} className="border p-2 rounded"/>
+                <input type="email" name="email" placeholder="Email" value={address.email} onChange={handleInputChange} className="border p-2 rounded" />
                 <input type="text" name="telefone" placeholder="Telefone" value={address.telefone} onChange={handleInputChange} className="border p-2 rounded" />
                 <input type="text" name="rua" placeholder="Rua / Avenida" value={address.rua} onChange={handleInputChange} className="border p-2 rounded" />
                 <input type="text" name="cidade" placeholder="Cidade" value={address.cidade} onChange={handleInputChange} className="border p-2 rounded" />
@@ -234,7 +240,6 @@ const CheckoutPage = () => {
             <div className="mb-6">
               <h2 className="text-xl font-semibold mb-4">Método de Pagamento</h2>
               <div className="flex flex-col md:flex-row gap-4">
-                {/* MBWay */}
                 <label className="flex flex-col items-center space-y-2">
                   <input
                     type="radio"
@@ -244,15 +249,9 @@ const CheckoutPage = () => {
                     onChange={() => setPaymentMethod('mbway')}
                   />
                   <span>MBWay</span>
-                  {/* Imagem do MBWay */}
-                  <img
-                    src="mbway.png"
-                    alt="MBWay"
-                    className="w-32 h-auto mt-2"
-                  />
+                  <img src="mbway.png" alt="MBWay" className="w-32 h-auto mt-2" />
                 </label>
 
-                {/* Multibanco */}
                 <label className="flex flex-col items-center space-y-4">
                   <input
                     type="radio"
@@ -261,16 +260,10 @@ const CheckoutPage = () => {
                     checked={paymentMethod === 'multibanco'}
                     onChange={() => setPaymentMethod('multibanco')}
                   />
-                  <span >Multibanco</span>
-                  {/* Imagem do Multibanco */}
-                  <img
-                    src="multibanco.png"
-                    alt="Multibanco"
-                    className="w-48 h-auto mt-2"
-                  />
+                  <span>Multibanco</span>
+                  <img src="multibanco.png" alt="Multibanco" className="w-48 h-auto mt-2" />
                 </label>
 
-                {/* Cartão de Crédito */}
                 <label className="flex flex-col items-center space-y-4">
                   <input
                     type="radio"
@@ -279,30 +272,26 @@ const CheckoutPage = () => {
                     checked={paymentMethod === 'cc'}
                     onChange={() => setPaymentMethod('cc')}
                   />
-                  <span >Cartão de Crédito</span>
-                  {/* Imagem do Cartão de Crédito */}
-                  <img
-                    src="cartao.png"
-                    alt="Cartão de Crédito"
-                    className="w-48 h-auto mt-2"
-                  />
+                  <span>Cartão de Crédito</span>
+                  <img src="cartao.png" alt="Cartão de Crédito" className="w-48 h-auto mt-2" />
                 </label>
               </div>
             </div>
 
-
             {/* ✅ Confirmar Pedido */}
             <div className="text-right">
-              <button 
+              <button
                 onClick={handlePlaceOrder}
-                className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
+                disabled={isSubmitting}
+                className={`bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                Confirmar Pedido
+                {isSubmitting ? 'A processar...' : 'Confirmar Pedido'}
               </button>
             </div>
           </>
         )}
       </div>
+
       <div className="mb-48"></div>
       <Footer />
     </div>
