@@ -123,7 +123,7 @@ const CheckoutPage = () => {
         navigate("/pedido/confirmacao", {
           state: {
             ...paymentResult,
-            totalPrice,
+            finalPrice,
             nome,
             orderId
           },
@@ -136,7 +136,7 @@ const CheckoutPage = () => {
       navigate("/pedido/confirmacao", {
         state: {
           orderId,
-          totalPrice,
+          finalPrice,
           nome
         }
       });
