@@ -59,10 +59,7 @@ const FounderSection: React.FC = () => {
             <div className="w-20 h-1 bg-blue-600 mb-6"></div>
             <h3 className="text-xl font-semibold text-blue-600 mb-4">Nuno Robinson</h3>
             <p className="text-gray-600 mb-6 leading-relaxed">
-              Nascido e criado no Porto Santo, Nuno Robinson sempre teve uma paixão por tecnologia e 
-              uma visão inovadora. Com formação em Engenharia Eletrotécnica e vasta experiência no setor, 
-              decidiu fundar a NREnergias em 2010, com o objetivo de fornecer produtos de qualidade e 
-              serviços especializados à sua ilha natal e além.
+              Nascido e criado no Porto Santo, Nuno Robinson sempre teve uma paixão por tecnologia e uma visão inovadora. Com formação em eletricidade , climatização ,Segurança eletrônica e automatismos e vasta experiência no setor, decidiu fundar a NREnergias em 2021, com o objetivo de fornecer produtos de qualidade e serviços especializados à sua ilha natal e além.
             </p>
             <p className="text-gray-600 mb-6 leading-relaxed">
               "Acredito que a tecnologia deve ser acessível a todos e que a inovação é a chave para 
