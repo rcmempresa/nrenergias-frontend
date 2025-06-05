@@ -73,7 +73,7 @@ export default function NovosProdutos() {
         if (response.ok) {
             toast.success('Produto adicionado ao carrinho!');
         } else {
-            toast.error(`Erro ao adicionar produto ao carrinho: ${response.status}`);
+            toast.error(`Erro ao adicionar produto ao carrinho, tem que fazer login!`);
         }
     } catch (error) {
         console.error('Erro ao adicionar produto ao carrinho:', error);
