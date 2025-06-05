@@ -23,6 +23,7 @@ const CheckoutPage = () => {
     codigoPostal: '',
     telefone: '',
     email: '',
+    nif:'',
   });
 
   const [paymentMethod, setPaymentMethod] = useState('mbway');
@@ -34,9 +35,9 @@ const CheckoutPage = () => {
   };
 
   const handlePlaceOrder = async () => {
-    const { nome, rua, cidade, codigoPostal, telefone, email } = address;
+    const { nome, rua, cidade, codigoPostal, telefone, email, nif } = address;
 
-    if (!nome || !rua || !cidade || !codigoPostal || !telefone || !email) {
+    if (!nome || !rua || !cidade || !codigoPostal || !telefone || !email || !nif) {
       toast.info('Por favor, preencha todos os campos de endereço.');
       return;
     }
@@ -63,6 +64,7 @@ const CheckoutPage = () => {
             address: rua,
             city: cidade,
             zip_code: codigoPostal,
+            nif: nif,
             country: "Portugal",
             phone: telefone
           },
@@ -233,6 +235,7 @@ const CheckoutPage = () => {
                 <input type="text" name="rua" placeholder="Rua / Avenida" value={address.rua} onChange={handleInputChange} className="border p-2 rounded" />
                 <input type="text" name="cidade" placeholder="Cidade" value={address.cidade} onChange={handleInputChange} className="border p-2 rounded" />
                 <input type="text" name="codigoPostal" placeholder="Código Postal" value={address.codigoPostal} onChange={handleInputChange} className="border p-2 rounded" />
+                <input type="text" name="nif" placeholder="Número de Contribuinte" value={address.nif} onChange={handleInputChange} className="border p-2 rounded" />
               </div>
             </div>
 
