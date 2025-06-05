@@ -89,7 +89,7 @@ const CheckoutPage = () => {
         },
         value: finalPrice,
         capture: {
-          descriptive: `Compra #${orderId} - total ${finalPrice.toFixed(2)}€`,
+          descriptive: `Compra #${orderId} - total de  ${finalPrice.toFixed(2)}€`,
           transaction_key: String(orderId) // usa orderId como identificador único
         }
       };
