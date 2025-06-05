@@ -186,6 +186,14 @@ const CheckoutPage = () => {
                     <td className="p-4 text-right">{parseFloat(item.preco_total).toFixed(2)}€</td>
                   </tr>
                 ))}
+                {finalPrice < totalPrice && (
+                    <tr className="bg-yellow-100 text-sm text-gray-800">
+                      <td className="p-4 text-right" colSpan="2">
+                        Taxa de encomendas inferiores a 100€
+                      </td>
+                      <td className="p-4 text-right">+5,00€</td>
+                    </tr>
+                  )}
                 <tr className="border-t font-bold bg-blue-100">
                   <td className="p-4 text-right" colSpan="2">Total:</td>
                   <td className="p-4 text-right">{finalPrice.toFixed(2)}€</td>
