@@ -15,7 +15,7 @@ const ProductPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [priceRange, setPriceRange] = useState(['', '']); // Strings vazias para permitir apagar 0 e 5000
+  const [priceRange, setPriceRange] = useState(['', '']); 
   const productsPerPage = 10;
 
   useEffect(() => {
@@ -146,8 +146,8 @@ const ProductPage = () => {
                   >
                     <option value="">Todas as Categorias</option>
                     <option value="Ar Condicionado">Ar Condicionado</option>
-                    <option value="Câmara Segurança">Câmara de Segurança</option>
-                    <option value="Switch">Switch</option>
+                    <option value="Câmara Segurança">Câmara de Segurança/Vídeo Porteiro</option>
+                    <option value="Switch">Reyee</option>
                     <option value="Bombas de Calor">Bombas de Calor</option>
                   </select>
                 </div>

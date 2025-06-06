@@ -9,12 +9,12 @@ const PromotionProducts = () => {
         <div className="bg-white p-6 rounded-xl shadow-md flex items-center gap-6">
           <div className="flex-1">
             <h2 className="text-xl font-semibold text-gray-900">
-              Transporte grátis para todo o lado!
+              Ar condicionado de qualidade e com montagem!
             </h2>
             <p className="text-gray-600 text-sm mt-2">
-              Especial para pedidos acima de 500,00€ no mundo todo.
+              Especial para pedidos acima de 500,00€ no Porto Santo.
               <br />
-              Disponível durante maio e junho de 2025.
+              Disponível durante Junho e Julho de 2025.
             </p>
             {/* Envolvendo o botão com Link para navegar até a página do produto */}
             <Link to="/produto/24"> {/* Substitua "1" pelo ID do produto */}
