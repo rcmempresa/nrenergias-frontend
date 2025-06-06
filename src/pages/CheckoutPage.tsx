@@ -72,7 +72,12 @@ const CheckoutPage = () => {
             payment_method: paymentMethod
           },
           order: {
-            total_amount: finalPrice
+            total_amount: finalPrice,
+            items: cartItems.map(item => ({
+              product_id: item.product_id,
+              quantity: item.quantidade,
+              price: parseFloat(item.preco_unitario), 
+            }))
           }
         })
       });
