@@ -121,6 +121,7 @@ const CheckoutPage = () => {
         });
 
         const paymentResult = await paymentResponse.json();
+        console.log(paymentResult);
 
         if (paymentResponse.ok && paymentResult.status === "ok") {
           navigate("/pedido/confirmacao", {
