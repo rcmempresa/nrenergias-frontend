@@ -38,7 +38,7 @@ const ConfirmacaoPedido = () => {
 
   const metodo = pedido.method || {};
   const nomeCliente = pedido.nome || 'cliente';
-  const valor = parseFloat(pedido.totalPrice) || 0;
+  const valor = parseFloat(pedido.finalPrice) || 0;
   const paymentImage = paymentImages[metodo.type];
 
   return (
