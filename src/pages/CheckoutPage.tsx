@@ -73,11 +73,18 @@ const CheckoutPage = () => {
           },
           order: {
             total_amount: finalPrice,
-            items: cartItems.map(item => ({
-              product_id: item.product_id,
-              quantity: item.quantidade,
-              price: parseFloat(item.preco_unitario), 
-            }))
+            items: [
+              ...cartItems.map(item => ({
+                product_id: item.product_id,
+                quantity: item.quantidade,
+                price: parseFloat(item.preco_unitario),
+              })),
+              ...(montagem ? [{
+                product_id: "montagem",
+                quantity: 1,
+                price: 250,
+              }] : [])
+            ]
           }
         })
       });
