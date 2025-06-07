@@ -109,13 +109,11 @@ const ServicesPage = () => {
 
     const quantidade = 1;
     const precoUnitario = service.preco_por_unidade;
-    const precoTotal = (quantidade * precoUnitario).toFixed(2);
 
     const bodyData = {
       serviceId: service.id,
       quantidade,
-      precoUnitario,
-      precoTotal,
+      precoUnitario:service.preco_por_unidade
     };
 
     const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/carrinho/add`, {
