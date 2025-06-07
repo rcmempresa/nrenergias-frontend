@@ -58,33 +58,37 @@ const CartPage = () => {
     setTotalPrice(total);
   }, [cartItems]);
 
-  // ➖ Remover item do carrinho
-  const handleRemoveItem = async (productId) => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) return;
+  const handleRemoveItem = async (id, isProduct) => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) return;
 
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/carrinho/remover/${productId}`, {
-        method: 'DELETE',
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-      });
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/carrinho/remover/${id}`, {
+      method: 'DELETE',
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ isProduct })
+    });
 
-      const result = await response.json();
+    const result = await response.json();
 
-      if (response.ok) {
-        setCartItems(cartItems.filter(item => item.product_id !== productId));
-        toast.success(result.message);
-      } else {
-        toast.error(result.message);
-      }
-    } catch (error) {
-      console.error("Erro ao remover o item:", error);
-      toast.error('Erro ao remover o item do carrinho');
+    if (response.ok) {
+      setCartItems(cartItems.filter(item =>
+        (isProduct ? item.product_id !== id : item.service_id !== id)
+      ));
+      toast.success(result.message);
+    } else {
+      toast.error(result.message);
     }
-  };
+  } catch (error) {
+    console.error("Erro ao remover o item:", error);
+    toast.error('Erro ao remover o item do carrinho');
+  }
+};
+
+
 
   // ➕ Aumentar quantidade
   const handleIncreaseQuantity = async (id, isProduct) => {
