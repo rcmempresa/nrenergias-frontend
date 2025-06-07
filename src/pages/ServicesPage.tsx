@@ -43,8 +43,8 @@ const ServicesPage = () => {
 
     let filtered = services.filter(service =>
       service.nome.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      service.preco_por_unidade >= minPrice &&
-      service.preco_por_unidade <= maxPrice
+      service.preco_unidade >= minPrice &&
+      service.preco_unidade <= maxPrice
     );
 
     if (tipo) {
@@ -52,9 +52,9 @@ const ServicesPage = () => {
     }
 
     if (sortBy === 'price-asc') {
-      filtered.sort((a, b) => a.preco_por_unidade - b.preco_por_unidade);
+      filtered.sort((a, b) => a.preco_unidade - b.preco_unidade);
     } else if (sortBy === 'price-desc') {
-      filtered.sort((a, b) => b.preco_por_unidade - a.preco_por_unidade);
+      filtered.sort((a, b) => b.preco_unidade - a.preco_unidade);
     } else if (sortBy === 'name') {
       filtered.sort((a, b) => a.nome.localeCompare(b.nome));
     }
@@ -219,7 +219,10 @@ const ServicesPage = () => {
                     <h3 className="font-semibold text-lg mb-1">{service.nome}</h3>
                     <p className="text-sm text-gray-600 mb-2 line-clamp-2">{service.descricao}</p>
                     <div className="flex justify-between items-center">
-                      <span className="font-semibold text-lg text-blue-600">€{service.preco_por_unidade}</span>
+                      <span className="font-semibold text-lg text-blue-600">
+                        €{service.preco_unidade} {service.tipo === 'Montagem' && `/ quantidade`}
+                        {service.tipo === 'Eletricidade' && `/ hora`}
+                      </span>
                     </div>
                   </div>
                 </div>
