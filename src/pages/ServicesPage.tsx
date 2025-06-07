@@ -94,27 +94,31 @@ const ServicesPage = () => {
   }
 
    const handleAddToCart = async (service) => {
-    const token = localStorage.getItem('token'); 
+  const token = localStorage.getItem('token');
 
-    if (!token) {
-      toast.info('Você precisa fazer login para adicionar ao carrinho!');
-      return;
-    }
+  if (!token) {
+    toast.info('Você precisa fazer login para adicionar ao carrinho!');
+    return;
+  }
 
-    try {
-      const headers = {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      };
+  try {
+    const headers = {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    };
 
-      const bodyData = {
-        serviceId: service.id,
-        quantidade: service.tipo === 'Montagem' ? 1 : undefined,
-        tempo: service.tipo === 'Eletricidade' ? 1 : undefined,
-        precoUnitario: service.preco_por_unidade,
-      };
+    const quantidade = 1;
+    const precoUnitario = service.preco_por_unidade;
+    const precoTotal = (quantidade * precoUnitario).toFixed(2);
 
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/carrinho/add`, {
+    const bodyData = {
+      serviceId: service.id,
+      quantidade,
+      precoUnitario,
+      precoTotal,
+    };
+
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/carrinho/add-service`, {
       method: 'POST',
       headers,
       body: JSON.stringify(bodyData),
@@ -131,6 +135,7 @@ const ServicesPage = () => {
     toast.error('Erro ao adicionar serviço ao carrinho');
   }
 };
+
 
 
   return (
