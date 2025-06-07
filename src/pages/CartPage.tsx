@@ -41,6 +41,7 @@ const CartPage = () => {
         }
 
         const data = await response.json();
+        console.log("📦 Carrinho:", data.items);
         setCartItems(data.items); // Define os itens do carrinho
         setCartId(data.cart_id);  // Guarda o cart_id
       } catch (error) {
