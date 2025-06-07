@@ -93,46 +93,45 @@ const ServicesPage = () => {
     );
   }
 
-   const handleAddToCart = async (service) => {
-  const token = localStorage.getItem('token');
+  const handleAddToCart = async (service) => {
+    const token = localStorage.getItem('token');
 
-  if (!token) {
-    toast.info('Você precisa fazer login para adicionar ao carrinho!');
-    return;
-  }
-
-  try {
-    const headers = {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    };
-
-    const quantidade = 1;
-    const precoUnitario = service.preco_por_unidade;
-
-    const bodyData = {
-      serviceId: service.id,
-      quantidade,
-      precoUnitario:service.preco_por_unidade
-    };
-
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/carrinho/add`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(bodyData),
-    });
-
-    if (response.ok) {
-      toast.success('Serviço adicionado ao carrinho!');
-    } else {
-      const errorData = await response.json();
-      toast.error(`Erro: ${errorData.message || 'Não foi possível adicionar o serviço'}`);
+    if (!token) {
+      toast.info('Você precisa fazer login para adicionar ao carrinho!');
+      return;
     }
-  } catch (error) {
-    console.error('Erro ao adicionar serviço ao carrinho:', error);
-    toast.error('Erro ao adicionar serviço ao carrinho');
-  }
-};
+
+    try {
+      const headers = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      };
+
+      const quantidade = 1;
+      
+      const bodyData = {
+        serviceId: service.id,
+        quantidade,
+        precoUnitario: Number(service.preco_por_unidade)
+      };
+
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/carrinho/add`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(bodyData),
+      });
+
+      if (response.ok) {
+        toast.success('Serviço adicionado ao carrinho!');
+      } else {
+        const errorData = await response.json();
+        toast.error(`Erro: ${errorData.message || 'Não foi possível adicionar o serviço'}`);
+      }
+    } catch (error) {
+      console.error('Erro ao adicionar serviço ao carrinho:', error);
+      toast.error('Erro ao adicionar serviço ao carrinho');
+    }
+  };
 
 
 
