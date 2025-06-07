@@ -1,76 +1,72 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, SlidersHorizontal, Star } from 'lucide-react';
+import { Search, SlidersHorizontal } from 'lucide-react';
 import { Helmet } from 'react-helmet';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 const ServicesPage = () => {
-  const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [services, setServices] = useState([]);
+  const [filteredServices, setFilteredServices] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [category, setCategory] = useState('');
+  const [tipo, setTipo] = useState('');
   const [sortBy, setSortBy] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [priceRange, setPriceRange] = useState(['', '']); 
-  const productsPerPage = 10;
+  const [priceRange, setPriceRange] = useState(['', '']);
+  const servicesPerPage = 10;
 
   useEffect(() => {
     setLoading(true);
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/products`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/services`)
       .then(response => {
-        if (!response.ok) {
-          throw new Error('Failed to fetch products');
-        }
+        if (!response.ok) throw new Error('Erro ao carregar serviços');
         return response.json();
       })
       .then(data => {
-        setProducts(data);
-        setFilteredProducts(data);
+        setServices(data);
+        setFilteredServices(data);
         setLoading(false);
       })
       .catch(error => {
-        console.error('Error fetching products:', error);
+        console.error('Erro:', error);
         setError(error.message);
         setLoading(false);
       });
   }, []);
 
   useEffect(() => {
-    // Converte os valores da faixa de preço para números, ou usa valores padrão se vazios
     const minPrice = priceRange[0] === '' ? 0 : Number(priceRange[0]);
-    const maxPrice = priceRange[1] === '' ? 5000 : Number(priceRange[1]);
+    const maxPrice = priceRange[1] === '' ? 1000 : Number(priceRange[1]);
 
-    let filtered = products.filter(product =>
-      product.nome.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      product.preco >= minPrice && product.preco <= maxPrice
+    let filtered = services.filter(service =>
+      service.nome.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      service.preco_unidade >= minPrice &&
+      service.preco_unidade <= maxPrice
     );
 
-    if (category) {
-      filtered = filtered.filter(product => product.categoria === category);
+    if (tipo) {
+      filtered = filtered.filter(service => service.tipo === tipo);
     }
 
-    // Ordenação
     if (sortBy === 'price-asc') {
-      filtered.sort((a, b) => a.preco - b.preco);
+      filtered.sort((a, b) => a.preco_unidade - b.preco_unidade);
     } else if (sortBy === 'price-desc') {
-      filtered.sort((a, b) => b.preco - a.preco);
+      filtered.sort((a, b) => b.preco_unidade - a.preco_unidade);
     } else if (sortBy === 'name') {
       filtered.sort((a, b) => a.nome.localeCompare(b.nome));
     }
 
-    setFilteredProducts(filtered);
+    setFilteredServices(filtered);
     setCurrentPage(1);
-  }, [searchTerm, priceRange, category, products, sortBy]);
+  }, [searchTerm, priceRange, tipo, services, sortBy]);
 
-  // Paginação
-  const indexOfLastProduct = currentPage * productsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
-  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+  const indexOfLastService = currentPage * servicesPerPage;
+  const indexOfFirstService = indexOfLastService - servicesPerPage;
+  const currentServices = filteredServices.slice(indexOfFirstService, indexOfLastService);
+  const totalPages = Math.ceil(filteredServices.length / servicesPerPage);
 
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -89,7 +85,7 @@ const ServicesPage = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-red-500 text-center">
-          <p className="text-xl font-semibold mb-2">Erro ao carregar os produtos</p>
+          <p className="text-xl font-semibold mb-2">Erro ao carregar os serviços</p>
           <p>{error}</p>
         </div>
       </div>
@@ -99,25 +95,25 @@ const ServicesPage = () => {
   return (
     <>
       <Helmet>
-        <title>Produtos Eletrónicos | NRenergias</title>
-        <meta name="description" content="Explore a seleção de produtos eletrónicos da NRenergias — desde cabos de carregamento e câmaras de vigilância até ar condicionados e soluções solares. Tecnologia e sustentabilidade ao seu alcance, com entrega em todo o país." />
-        <meta name="keywords" content="produtos eletrónicos, cabos de carregamento, ar condicionado, câmara de vigilância, NRenergias, Porto Santo, painéis solares, sustentabilidade, Portugal" />
-        <link rel="canonical" href="https://nrenergias.pt/produtos" />
+        <title>Serviços | NRenergias</title>
+        <meta name="description" content="Explore os serviços da NRenergias — montagem, eletricidade, assistência técnica e muito mais. Profissionais qualificados ao seu dispor." />
+        <meta name="keywords" content="serviços, montagem, eletricidade, assistência, NRenergias, Porto Santo" />
+        <link rel="canonical" href="https://nrenergias.pt/servicos" />
       </Helmet>
       <Header />
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8 mt-44">
-          <h1 className="text-3xl font-bold">Produtos</h1>
+          <h1 className="text-3xl font-bold">Serviços</h1>
         </div>
 
-        {/* Search and Filters */}
+        {/* Filtros e Pesquisa */}
         <div className="mb-8">
           <div className="flex gap-4 mb-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Procurar Produtos..."
+                placeholder="Procurar serviços..."
                 className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -137,18 +133,18 @@ const ServicesPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Categoria
+                    Tipo de Serviço
                   </label>
                   <select
                     className="w-full p-2 border rounded-lg"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
+                    value={tipo}
+                    onChange={(e) => setTipo(e.target.value)}
                   >
-                    <option value="">Todas as Categorias</option>
-                    <option value="Ar Condicionado">Ar Condicionado</option>
-                    <option value="Câmara Segurança">Câmara de Segurança/Vídeo Porteiro</option>
-                    <option value="Switch">Reyee</option>
-                    <option value="Bombas de Calor">Bombas de Calor</option>
+                    <option value="">Todos</option>
+                    <option value="Montagem">Montagem</option>
+                    <option value="Eletricidade">Eletricidade</option>
+                    <option value="Climatização">Climatização</option>
+                    <option value="Assistência Técnica">Assistência Técnica</option>
                   </select>
                 </div>
                 <div>
@@ -168,7 +164,7 @@ const ServicesPage = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Faixa de preço
+                    Faixa de Preço
                   </label>
                   <div className="flex gap-2">
                     <input
@@ -178,13 +174,12 @@ const ServicesPage = () => {
                       value={priceRange[0]}
                       onChange={(e) => {
                         const val = e.target.value;
-                        // Permitir string vazia para limpar input
-                        if (val === '' || (Number(val) >= 0 && Number(val) <= (priceRange[1] === '' ? 5000 : Number(priceRange[1])))) {
+                        if (val === '' || (Number(val) >= 0 && Number(val) <= (priceRange[1] === '' ? 1000 : Number(priceRange[1])))) {
                           setPriceRange([val, priceRange[1]]);
                         }
                       }}
                       min={0}
-                      max={priceRange[1] === '' ? 5000 : Number(priceRange[1])}
+                      max={priceRange[1] === '' ? 1000 : Number(priceRange[1])}
                     />
                     <input
                       type="number"
@@ -198,7 +193,7 @@ const ServicesPage = () => {
                         }
                       }}
                       min={priceRange[0] === '' ? 0 : Number(priceRange[0])}
-                      max={5000}
+                      max={1000}
                     />
                   </div>
                 </div>
@@ -207,51 +202,31 @@ const ServicesPage = () => {
           )}
         </div>
 
-        {/* Products Grid */}
+        {/* Lista de Serviços */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {currentProducts.length > 0 ? (
-            currentProducts.map(product => (
-              <Link to={`/produto/${product.id}`} key={product.id} className="text-blue-500 hover:text-blue-600">
+          {currentServices.length > 0 ? (
+            currentServices.map(service => (
+              <Link to={`/servico/${service.id}`} key={service.id}>
                 <div className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
                   <div className="relative">
                     <img
-                      src={product.imagem_url}
-                      alt={product.nome}
+                      src={service.imagem_url || '/placeholder.jpg'}
+                      alt={service.nome}
                       className="w-full h-48 object-cover"
                     />
-                    {product.stock < 5 && (
-                      <span className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
-                        Pouco stock
-                      </span>
-                    )}
                   </div>
                   <div className="p-4">
-                    <h3 className="font-semibold text-lg mb-1">{product.nome}</h3>
-                    <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.descricao}</p>
-                    <div className="flex items-center gap-1 mb-2">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-4 h-4 ${
-                            i < Math.floor(product.rating || 3)
-                              ? 'text-yellow-400 fill-current'
-                              : 'text-gray-300'
-                          }`}
-                        />
-                      ))}
-                      {product.rating !== undefined && (
-                        <span className="text-sm text-gray-500">({product.rating})</span>
-                      )}
-                    </div>
+                    <h3 className="font-semibold text-lg mb-1">{service.nome}</h3>
+                    <p className="text-sm text-gray-600 mb-2 line-clamp-2">{service.descricao}</p>
                     <div className="flex justify-between items-center">
-                      <span className="font-semibold text-lg text-blue-600">€{product.preco}</span>
+                      <span className="font-semibold text-lg text-blue-600">€{service.preco_unidade}</span>
                     </div>
                   </div>
                 </div>
               </Link>
             ))
           ) : (
-            <p>Nenhum produto encontrado.</p>
+            <p>Nenhum serviço encontrado.</p>
           )}
         </div>
 
