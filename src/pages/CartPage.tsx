@@ -86,68 +86,79 @@ const CartPage = () => {
   };
 
   // ➕ Aumentar quantidade
-  const handleIncreaseQuantity = async (productId) => {
-    if (!cartId) return;
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-  
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/carrinho/aumentar`, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ cartId, productId })
-      });
-  
-      const updatedItem = await response.json();
-  
-      if (response.ok) {
-        setCartItems(cartItems.map(item => 
-          item.product_id === productId 
-            ? { ...item, quantidade: updatedItem.quantidade, preco_total: updatedItem.preco_total } 
-            : item
-        ));
-      } else {
-        toast.error(updatedItem.message);
-      }
-    } catch (error) {
-      console.error("Erro ao aumentar quantidade:", error);
-    }
-  };
-  
-  const handleDecreaseQuantity = async (productId) => {
-    if (!cartId) return;
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-  
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/carrinho/diminuir`, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ cartId, productId })
-      });
-  
-      const updatedItem = await response.json();
-  
-      if (response.ok) {
-        setCartItems(cartItems.map(item => 
-          item.product_id === productId 
-            ? { ...item, quantidade: updatedItem.quantidade, preco_total: updatedItem.preco_total } 
-            : item
-        ));
-      } else {
-        toast.error(updatedItem.message);
-      }
-    } catch (error) {
-      console.error("Erro ao diminuir quantidade:", error);
-    }
-  };
+  const handleIncreaseQuantity = async (id, isProduct) => {
+  if (!cartId) return;
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) return;
 
+    const body = {
+      cartId,
+      ...(isProduct ? { productId: id } : { serviceId: id })
+    };
+
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/carrinho/aumentar`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body)
+    });
+
+    const updatedItem = await response.json();
+
+    if (response.ok) {
+      setCartItems(cartItems.map(item =>
+        (item.product_id === id || item.service_id === id)
+          ? { ...item, quantidade: updatedItem.quantidade, preco_total: updatedItem.preco_total }
+          : item
+      ));
+    } else {
+      toast.error(updatedItem.message);
+    }
+  } catch (error) {
+    console.error("Erro ao aumentar quantidade:", error);
+  }
+};
+
+const handleDecreaseQuantity = async (id, isProduct) => {
+  if (!cartId) return;
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    const body = {
+      cartId,
+      ...(isProduct ? { productId: id } : { serviceId: id })
+    };
+
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/carrinho/diminuir`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body)
+    });
+
+    const updatedItem = await response.json();
+
+    if (response.ok) {
+      setCartItems(cartItems.map(item =>
+        (item.product_id === id || item.service_id === id)
+          ? { ...item, quantidade: updatedItem.quantidade, preco_total: updatedItem.preco_total }
+          : item
+      ));
+    } else {
+      toast.error(updatedItem.message);
+    }
+  } catch (error) {
+    console.error("Erro ao diminuir quantidade:", error);
+  }
+};
+
+  
   
   const handleGoToCheckout = () => {
     // 1. Verificar se o carrinho está vazio
@@ -189,44 +200,47 @@ const CartPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {cartItems.map(item => (
-                  <tr key={item.id} className="border-b hover:bg-gray-50">
-                    <td className="p-4 flex items-center">
-                      <img src={item.imagem_url} alt={item.nome} className="w-16 h-16 mr-4" />
-                      <div>
-                        <p className="font-semibold">{item.nome}</p>
-                      </div>
-                    </td>
-                    <td className="p-4">{parseFloat(item.preco_unitario).toFixed(2)}€</td>
-                    <td className="p-4">
-                      <div className="flex items-center">
-                        <button className="px-3 py-1 border rounded" onClick={() => handleDecreaseQuantity(item.product_id)}>-</button>
-                        <input 
-                          type="number" 
-                          value={item.quantidade} 
-                          readOnly
-                          className="w-12 mx-2 text-center border rounded" 
-                        />
-                        <button className="px-3 py-1 border rounded" onClick={() => handleIncreaseQuantity(item.product_id)}>+</button>
-                      </div>
-                    </td>
-                    <td className="p-4 font-semibold">{parseFloat(item.preco_total).toFixed(2)}€</td>
-                    <td className="p-4">
-                      <button className="text-red-500 hover:underline" onClick={() => handleRemoveItem(item.product_id)}>Remover</button>
-                    </td>
-                  </tr>
-                ))}
-                <tr className="border-t bg-blue-300">
-                  <td colSpan="3" className="p-4 text-right font-semibold text-white">TOTAL:</td>
-                  <td className="p-4 font-semibold text-white bg-blue-500">{totalPrice.toFixed(2)}€</td>
-                  <td></td>
-                </tr>
+            {cartItems.map(item => {
+              const id = item.product_id ?? item.service_id;
+              const isProduct = !!item.product_id;
 
-              </tbody>
+              return (
+                <tr key={item.id} className="border-b hover:bg-gray-50">
+                  <td className="p-4 flex items-center">
+                    <img src={item.imagem_url} alt={item.nome} className="w-16 h-16 mr-4" />
+                    <div>
+                      <p className="font-semibold">{item.nome}</p>
+                    </div>
+                  </td>
+                  <td className="p-4">{parseFloat(item.preco_unitario).toFixed(2)}€</td>
+                  <td className="p-4">
+                    <div className="flex items-center">
+                      <button className="px-3 py-1 border rounded" onClick={() => handleDecreaseQuantity(id, isProduct)}>-</button>
+                      <input 
+                        type="number" 
+                        value={item.quantidade} 
+                        readOnly
+                        className="w-12 mx-2 text-center border rounded" 
+                      />
+                      <button className="px-3 py-1 border rounded" onClick={() => handleIncreaseQuantity(id, isProduct)}>+</button>
+                    </div>
+                  </td>
+                  <td className="p-4 font-semibold">{parseFloat(item.preco_total).toFixed(2)}€</td>
+                  <td className="p-4">
+                    <button className="text-red-500 hover:underline" onClick={() => handleRemoveItem(id, isProduct)}>Remover</button>
+                  </td>
+                </tr>
+              );
+            })}
+            <tr className="border-t bg-blue-300">
+              <td colSpan="3" className="p-4 text-right font-semibold text-white">TOTAL:</td>
+              <td className="p-4 font-semibold text-white bg-blue-500">{totalPrice.toFixed(2)}€</td>
+              <td></td>
+            </tr>
+          </tbody>
             </table>
           </div>
         )}
-
 
 
           <div className="mt-6 flex justify-between">
