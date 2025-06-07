@@ -86,44 +86,36 @@ const CartPage = () => {
   };
 
   // ➕ Aumentar quantidade
-  const handleIncreaseQuantity = async (id, isProduct) => {
-  if (!cartId) return;
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-
-    // Monta o body dinamicamente conforme o tipo
-    const body = isProduct 
-      ? { cartId, productId: id } 
-      : { cartId, serviceId: id };
-
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/carrinho/aumentar`, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(body)
-    });
-
-    const updatedItem = await response.json();
-
-    if (response.ok) {
-      setCartItems(cartItems.map(item => {
-        const itemId = item.product_id ?? item.service_id;
-        if (itemId === id) {
-          return { ...item, quantidade: updatedItem.quantidade, preco_total: updatedItem.preco_total };
-        }
-        return item;
-      }));
-    } else {
-      toast.error(updatedItem.message);
+  const handleIncreaseQuantity = async (productId) => {
+    if (!cartId) return;
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+  
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/carrinho/aumentar`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ cartId, productId })
+      });
+  
+      const updatedItem = await response.json();
+  
+      if (response.ok) {
+        setCartItems(cartItems.map(item => 
+          item.product_id === productId 
+            ? { ...item, quantidade: updatedItem.quantidade, preco_total: updatedItem.preco_total } 
+            : item
+        ));
+      } else {
+        toast.error(updatedItem.message);
+      }
+    } catch (error) {
+      console.error("Erro ao aumentar quantidade:", error);
     }
-  } catch (error) {
-    console.error("Erro ao aumentar quantidade:", error);
-  }
-};
-
+  };
   
   const handleDecreaseQuantity = async (productId) => {
     if (!cartId) return;
@@ -215,7 +207,7 @@ const CartPage = () => {
                           readOnly
                           className="w-12 mx-2 text-center border rounded" 
                         />
-                        <button className="px-3 py-1 border rounded" onClick={() => handleIncreaseQuantity(item.id, isProduct)}>+</button>
+                        <button className="px-3 py-1 border rounded" onClick={() => handleIncreaseQuantity(item.product_id)}>+</button>
                       </div>
                     </td>
                     <td className="p-4 font-semibold">{parseFloat(item.preco_total).toFixed(2)}€</td>
