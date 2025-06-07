@@ -215,7 +215,7 @@ const CartPage = () => {
                           readOnly
                           className="w-12 mx-2 text-center border rounded" 
                         />
-                        <button className="px-3 py-1 border rounded" onClick={() => handleIncreaseQuantity(id, isProduct)}>+</button>
+                        <button className="px-3 py-1 border rounded" onClick={() => handleIncreaseQuantity(item.id, isProduct)}>+</button>
                       </div>
                     </td>
                     <td className="p-4 font-semibold">{parseFloat(item.preco_total).toFixed(2)}€</td>
