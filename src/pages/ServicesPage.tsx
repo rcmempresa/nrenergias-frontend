@@ -118,7 +118,7 @@ const ServicesPage = () => {
       precoTotal,
     };
 
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/carrinho/add-service`, {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/carrinho/add`, {
       method: 'POST',
       headers,
       body: JSON.stringify(bodyData),
