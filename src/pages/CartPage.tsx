@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 const CartPage = () => {
@@ -11,7 +10,6 @@ const CartPage = () => {
   const [cartId, setCartId] = useState(null);
   const [totalPrice, setTotalPrice] = useState(0);
   const navigate = useNavigate();
- ;
 
   // 🚀 Carregar os produtos do carrinho
   useEffect(() => {
@@ -58,23 +56,28 @@ const CartPage = () => {
   }, [cartItems]);
 
   // ➖ Remover item do carrinho
-  const handleRemoveItem = async (productId) => {
+  const handleRemoveItem = async (id, type) => {
     try {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/carrinho/remover/${productId}`, {
+      // Supondo que a tua API aceita o tipo via query ou body para identificar o item
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/carrinho/remover/${id}`, {
         method: 'DELETE',
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"
         },
+        body: JSON.stringify({ type }),
       });
 
       const result = await response.json();
 
       if (response.ok) {
-        setCartItems(cartItems.filter(item => item.product_id !== productId));
+        setCartItems(cartItems.filter(item => {
+          const itemId = item.product_id ?? item.service_id;
+          return itemId !== id;
+        }));
         toast.success(result.message);
       } else {
         toast.error(result.message);
@@ -86,7 +89,7 @@ const CartPage = () => {
   };
 
   // ➕ Aumentar quantidade
-  const handleIncreaseQuantity = async (productId) => {
+  const handleIncreaseQuantity = async (id, type) => {
     if (!cartId) return;
     try {
       const token = localStorage.getItem('token');
@@ -98,17 +101,19 @@ const CartPage = () => {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ cartId, productId })
+        body: JSON.stringify({ cartId, id, type })
       });
   
       const updatedItem = await response.json();
   
       if (response.ok) {
-        setCartItems(cartItems.map(item => 
-          item.product_id === productId 
-            ? { ...item, quantidade: updatedItem.quantidade, preco_total: updatedItem.preco_total } 
-            : item
-        ));
+        setCartItems(cartItems.map(item => {
+          const itemId = item.product_id ?? item.service_id;
+          if (itemId === id) {
+            return { ...item, quantidade: updatedItem.quantidade, preco_total: updatedItem.preco_total };
+          }
+          return item;
+        }));
       } else {
         toast.error(updatedItem.message);
       }
@@ -117,7 +122,8 @@ const CartPage = () => {
     }
   };
   
-  const handleDecreaseQuantity = async (productId) => {
+  // ➖ Diminuir quantidade
+  const handleDecreaseQuantity = async (id, type) => {
     if (!cartId) return;
     try {
       const token = localStorage.getItem('token');
@@ -129,17 +135,19 @@ const CartPage = () => {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ cartId, productId })
+        body: JSON.stringify({ cartId, id, type })
       });
   
       const updatedItem = await response.json();
   
       if (response.ok) {
-        setCartItems(cartItems.map(item => 
-          item.product_id === productId 
-            ? { ...item, quantidade: updatedItem.quantidade, preco_total: updatedItem.preco_total } 
-            : item
-        ));
+        setCartItems(cartItems.map(item => {
+          const itemId = item.product_id ?? item.service_id;
+          if (itemId === id) {
+            return { ...item, quantidade: updatedItem.quantidade, preco_total: updatedItem.preco_total };
+          }
+          return item;
+        }));
       } else {
         toast.error(updatedItem.message);
       }
@@ -148,20 +156,14 @@ const CartPage = () => {
     }
   };
 
-  
   const handleGoToCheckout = () => {
-    // 1. Verificar se o carrinho está vazio
     if (cartItems.length === 0) {
       toast.info("Seu carrinho está vazio! Adicione produtos antes de continuar.");
-      return; // Não permite seguir para o checkout
+      return;
     }
-
-    
-  
-    // 3. Caso a validação passe, redireciona para a página de checkout
-    navigate('/checkout', { state: { cartItems, totalPrice } }); 
+    navigate('/checkout', { state: { cartItems, totalPrice } });
   };
-  
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <Helmet>
@@ -171,7 +173,7 @@ const CartPage = () => {
         <link rel="canonical" href="https://nrenergias.pt/contacto" />
       </Helmet>
       <Header />
-      <div className=" mt-60 container mx-auto p-8 bg-white rounded-lg shadow-md mt-20">
+      <div className="mt-20 container mx-auto p-8 bg-white rounded-lg shadow-md">
         <h1 className="text-3xl font-bold mb-6">O teu Carrinho</h1>
         
         {cartItems.length === 0 ? (
@@ -181,65 +183,80 @@ const CartPage = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b">
-                  <th className="p-4">Produto</th>
-                  <th className="p-4">Preço</th>
+                  <th className="p-4">Produto / Serviço</th>
+                  <th className="p-4">Preço Unitário</th>
                   <th className="p-4">Quantidade</th>
                   <th className="p-4">Total</th>
                   <th className="p-4">Ação</th>
                 </tr>
               </thead>
               <tbody>
-                {cartItems.map(item => (
-                  <tr key={item.id} className="border-b hover:bg-gray-50">
-                    <td className="p-4 flex items-center">
-                      <img src={item.imagem_url} alt={item.nome} className="w-16 h-16 mr-4" />
-                      <div>
-                        <p className="font-semibold">{item.nome}</p>
-                      </div>
-                    </td>
-                    <td className="p-4">{parseFloat(item.preco_unitario).toFixed(2)}€</td>
-                    <td className="p-4">
-                      <div className="flex items-center">
-                        <button className="px-3 py-1 border rounded" onClick={() => handleDecreaseQuantity(item.product_id)}>-</button>
-                        <input 
-                          type="number" 
-                          value={item.quantidade} 
-                          readOnly
-                          className="w-12 mx-2 text-center border rounded" 
-                        />
-                        <button className="px-3 py-1 border rounded" onClick={() => handleIncreaseQuantity(item.product_id)}>+</button>
-                      </div>
-                    </td>
-                    <td className="p-4 font-semibold">{parseFloat(item.preco_total).toFixed(2)}€</td>
-                    <td className="p-4">
-                      <button className="text-red-500 hover:underline" onClick={() => handleRemoveItem(item.product_id)}>Remover</button>
-                    </td>
-                  </tr>
-                ))}
+                {cartItems.map(item => {
+                  const itemId = item.product_id ?? item.service_id;
+                  const itemType = item.product_id ? 'product' : 'service';
+
+                  return (
+                    <tr key={item.id} className="border-b hover:bg-gray-50">
+                      <td className="p-4 flex items-center">
+                        <img src={item.imagem_url} alt={item.nome} className="w-16 h-16 mr-4" />
+                        <div>
+                          <p className="font-semibold">
+                            {item.nome} {itemType === 'product' ? '(Produto)' : '(Serviço)'}
+                          </p>
+                        </div>
+                      </td>
+                      <td className="p-4">{parseFloat(item.preco_unitario).toFixed(2)}€</td>
+                      <td className="p-4">
+                        <div className="flex items-center">
+                          <button
+                            className="px-3 py-1 border rounded"
+                            onClick={() => handleDecreaseQuantity(itemId, itemType)}
+                          >-</button>
+                          <input 
+                            type="number" 
+                            value={item.quantidade} 
+                            readOnly
+                            className="w-12 mx-2 text-center border rounded" 
+                          />
+                          <button
+                            className="px-3 py-1 border rounded"
+                            onClick={() => handleIncreaseQuantity(itemId, itemType)}
+                          >+</button>
+                        </div>
+                      </td>
+                      <td className="p-4 font-semibold">{parseFloat(item.preco_total).toFixed(2)}€</td>
+                      <td className="p-4">
+                        <button
+                          className="text-red-500 hover:underline"
+                          onClick={() => handleRemoveItem(itemId, itemType)}
+                        >
+                          Remover
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
                 <tr className="border-t bg-blue-300">
                   <td colSpan="3" className="p-4 text-right font-semibold text-white">TOTAL:</td>
                   <td className="p-4 font-semibold text-white bg-blue-500">{totalPrice.toFixed(2)}€</td>
                   <td></td>
                 </tr>
-
               </tbody>
             </table>
           </div>
         )}
 
-
-
-          <div className="mt-6 flex justify-between">
-            <Link to="/produtos" className="text-blue-600 hover:text-blue-800">Continuar a comprar</Link>
-            {cartItems.length > 0 && (
-              <button
-                onClick={handleGoToCheckout}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
-              >
-                Fazer o checkout
-              </button>
-            )}
-          </div>
+        <div className="mt-6 flex justify-between">
+          <Link to="/produtos" className="text-blue-600 hover:text-blue-800">Continuar a comprar</Link>
+          {cartItems.length > 0 && (
+            <button
+              onClick={handleGoToCheckout}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+            >
+              Fazer o checkout
+            </button>
+          )}
+        </div>
       </div>
       <div className="mb-52"></div>
       <Footer />
