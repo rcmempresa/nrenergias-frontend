@@ -213,13 +213,15 @@ const Header = () => {
       {/* Desktop Navigation Bar */}
       <nav className="hidden md:block bg-blue-700 text-white">
         <div className="container mx-auto px-6 py-4">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center space-x-8">
             <Link to="/produtos" className="hover:text-blue-300">PRODUTOS</Link>
+            <Link to="/servicos" className="hover:text-blue-300">SERVIÇOS</Link>
             <Link to="/sobre-nos" className="hover:text-blue-300">SOBRE NÓS</Link>
             <Link to="/contacto" className="hover:text-blue-300">CONTACTOS</Link>
           </div>
         </div>
       </nav>
+
 
       {/* Mobile Menu */}
       <AnimatePresence>
@@ -238,6 +240,14 @@ const Header = () => {
               >
                 PRODUTOS
               </Link>
+              <Link
+                to="/servicos"
+                className="block py-2 text-blue-700 hover:bg-blue-50 px-4 rounded"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                SERVIÇOS
+              </Link>
+
               <Link
                 to="/sobre-nos"
                 className="block py-2 text-blue-700 hover:bg-blue-50 px-4 rounded"
