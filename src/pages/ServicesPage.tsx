@@ -43,8 +43,8 @@ const ServicesPage = () => {
 
     let filtered = services.filter(service =>
       service.nome.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      service.preco_unidade >= minPrice &&
-      service.preco_unidade <= maxPrice
+      service.preco_por_unidade >= minPrice &&
+      service.preco_por_unidade <= maxPrice
     );
 
     if (tipo) {
@@ -52,9 +52,9 @@ const ServicesPage = () => {
     }
 
     if (sortBy === 'price-asc') {
-      filtered.sort((a, b) => a.preco_unidade - b.preco_unidade);
+      filtered.sort((a, b) => a.preco_por_unidade - b.preco_por_unidade);
     } else if (sortBy === 'price-desc') {
-      filtered.sort((a, b) => b.preco_unidade - a.preco_unidade);
+      filtered.sort((a, b) => b.preco_por_unidade - a.preco_por_unidade);
     } else if (sortBy === 'name') {
       filtered.sort((a, b) => a.nome.localeCompare(b.nome));
     }
@@ -143,8 +143,6 @@ const ServicesPage = () => {
                     <option value="">Todos</option>
                     <option value="Montagem">Montagem</option>
                     <option value="Eletricidade">Eletricidade</option>
-                    <option value="Climatização">Climatização</option>
-                    <option value="Assistência Técnica">Assistência Técnica</option>
                   </select>
                 </div>
                 <div>
@@ -203,35 +201,33 @@ const ServicesPage = () => {
         </div>
 
         {/* Lista de Serviços */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {currentServices.length > 0 ? (
-            currentServices.map(service => (
-              <Link to={`/servico/${service.id}`} key={service.id}>
-                <div className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                  <div className="relative">
-                    <img
-                      src={service.imagem_url || '/placeholder.jpg'}
-                      alt={service.nome}
-                      className="w-full h-48 object-cover"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-semibold text-lg mb-1">{service.nome}</h3>
-                    <p className="text-sm text-gray-600 mb-2 line-clamp-2">{service.descricao}</p>
-                    <div className="flex justify-between items-center">
-                      <span className="font-semibold text-lg text-blue-600">
-                        €{service.preco_unidade} {service.tipo === 'Montagem' && `/ quantidade`}
-                        {service.tipo === 'Eletricidade' && `/ hora`}
-                      </span>
-                    </div>
+        {currentServices.length > 0 ? (
+          currentServices.map(service => (
+            <Link to={`/servico/${service.id}`} key={service.id}>
+              <div className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                <div className="relative">
+                  <img
+                    src={service.imagem_url || '/placeholder.jpg'}
+                    alt={service.nome}
+                    className="w-full h-48 object-cover"
+                  />
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-lg mb-1">{service.nome}</h3>
+                  <p className="text-sm text-gray-600 mb-2 line-clamp-2">{service.descricao}</p>
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold text-lg text-blue-600">
+                      €{service.preco_por_unidade} {service.tipo === 'Montagem' ? `/ quantidade` : service.tipo === 'Eletricidade' ? `/ hora` : ''}
+                    </span>
                   </div>
                 </div>
-              </Link>
-            ))
-          ) : (
-            <p>Nenhum serviço encontrado.</p>
-          )}
-        </div>
+              </div>
+            </Link>
+          ))
+        ) : (
+          <p>Nenhum serviço encontrado.</p>
+        )}
+
 
         {/* Paginação */}
         {totalPages > 1 && (
