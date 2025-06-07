@@ -202,31 +202,33 @@ const ServicesPage = () => {
 
         {/* Lista de Serviços */}
         {currentServices.length > 0 ? (
-          currentServices.map(service => (
-            <Link to={`/servico/${service.id}`} key={service.id} className="flex justify-center">
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow max-w-sm w-full">
-              <div className="relative">
-                <img
-                  src={service.imagem_url || '/placeholder.jpg'}
-                  alt={service.nome}
-                  className="w-full h-36 object-cover"
-                />
-              </div>
-              <div className="p-3">
-                <h3 className="font-semibold text-lg mb-1">{service.nome}</h3>
-                <p className="text-sm text-gray-600 mb-2 line-clamp-2">{service.descricao}</p>
-                <div className="flex justify-between items-center">
-                  <span className="font-semibold text-lg text-blue-600">
-                    €{service.preco_por_unidade} {service.tipo === 'Montagem' ? `/ quantidade` : service.tipo === 'Eletricidade' ? `/ hora` : ''}
-                  </span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {currentServices.map(service => (
+            <Link to={`/servico/${service.id}`} key={service.id}>
+              <div className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow max-w-sm mx-auto">
+                <div className="relative">
+                  <img
+                    src={service.imagem_url || '/placeholder.jpg'}
+                    alt={service.nome}
+                    className="w-full h-36 object-cover"
+                  />
+                </div>
+                <div className="p-3">
+                  <h3 className="font-semibold text-lg mb-1">{service.nome}</h3>
+                  <p className="text-sm text-gray-600 mb-2 line-clamp-2">{service.descricao}</p>
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold text-lg text-blue-600">
+                      €{service.preco_por_unidade} {service.tipo === 'Montagem' ? `/ quantidade` : service.tipo === 'Eletricidade' ? `/ hora` : ''}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </Link>
-          ))
-        ) : (
-          <p>Nenhum serviço encontrado.</p>
-        )}
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <p>Nenhum serviço encontrado.</p>
+      )}
 
 
         {/* Paginação */}
