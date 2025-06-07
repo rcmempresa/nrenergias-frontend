@@ -93,42 +93,45 @@ const ServicesPage = () => {
     );
   }
 
-   const handleAddToCart = async (product) => {
-      const token = localStorage.getItem('token'); 
-  
-      if (!token) {
-          toast.info('Token não encontrado, você precisa fazer login!');
-          return;
-      }
-  
-      try {
-          const headers = {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-          };
-  
-          const bodyData = {
-              productId: product.id,
-              quantidade: 1,
-              precoUnitario: product.preco,
-          };
-  
-          const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/carrinho/add`, {
-              method: 'POST',
-              headers,
-              body: JSON.stringify(bodyData),
-          });
-  
-          if (response.ok) {
-              toast.success('Produto adicionado ao carrinho!');
-          } else {
-              toast.error(`Erro ao adicionar produto ao carrinho, tens que fazer LOGIN!`);
-          }
-      } catch (error) {
-          console.error('Erro ao adicionar produto ao carrinho:', error);
-          toast.error('Erro ao adicionar produto ao carrinho');
-      }
-    };
+   const handleAddToCart = async (service) => {
+    const token = localStorage.getItem('token'); 
+
+    if (!token) {
+      toast.info('Você precisa fazer login para adicionar ao carrinho!');
+      return;
+    }
+
+    try {
+      const headers = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      };
+
+      const bodyData = {
+        serviceId: service.id,
+        quantidade: service.tipo === 'Montagem' ? 1 : undefined,
+        tempo: service.tipo === 'Eletricidade' ? 1 : undefined,
+        precoUnitario: service.preco_por_unidade,
+      };
+
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/carrinho/add`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(bodyData),
+    });
+
+    if (response.ok) {
+      toast.success('Serviço adicionado ao carrinho!');
+    } else {
+      const errorData = await response.json();
+      toast.error(`Erro: ${errorData.message || 'Não foi possível adicionar o serviço'}`);
+    }
+  } catch (error) {
+    console.error('Erro ao adicionar serviço ao carrinho:', error);
+    toast.error('Erro ao adicionar serviço ao carrinho');
+  }
+};
+
 
   return (
     <>
