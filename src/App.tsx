@@ -20,6 +20,7 @@ import Checkout from './pages/CheckoutPage';
 import SobreNosPage from './pages/SobreNosPage';
 import RegisterPage from './pages/RegisterPage';
 import ConfirmacaoPedido from './pages/ConfirmacaoPedido';
+import ServicesPage from './pages/ServicesPage';
 
 
 // Admin layout + páginas admin
@@ -63,6 +64,7 @@ function App() {
         <Route path="/sobre-nos" element={<SobreNosPage />} />
         <Route path="/contacto" element={<ContactoPage />} />
         <Route path="/duvidas-frequentes" element={<DuvidasPage />} />
+        <Route path="/servicos" element={<ServicesPage />} />
         <Route path="/pedido/confirmacao" element={<ConfirmacaoPedido />}/>
 
         {/* Rotas admin aninhadas */}
