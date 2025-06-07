@@ -4,6 +4,7 @@ import { Search, SlidersHorizontal } from 'lucide-react';
 import { Helmet } from 'react-helmet';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { toast } from 'react-toastify';
 
 const ServicesPage = () => {
   const [services, setServices] = useState([]);
@@ -91,6 +92,43 @@ const ServicesPage = () => {
       </div>
     );
   }
+
+   const handleAddToCart = async (product) => {
+      const token = localStorage.getItem('token'); 
+  
+      if (!token) {
+          toast.info('Token não encontrado, você precisa fazer login!');
+          return;
+      }
+  
+      try {
+          const headers = {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+          };
+  
+          const bodyData = {
+              productId: product.id,
+              quantidade: 1,
+              precoUnitario: product.preco,
+          };
+  
+          const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/carrinho/add`, {
+              method: 'POST',
+              headers,
+              body: JSON.stringify(bodyData),
+          });
+  
+          if (response.ok) {
+              toast.success('Produto adicionado ao carrinho!');
+          } else {
+              toast.error(`Erro ao adicionar produto ao carrinho, tens que fazer LOGIN!`);
+          }
+      } catch (error) {
+          console.error('Erro ao adicionar produto ao carrinho:', error);
+          toast.error('Erro ao adicionar produto ao carrinho');
+      }
+    };
 
   return (
     <>
@@ -222,6 +260,14 @@ const ServicesPage = () => {
                     </span>
                   </div>
                 </div>
+                <div className="mt-6">
+                  <button
+                    onClick={() => handleAddToCart(produto)}
+                    className="bg-red-500 text-white px-6 py-3 rounded-lg shadow hover:bg-red-600 transition"
+                  >
+                    Adicionar Servico
+                  </button>
+            </div>
               </div>
             </Link>
           ))}
