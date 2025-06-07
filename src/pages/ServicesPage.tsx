@@ -203,26 +203,26 @@ const ServicesPage = () => {
         {/* Lista de Serviços */}
         {currentServices.length > 0 ? (
           currentServices.map(service => (
-            <Link to={`/servico/${service.id}`} key={service.id}>
-              <div className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                <div className="relative">
-                  <img
-                    src={service.imagem_url || '/placeholder.jpg'}
-                    alt={service.nome}
-                    className="w-full h-48 object-cover"
-                  />
-                </div>
-                <div className="p-4">
-                  <h3 className="font-semibold text-lg mb-1">{service.nome}</h3>
-                  <p className="text-sm text-gray-600 mb-2 line-clamp-2">{service.descricao}</p>
-                  <div className="flex justify-between items-center">
-                    <span className="font-semibold text-lg text-blue-600">
-                      €{service.preco_por_unidade} {service.tipo === 'Montagem' ? `/ quantidade` : service.tipo === 'Eletricidade' ? `/ hora` : ''}
-                    </span>
-                  </div>
+            <Link to={`/servico/${service.id}`} key={service.id} className="flex justify-center">
+            <div className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow max-w-sm w-full">
+              <div className="relative">
+                <img
+                  src={service.imagem_url || '/placeholder.jpg'}
+                  alt={service.nome}
+                  className="w-full h-36 object-cover"
+                />
+              </div>
+              <div className="p-3">
+                <h3 className="font-semibold text-lg mb-1">{service.nome}</h3>
+                <p className="text-sm text-gray-600 mb-2 line-clamp-2">{service.descricao}</p>
+                <div className="flex justify-between items-center">
+                  <span className="font-semibold text-lg text-blue-600">
+                    €{service.preco_por_unidade} {service.tipo === 'Montagem' ? `/ quantidade` : service.tipo === 'Eletricidade' ? `/ hora` : ''}
+                  </span>
                 </div>
               </div>
-            </Link>
+            </div>
+          </Link>
           ))
         ) : (
           <p>Nenhum serviço encontrado.</p>
