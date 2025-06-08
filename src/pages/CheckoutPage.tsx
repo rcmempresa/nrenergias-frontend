@@ -77,7 +77,7 @@ const CheckoutPage = () => {
             total_amount: finalPrice,
             items: [
             ...cartItems.map(item => ({
-              product_id: item.product_id || null,
+              product_id: item.product_id !== null ? item.product_id : item.nome,
               service_id: item.service_id || null,
               quantity: item.quantidade,
               price: parseFloat(item.preco_unitario),
