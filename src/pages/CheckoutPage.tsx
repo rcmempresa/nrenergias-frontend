@@ -51,6 +51,8 @@ const CheckoutPage = () => {
         return;
       }
 
+      console.log("Itens do carrinho a enviar:", cartItems);
+
       // 1️⃣ Cria o pedido na base de dados
       const createOrderResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/checkout/add`, {
         method: "POST",
@@ -74,17 +76,19 @@ const CheckoutPage = () => {
           order: {
             total_amount: finalPrice,
             items: [
-              ...cartItems.map(item => ({
-                product_id: item.product_id,
-                quantity: item.quantidade,
-                price: parseFloat(item.preco_unitario),
-              })),
-              ...(montagem ? [{
-                product_id: "montagem",
-                quantity: 1,
-                price: 250,
-              }] : [])
-            ]
+            ...cartItems.map(item => ({
+              product_id: item.product_id || null,
+              service_id: item.service_id || null,
+              quantity: item.quantidade,
+              price: parseFloat(item.preco_unitario),
+            })),
+            ...(montagem ? [{
+              product_id: "montagem",
+              service_id: null,
+              quantity: 1,
+              price: 250,
+            }] : [])
+          ]
           }
         })
       });
