@@ -34,7 +34,7 @@ const CookiesPage = () => {
             <div className="bg-gradient-to-r from-primary-500 to-primary-600 p-8 text-white">
               <h1 className="text-3xl font-bold mb-2">Política de Cookies</h1>
               <p className="text-blue-100">
-                Última atualização: 1 de Junho de 2025
+                Última atualização: 8 de Junho de 2025
               </p>
             </div>
 
@@ -42,7 +42,7 @@ const CookiesPage = () => {
             <div className="p-8">
               <div className="prose prose-lg max-w-none">
                 <p>
-                  Esta Política de Cookies explica como a <strong>1way</strong> utiliza cookies e tecnologias semelhantes para melhorar a sua experiência enquanto navega no nosso website. Aqui poderá encontrar detalhes sobre os tipos de cookies, as suas finalidades, e como pode geri-los.
+                  Esta Política de Cookies explica como a <strong>Nrenergias</strong> utiliza cookies e tecnologias semelhantes para melhorar a sua experiência enquanto navega no nosso website. Aqui poderá encontrar detalhes sobre os tipos de cookies, as suas finalidades, e como pode geri-los.
                 </p>
 
                 <h2>1. O que são Cookies?</h2>
