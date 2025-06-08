@@ -67,6 +67,7 @@ function App() {
         <Route path="/servicos" element={<ServicesPage />} />
         <Route path="/pedido/confirmacao" element={<ConfirmacaoPedido />}/>
 
+
         {/* Rotas admin aninhadas */}
         <Route path="/admin" element={<Layout />}>
           <Route index element={<Dashboard />} />

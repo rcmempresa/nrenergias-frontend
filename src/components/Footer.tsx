@@ -61,6 +61,7 @@ const Footer = () => {
                 📖 Livro de Reclamações
               </a>
             </li>
+            <li><Link to="/cookies" className="hover:underline">Política de Cookies</Link></li>
           </ul>
 
           <br />
