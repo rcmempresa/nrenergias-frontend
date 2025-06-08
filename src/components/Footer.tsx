@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaFacebookF, FaInstagram, FaLinkedinIn } from 'react-icons/fa';
+import { FaFacebookF } from 'react-icons/fa';
 import logo from '/logo.png'; // ajusta o caminho se necessário
 
 const Footer = () => {
@@ -33,33 +33,42 @@ const Footer = () => {
             <li><Link to="/contacto" className="hover:underline">Contactos</Link></li>
           </ul>
         </div>
-        
 
-         <div>
+        {/* Contactos */}
+        <div>
           <h3 className="text-md font-semibold mb-3">Contactos</h3>
           <ul className="space-y-1 text-sm">
-            <li>Telefone:291 110 483</li> 
-            <li>Email:geral@nrenergias.pt</li>
+            <li>Telefone: 291 110 483</li> 
+            <li>Email: geral@nrenergias.pt</li>
             <li>Morada: Estrada Padre Silvano Ernesto Jardim, Porto Santo</li>
             <li>Horário: 9h - 18h (dias úteis)</li>
           </ul>
-
-         
         </div>
 
-        {/* Políticas */}
+        {/* Legal */}
         <div>
           <h3 className="text-md font-semibold mb-3">Legal</h3>
           <ul className="space-y-2 text-sm">
             <li><Link to="/privacidade" className="hover:underline">Política de Privacidade</Link></li>
             <li><Link to="/termos" className="hover:underline">Termos e Condições</Link></li>
+            <li>
+              <a
+                href="https://www.livroreclamacoes.pt/inicio"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline"
+              >
+                📖 Livro de Reclamações
+              </a>
+            </li>
           </ul>
-          <br></br>
+
+          <br />
           <h3 className="text-md font-semibold mb-3">Métodos de Pagamento</h3>
-           <div className="mt-4 flex space-x-2">
+          <div className="mt-4 flex space-x-2">
             <img src="/mbway.png" alt="Mbway" className="h-6" />
             <img src="/multibanco.png" alt="Multibanco" className="h-6" />
-            <img src="/cartao.png" alt="Cartao" className="h-6" />
+            <img src="/cartao.png" alt="Cartão" className="h-6" />
           </div>
         </div>
 
