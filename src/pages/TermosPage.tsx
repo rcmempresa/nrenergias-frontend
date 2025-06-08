@@ -31,7 +31,7 @@ const TermosPage = () => {
           >
             <div className="bg-gradient-to-r from-primary-500 to-primary-600 p-8 text-white">
               <h1 className="text-3xl font-bold mb-2">Termos e Condições</h1>
-              <p className="text-blue-100">Última atualização: 1 de Junho de 2025</p>
+              <p className="text-blue-100">Última atualização: 8 de Junho de 2025</p>
             </div>
             
             <div className="p-8">
