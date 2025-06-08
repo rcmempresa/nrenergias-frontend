@@ -269,7 +269,7 @@ const ServicesPage = () => {
                     onClick={() => handleAddToCart(service)}
                     className="bg-blue-500 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-600 transition"
                   >
-                    Adicionar Servico
+                    Solicitar Serviço
                   </button>
                 </div>
               </div>
