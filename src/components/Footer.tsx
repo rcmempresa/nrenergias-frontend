@@ -51,7 +51,7 @@ const Footer = () => {
         <div>
           <h3 className="text-md font-semibold mb-3">Legal</h3>
           <ul className="space-y-2 text-sm">
-            <li><Link to="/politica-de-privacidade" className="hover:underline">Política de Privacidade</Link></li>
+            <li><Link to="/privacidade" className="hover:underline">Política de Privacidade</Link></li>
             <li><Link to="/termos-e-condicoes" className="hover:underline">Termos e Condições</Link></li>
           </ul>
           <br></br>
