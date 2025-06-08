@@ -17,13 +17,17 @@ const HomePage = () => {
   const [showCookieBanner, setShowCookieBanner] = useState(false);
 
   useEffect(() => {
-    if (!localStorage.getItem('cookiesAccepted')) {
+    const acceptedUntil = localStorage.getItem('cookiesAcceptedUntil');
+    if (!acceptedUntil || new Date() > new Date(acceptedUntil)) {
       setShowCookieBanner(true);
     }
   }, []);
 
   const handleAcceptCookies = () => {
-    localStorage.setItem('cookiesAccepted', 'true');
+    const expirationDays = 365;
+    const now = new Date();
+    const expiration = new Date(now.getTime() + expirationDays * 24 * 60 * 60 * 1000);
+    localStorage.setItem('cookiesAcceptedUntil', expiration.toISOString());
     setShowCookieBanner(false);
   };
 
@@ -84,10 +88,17 @@ const HomePage = () => {
 
       {/* Banner de Cookies */}
       {showCookieBanner && (
-        <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-4 z-50 shadow-lg">
+        <div
+          className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-4 z-50 shadow-lg"
+          role="dialog"
+          aria-label="Aviso de Cookies"
+        >
           <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-gray-800 text-sm">
-              Utilizamos cookies para melhorar a sua experiência. Ao continuar a navegar, aceita a nossa política de cookies.
+              Utilizamos cookies para melhorar a sua experiência. Consulte a nossa{' '}
+              <a href="/cookies" className="text-primary-600 underline hover:text-primary-700">
+                Política de Cookies
+              </a>.
             </p>
             <button
               onClick={handleAcceptCookies}
