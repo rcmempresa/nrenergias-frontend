@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { FaWhatsapp, FaFacebookMessenger } from 'react-icons/fa';
+import { FaWhatsapp } from 'react-icons/fa';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
 import FeaturedProducts from '../components/FeaturedProducts';
@@ -14,16 +14,26 @@ import Footer from '../components/Footer';
 
 const HomePage = () => {
   const location = useLocation();
+  const [showCookieBanner, setShowCookieBanner] = useState(false);
+
+  useEffect(() => {
+    if (!localStorage.getItem('cookiesAccepted')) {
+      setShowCookieBanner(true);
+    }
+  }, []);
+
+  const handleAcceptCookies = () => {
+    localStorage.setItem('cookiesAccepted', 'true');
+    setShowCookieBanner(false);
+  };
 
   useEffect(() => {
     if (location.state && location.state.scrollToId) {
       const targetId = location.state.scrollToId;
       const element = document.getElementById(targetId);
-      
       if (element) {
-        // Adicionado um pequeno delay para ter a certeza que a página foi carregada
         setTimeout(() => {
-          const yOffset = -80; 
+          const yOffset = -80;
           const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
           window.scrollTo({ top: y, behavior: 'smooth' });
         }, 100);
@@ -35,7 +45,6 @@ const HomePage = () => {
     if (location.hash) {
       const targetId = location.hash.substring(1);
       const element = document.getElementById(targetId);
-      
       if (element) {
         setTimeout(() => {
           const yOffset = -80;
@@ -60,17 +69,35 @@ const HomePage = () => {
         <Problems />
       </main>
       <Footer />
-      {/* Ícones de WhatsApp e Messenger */}
-    <div className="fixed bottom-4 right-4 flex flex-col space-y-3 z-50">
-    <a 
-      href="https://wa.me/962515190"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="bg-green-500 text-white p-3 rounded-full hover:bg-green-600"
-    >
-      <FaWhatsapp size={30} />
-    </a>
-  </div>
+
+      {/* Ícone WhatsApp */}
+      <div className="fixed bottom-4 right-4 flex flex-col space-y-3 z-50">
+        <a
+          href="https://wa.me/962515190"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-green-500 text-white p-3 rounded-full hover:bg-green-600"
+        >
+          <FaWhatsapp size={30} />
+        </a>
+      </div>
+
+      {/* Banner de Cookies */}
+      {showCookieBanner && (
+        <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-4 z-50 shadow-lg">
+          <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-gray-800 text-sm">
+              Utilizamos cookies para melhorar a sua experiência. Ao continuar a navegar, aceita a nossa política de cookies.
+            </p>
+            <button
+              onClick={handleAcceptCookies}
+              className="mt-2 sm:mt-0 bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700 transition"
+            >
+              Aceitar
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 };
