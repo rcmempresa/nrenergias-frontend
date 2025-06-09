@@ -184,7 +184,7 @@ const ServicesPage = () => {
                     onChange={(e) => setTipo(e.target.value)}
                   >
                     <option value="">Todos</option>
-                    <option value="Montagem">Montagem</option>
+                    <option value="Montagem">Manutenção</option>
                     <option value="Eletricidade">Eletricidade</option>
                   </select>
                 </div>
