@@ -216,7 +216,7 @@ const CheckoutPage = () => {
                 {isLowValueOrder && (
                   <tr className="bg-yellow-100 text-sm text-gray-800">
                     <td className="p-4 text-right" colSpan="2">
-                      Taxa de encomendas inferiores a 100€
+                      Taxa de encomendas inferiores a 100€ apenas para o Porto Santo
                     </td>
                     <td className="p-4 text-right">+5,00€</td>
                   </tr>

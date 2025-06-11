@@ -10,8 +10,8 @@ const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
   const [cartId, setCartId] = useState(null);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [montagem, setMontagem] = useState(false); // 🆕 Novo estado para a montagem
   const navigate = useNavigate();
- ;
 
   // 🚀 Carregar os produtos do carrinho
   useEffect(() => {
@@ -42,8 +42,10 @@ const CartPage = () => {
 
         const data = await response.json();
         console.log("📦 Carrinho:", data.items);
-        setCartItems(data.items); // Define os itens do carrinho
-        setCartId(data.cart_id);  // Guarda o cart_id
+        setCartItems(data.items);
+        setCartId(data.cart_id);
+        // Opcional: Se o backend devolver o estado da montagem
+        // setMontagem(data.montagem || false);
       } catch (error) {
         console.error("Erro ao carregar o carrinho:", error);
       }
@@ -52,132 +54,137 @@ const CartPage = () => {
     fetchCartItems();    
   }, []);
 
-  // 🛒 Atualiza o preço total sempre que os itens mudam
+  // 🛒 Atualiza o preço total sempre que os itens ou a montagem mudam
   useEffect(() => {
-    const total = cartItems.reduce((acc, item) => acc + parseFloat(item.preco_total), 0);
+    let total = cartItems.reduce((acc, item) => acc + parseFloat(item.preco_total), 0);
+    if (montagem) {
+      total += 250; // Adiciona o custo da montagem se estiver selecionada
+    }
+
+    // 💰 Aplica taxas adicionais (mantido da página de checkout, mas agora aqui)
+    const isLowValueOrder = total < 100;
+    if (isLowValueOrder) total += 5; // Taxa de encomenda inferior a 100€ para Porto Santo (como no checkout)
+
     setTotalPrice(total);
-  }, [cartItems]);
+  }, [cartItems, montagem]); // 🆕 Adiciona 'montagem' como dependência
 
   const handleRemoveItem = async (id, isProduct) => {
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) return;
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
 
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/carrinho/remover/${id}`, {
-      method: 'DELETE',
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ isProduct })
-    });
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/carrinho/remover/${id}`, {
+        method: 'DELETE',
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ isProduct })
+      });
 
-    const result = await response.json();
+      const result = await response.json();
 
-    if (response.ok) {
-      setCartItems(cartItems.filter(item =>
-        (isProduct ? item.product_id !== id : item.service_id !== id)
-      ));
-      toast.success(result.message);
-    } else {
-      toast.error(result.message);
+      if (response.ok) {
+        setCartItems(cartItems.filter(item =>
+          (isProduct ? item.product_id !== id : item.service_id !== id)
+        ));
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      console.error("Erro ao remover o item:", error);
+      toast.error('Erro ao remover o item do carrinho');
     }
-  } catch (error) {
-    console.error("Erro ao remover o item:", error);
-    toast.error('Erro ao remover o item do carrinho');
-  }
-};
-
-
+  };
 
   // ➕ Aumentar quantidade
   const handleIncreaseQuantity = async (id, isProduct) => {
-  if (!cartId) return;
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) return;
+    if (!cartId) return;
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
 
-    const body = {
-      cartId,
-      ...(isProduct ? { productId: id } : { serviceId: id })
-    };
+      const body = {
+        cartId,
+        ...(isProduct ? { productId: id } : { serviceId: id })
+      };
 
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/carrinho/aumentar`, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(body)
-    });
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/carrinho/aumentar`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+      });
 
-    const updatedItem = await response.json();
+      const updatedItem = await response.json();
 
-    if (response.ok) {
-      setCartItems(cartItems.map(item =>
-        (item.product_id === id || item.service_id === id)
-          ? { ...item, quantidade: updatedItem.quantidade, preco_total: updatedItem.preco_total }
-          : item
-      ));
-    } else {
-      toast.error(updatedItem.message);
+      if (response.ok) {
+        setCartItems(cartItems.map(item =>
+          (item.product_id === id || item.service_id === id)
+            ? { ...item, quantidade: updatedItem.quantidade, preco_total: updatedItem.preco_total }
+            : item
+        ));
+      } else {
+        toast.error(updatedItem.message);
+      }
+    } catch (error) {
+      console.error("Erro ao aumentar quantidade:", error);
     }
-  } catch (error) {
-    console.error("Erro ao aumentar quantidade:", error);
-  }
-};
+  };
 
-const handleDecreaseQuantity = async (id, isProduct) => {
-  if (!cartId) return;
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) return;
+  const handleDecreaseQuantity = async (id, isProduct) => {
+    if (!cartId) return;
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
 
-    const body = {
-      cartId,
-      ...(isProduct ? { productId: id } : { serviceId: id })
-    };
+      const body = {
+        cartId,
+        ...(isProduct ? { productId: id } : { serviceId: id })
+      };
 
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/carrinho/diminuir`, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(body)
-    });
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/carrinho/diminuir`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+      });
 
-    const updatedItem = await response.json();
+      const updatedItem = await response.json();
 
-    if (response.ok) {
-      setCartItems(cartItems.map(item =>
-        (item.product_id === id || item.service_id === id)
-          ? { ...item, quantidade: updatedItem.quantidade, preco_total: updatedItem.preco_total }
-          : item
-      ));
-    } else {
-      toast.error(updatedItem.message);
+      if (response.ok) {
+        setCartItems(cartItems.map(item =>
+          (item.product_id === id || item.service_id === id)
+            ? { ...item, quantidade: updatedItem.quantidade, preco_total: updatedItem.preco_total }
+            : item
+        ));
+      } else {
+        toast.error(updatedItem.message);
+      }
+    } catch (error) {
+      console.error("Erro ao diminuir quantidade:", error);
     }
-  } catch (error) {
-    console.error("Erro ao diminuir quantidade:", error);
-  }
-};
+  };
 
-  
-  
   const handleGoToCheckout = () => {
-    // 1. Verificar se o carrinho está vazio
     if (cartItems.length === 0) {
       toast.info("Seu carrinho está vazio! Adicione produtos antes de continuar.");
-      return; // Não permite seguir para o checkout
+      return;
     }
 
-    
-  
-    // 3. Caso a validação passe, redireciona para a página de checkout
-    navigate('/checkout', { state: { cartItems, totalPrice } }); 
+    // 🆕 Passa o estado da montagem para a página de checkout
+    navigate('/checkout', { state: { cartItems, totalPrice, montagem } });
   };
-  
+
+  // 💰 Duplica a lógica da taxa de baixo valor para exibir no carrinho
+  const currentTotalWithoutFees = cartItems.reduce((acc, item) => acc + parseFloat(item.preco_total), 0);
+  const isLowValueOrder = (montagem ? currentTotalWithoutFees + 250 : currentTotalWithoutFees) < 100;
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <Helmet>
@@ -189,7 +196,7 @@ const handleDecreaseQuantity = async (id, isProduct) => {
       <Header />
       <div className=" mt-60 container mx-auto p-8 bg-white rounded-lg shadow-md mt-20">
         <h1 className="text-3xl font-bold mb-6">O teu Carrinho</h1>
-        
+
         {cartItems.length === 0 ? (
           <p className="text-gray-500 text-center">O teu carrinho está vazio.</p>
         ) : (
@@ -205,60 +212,86 @@ const handleDecreaseQuantity = async (id, isProduct) => {
                 </tr>
               </thead>
               <tbody>
-            {cartItems.map(item => {
-              const id = item.product_id ?? item.service_id;
-              const isProduct = !!item.product_id;
+                {cartItems.map(item => {
+                  const id = item.product_id ?? item.service_id;
+                  const isProduct = !!item.product_id;
 
-              return (
-                <tr key={item.id} className="border-b hover:bg-gray-50">
-                  <td className="p-4 flex items-center">
-                    <img src={item.imagem_url} alt={item.nome} className="w-16 h-16 mr-4" />
-                    <div>
-                      <p className="font-semibold">{item.nome}</p>
-                    </div>
+                  return (
+                    <tr key={item.id} className="border-b hover:bg-gray-50">
+                      <td className="p-4 flex items-center">
+                        <img src={item.imagem_url} alt={item.nome} className="w-16 h-16 mr-4" />
+                        <div>
+                          <p className="font-semibold">{item.nome}</p>
+                        </div>
+                      </td>
+                      <td className="p-4">{parseFloat(item.preco_unitario).toFixed(2)}€</td>
+                      <td className="p-4">
+                        <div className="flex items-center">
+                          <button className="px-3 py-1 border rounded" onClick={() => handleDecreaseQuantity(id, isProduct)}>-</button>
+                          <input
+                            type="number"
+                            value={item.quantidade}
+                            readOnly
+                            className="w-12 mx-2 text-center border rounded"
+                          />
+                          <button className="px-3 py-1 border rounded" onClick={() => handleIncreaseQuantity(id, isProduct)}>+</button>
+                        </div>
+                      </td>
+                      <td className="p-4 font-semibold">{parseFloat(item.preco_total).toFixed(2)}€</td>
+                      <td className="p-4">
+                        <button className="text-red-500 hover:underline" onClick={() => handleRemoveItem(id, isProduct)}>Remover</button>
+                      </td>
+                    </tr>
+                  );
+                })}
+                {/* 🆕 Opção de Montagem na Tabela do Carrinho */}
+                <tr className="bg-blue-100 text-sm text-gray-800">
+                  <td className="p-4 text-right" colSpan="3">
+                    Montagem do equipamento (até 3 metros de tubo de cobre)
                   </td>
-                  <td className="p-4">{parseFloat(item.preco_unitario).toFixed(2)}€</td>
-                  <td className="p-4">
-                    <div className="flex items-center">
-                      <button className="px-3 py-1 border rounded" onClick={() => handleDecreaseQuantity(id, isProduct)}>-</button>
-                      <input 
-                        type="number" 
-                        value={item.quantidade} 
-                        readOnly
-                        className="w-12 mx-2 text-center border rounded" 
-                      />
-                      <button className="px-3 py-1 border rounded" onClick={() => handleIncreaseQuantity(id, isProduct)}>+</button>
-                    </div>
-                  </td>
-                  <td className="p-4 font-semibold">{parseFloat(item.preco_total).toFixed(2)}€</td>
-                  <td className="p-4">
-                    <button className="text-red-500 hover:underline" onClick={() => handleRemoveItem(id, isProduct)}>Remover</button>
+                  <td className="p-4 text-right">+250,00€</td>
+                  <td>
+                    {/* Checkbox para a montagem */}
+                    <input
+                      type="checkbox"
+                      id="montagem"
+                      checked={montagem}
+                      onChange={() => setMontagem(!montagem)}
+                      className="w-4 h-4 accent-blue-500"
+                    />
                   </td>
                 </tr>
-              );
-            })}
-            <tr className="border-t bg-blue-300">
-              <td colSpan="3" className="p-4 text-right font-semibold text-white">TOTAL:</td>
-              <td className="p-4 font-semibold text-white bg-blue-500">{totalPrice.toFixed(2)}€</td>
-              <td></td>
-            </tr>
-          </tbody>
+                {/* 🆕 Taxa de encomendas de baixo valor (se aplicável) */}
+                {isLowValueOrder && (
+                  <tr className="bg-yellow-100 text-sm text-gray-800">
+                    <td className="p-4 text-right" colSpan="3">
+                      Taxa de encomendas inferiores a 100€ (apenas para o Porto Santo)
+                    </td>
+                    <td className="p-4 text-right">+5,00€</td>
+                    <td></td>
+                  </tr>
+                )}
+                <tr className="border-t bg-blue-300">
+                  <td colSpan="3" className="p-4 text-right font-semibold text-white">TOTAL:</td>
+                  <td className="p-4 font-semibold text-white bg-blue-500">{totalPrice.toFixed(2)}€</td>
+                  <td></td>
+                </tr>
+              </tbody>
             </table>
           </div>
         )}
 
-
-          <div className="mt-6 flex justify-between">
-            <Link to="/produtos" className="text-blue-600 hover:text-blue-800">Continuar a comprar</Link>
-            {cartItems.length > 0 && (
-              <button
-                onClick={handleGoToCheckout}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
-              >
-                Fazer o checkout
-              </button>
-            )}
-          </div>
+        <div className="mt-6 flex justify-between">
+          <Link to="/produtos" className="text-blue-600 hover:text-blue-800">Continuar a comprar</Link>
+          {cartItems.length > 0 && (
+            <button
+              onClick={handleGoToCheckout}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+            >
+              Fazer o checkout
+            </button>
+          )}
+        </div>
       </div>
       <div className="mb-52"></div>
       <Footer />
