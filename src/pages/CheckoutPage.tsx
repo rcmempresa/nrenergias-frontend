@@ -8,17 +8,13 @@ import { toast } from 'react-toastify';
 const CheckoutPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  // Não precisamos mais de um estado local para 'montagem' aqui.
-  // const [montagem, setMontagem] = useState(false); // REMOVER ESTA LINHA
-
-  // 💰 Recebe a montagem e o preço total (já com montagem incluída se selecionada) do CartPage
-  const { cartItems, totalPrice, montagem } = location.state || { cartItems: [], totalPrice: 0, montagem: false };
-
+  const [montagem, setMontagem] = useState(false);
+  const { cartItems, totalPrice } = location.state || { cartItems: [], totalPrice: 0 };
+  
   // 💰 Aplica taxas adicionais
-  // O totalPrice já inclui a montagem se selecionada na página do carrinho
-  let finalPrice = totalPrice;
+  let finalPrice = montagem ? totalPrice + 250 : totalPrice;
   const isLowValueOrder = finalPrice < 100;
-  if (isLowValueOrder) finalPrice += 5; // A taxa de 5€ é aplicada se o total final for inferior a 100€
+  if (isLowValueOrder) finalPrice += 5;
 
   const [address, setAddress] = useState({
     nome: '',
@@ -81,14 +77,14 @@ const CheckoutPage = () => {
             total_amount: finalPrice,
             items: [
             ...cartItems.map(item => ({
-              product_id: item.product_id !== null ? item.product_id : item.nome, // O item.nome como product_id é um fallback, verifica se isto é o desejado no backend
+              product_id: item.product_id !== null ? item.product_id : item.nome,
               service_id: item.service_id || null,
               quantity: item.quantidade,
               price: parseFloat(item.preco_unitario),
             })),
-            ...(montagem ? [{ // Adiciona a montagem ao pedido APENAS se montagem for true (recebido do estado)
+            ...(montagem ? [{
               product_id: "montagem",
-              service_id: null, // Ou algum ID de serviço para "montagem" se tiveres no backend
+              service_id: null,
               quantity: 1,
               price: 250,
             }] : [])
@@ -178,7 +174,9 @@ const CheckoutPage = () => {
     <div className="flex flex-col min-h-screen bg-gray-100">
       <Helmet>
         <title>Checkout | NRenergias</title>
-        <meta name="robots" content="noindex, nofollow" /> 
+        <meta name="description" content="Entre em contacto com a NRenergias — estamos disponíveis para esclarecer dúvidas, fornecer orçamentos e ajudar na escolha dos melhores produtos eletrónicos e soluções sustentáveis. Atendimento em todo o país." />
+        <meta name="keywords" content="carrinho NRenergias, finalização de compra, checkout, produtos eletrónicos, soluções sustentáveis, energia solar, pagamento seguro, Portugal"/>
+        <link rel="canonical" href="https://nrenergias.pt/checkout" />
       </Helmet>
 
       <Header />
@@ -201,13 +199,12 @@ const CheckoutPage = () => {
               </thead>
               <tbody>
                 {cartItems.map(item => (
-                  <tr key={item.product_id || item.service_id} className="border-b">
+                  <tr key={item.product_id} className="border-b">
                     <td className="p-4">{item.nome}</td>
                     <td className="p-4 text-center">{item.quantidade}</td>
                     <td className="p-4 text-right">{parseFloat(item.preco_total).toFixed(2)}€</td>
                   </tr>
                 ))}
-                {/* 🔧 Condicional para exibir a linha da montagem (recebida do carrinho) */}
                 {montagem && (
                   <tr className="bg-blue-100 text-sm text-gray-800">
                     <td className="p-4 text-right" colSpan="2">
@@ -231,8 +228,19 @@ const CheckoutPage = () => {
               </tbody>
             </table>
 
-            {/* REMOVIDO: Opção de montagem (agora está na página do carrinho) */}
-            {/* ... */}
+            {/* 🔧 Opção de montagem */}
+            <div className="mb-6 flex items-center gap-2 border border-blue-400 rounded-lg p-3 bg-blue-50 shadow-sm">
+              <input
+                type="checkbox"
+                id="montagem"
+                checked={montagem}
+                onChange={() => setMontagem(!montagem)}
+                className="w-4 h-4 accent-blue-500"
+              />
+              <label htmlFor="montagem" className="text-base font-semibold text-blue-900">
+                Quero incluir a montagem do equipamento até 3 metros de tubo de cobre (+250€)
+              </label>
+            </div>
 
             {/* 🧾 Formulário de Endereço */}
             <div className="mb-6">
