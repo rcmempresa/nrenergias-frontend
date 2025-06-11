@@ -220,19 +220,7 @@ const CheckoutPage = () => {
               </tbody>
             </table>
 
-            {/* 🔧 Opção de montagem */}
-            <div className="mb-6 flex items-center gap-2 border border-blue-400 rounded-lg p-3 bg-blue-50 shadow-sm">
-              <input
-                type="checkbox"
-                id="montagem"
-                checked={montagem}
-                onChange={() => setMontagem(!montagem)}
-                className="w-4 h-4 accent-blue-500"
-              />
-              <label htmlFor="montagem" className="text-base font-semibold text-blue-900">
-                Quero incluir a montagem do equipamento até 3 metros de tubo de cobre (+250€)
-              </label>
-            </div>
+
 
             {/* 🧾 Formulário de Endereço */}
             <div className="mb-6">
