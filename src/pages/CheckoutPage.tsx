@@ -8,11 +8,10 @@ import { toast } from 'react-toastify';
 const CheckoutPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [montagem, setMontagem] = useState(false);
-  const { cartItems, totalPrice } = location.state || { cartItems: [], totalPrice: 0 };
+  const { cartItems, totalPrice, montagem } = location.state || { cartItems: [], totalPrice: 0, montagem: false };
   
   // 💰 Aplica taxas adicionais
-  let finalPrice = montagem ? totalPrice + 250 : totalPrice;
+  let finalPrice = totalPrice;
   const isLowValueOrder = finalPrice < 100;
   if (isLowValueOrder) finalPrice += 5;
 
@@ -205,6 +204,14 @@ const CheckoutPage = () => {
                     <td className="p-4 text-right">{parseFloat(item.preco_total).toFixed(2)}€</td>
                   </tr>
                 ))}
+                {montagem && (
+                  <tr className="bg-blue-100 text-sm text-gray-800">
+                    <td className="p-4 text-right" colSpan="2">
+                      Montagem do equipamento
+                    </td>
+                    <td className="p-4 text-right">+250,00€</td>
+                  </tr>
+                )}
                 {isLowValueOrder && (
                   <tr className="bg-yellow-100 text-sm text-gray-800">
                     <td className="p-4 text-right" colSpan="2">
