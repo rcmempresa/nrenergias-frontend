@@ -16,7 +16,7 @@ const CartPage = () => {
   const MOUNTING_SERVICE_ID = 'frontend-mounting-service'; // ID único para o frontend
   const MOUNTING_SERVICE_PRICE = 250.00;
   const MOUNTING_SERVICE_NAME = "Montagem de Equipamento (até 3m de tubo)";
-  const MOUNTING_SERVICE_IMAGE = "/images/montagem_icon.png"; // Exemplo de imagem para o frontend
+  const MOUNTING_SERVICE_IMAGE = "montagem_equipamento.webp"; // Exemplo de imagem para o frontend
 
   // Estado para controlar se a montagem está selecionada
   // Vamos derivar este estado de cartItems, para que seja sempre consistente
