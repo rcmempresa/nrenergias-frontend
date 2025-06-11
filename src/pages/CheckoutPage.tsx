@@ -82,6 +82,12 @@ const CheckoutPage = () => {
               quantity: item.quantidade,
               price: parseFloat(item.preco_unitario),
             })),
+            ...(montagem ? [{
+              product_id: "montagem",
+              service_id: null,
+              quantity: 1,
+              price: 250,
+            }] : [])
           ]
           }
         })
@@ -170,7 +176,7 @@ const CheckoutPage = () => {
         <title>Checkout | NRenergias</title>
         <meta name="description" content="Entre em contacto com a NRenergias — estamos disponíveis para esclarecer dúvidas, fornecer orçamentos e ajudar na escolha dos melhores produtos eletrónicos e soluções sustentáveis. Atendimento em todo o país." />
         <meta name="keywords" content="carrinho NRenergias, finalização de compra, checkout, produtos eletrónicos, soluções sustentáveis, energia solar, pagamento seguro, Portugal"/>
-        <link rel="canonical" href="https://nrenergias.pt/checkout" />
+        <link rel="canonical" href="https://nrenergias.pt/" />
       </Helmet>
 
       <Header />
@@ -199,10 +205,18 @@ const CheckoutPage = () => {
                     <td className="p-4 text-right">{parseFloat(item.preco_total).toFixed(2)}€</td>
                   </tr>
                 ))}
+                {montagem && (
+                  <tr className="bg-blue-100 text-sm text-gray-800">
+                    <td className="p-4 text-right" colSpan="2">
+                      Montagem do equipamento
+                    </td>
+                    <td className="p-4 text-right">+250,00€</td>
+                  </tr>
+                )}
                 {isLowValueOrder && (
                   <tr className="bg-yellow-100 text-sm text-gray-800">
                     <td className="p-4 text-right" colSpan="2">
-                      Taxa de encomendas inferiores a 100€ apenas para o Porto Santo
+                      Taxa de encomendas inferiores a 100€
                     </td>
                     <td className="p-4 text-right">+5,00€</td>
                   </tr>
@@ -214,7 +228,19 @@ const CheckoutPage = () => {
               </tbody>
             </table>
 
-            
+            {/* 🔧 Opção de montagem */}
+            <div className="mb-6 flex items-center gap-2 border border-blue-400 rounded-lg p-3 bg-blue-50 shadow-sm">
+              <input
+                type="checkbox"
+                id="montagem"
+                checked={montagem}
+                onChange={() => setMontagem(!montagem)}
+                className="w-4 h-4 accent-blue-500"
+              />
+              <label htmlFor="montagem" className="text-base font-semibold text-blue-900">
+                Quero incluir a montagem do equipamento até 3 metros de tubo de cobre (+250€)
+              </label>
+            </div>
 
             {/* 🧾 Formulário de Endereço */}
             <div className="mb-6">
