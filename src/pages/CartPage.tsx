@@ -58,15 +58,10 @@ const CartPage = () => {
   useEffect(() => {
     let total = cartItems.reduce((acc, item) => acc + parseFloat(item.preco_total), 0);
     if (montagem) {
-      total += 250; // Adiciona o custo da montagem se estiver selecionada
+      total += 250; 
     }
-
-    // 💰 Aplica taxas adicionais (mantido da página de checkout, mas agora aqui)
-    const isLowValueOrder = total < 100;
-    if (isLowValueOrder) total += 5; // Taxa de encomenda inferior a 100€ para Porto Santo (como no checkout)
-
     setTotalPrice(total);
-  }, [cartItems, montagem]); // 🆕 Adiciona 'montagem' como dependência
+  }, [cartItems, montagem]);
 
   const handleRemoveItem = async (id, isProduct) => {
     try {
@@ -183,7 +178,6 @@ const CartPage = () => {
 
   // 💰 Duplica a lógica da taxa de baixo valor para exibir no carrinho
   const currentTotalWithoutFees = cartItems.reduce((acc, item) => acc + parseFloat(item.preco_total), 0);
-  const isLowValueOrder = (montagem ? currentTotalWithoutFees + 250 : currentTotalWithoutFees) < 100;
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
@@ -261,16 +255,6 @@ const CartPage = () => {
                     />
                   </td>
                 </tr>
-                {/* 🆕 Taxa de encomendas de baixo valor (se aplicável) */}
-                {isLowValueOrder && (
-                  <tr className="bg-yellow-100 text-sm text-gray-800">
-                    <td className="p-4 text-right" colSpan="3">
-                      Taxa de encomendas inferiores a 100€ (apenas para o Porto Santo)
-                    </td>
-                    <td className="p-4 text-right">+5,00€</td>
-                    <td></td>
-                  </tr>
-                )}
                 <tr className="border-t bg-blue-300">
                   <td colSpan="3" className="p-4 text-right font-semibold text-white">TOTAL:</td>
                   <td className="p-4 font-semibold text-white bg-blue-500">{totalPrice.toFixed(2)}€</td>

@@ -205,14 +205,6 @@ const CheckoutPage = () => {
                     <td className="p-4 text-right">{parseFloat(item.preco_total).toFixed(2)}€</td>
                   </tr>
                 ))}
-                {montagem && (
-                  <tr className="bg-blue-100 text-sm text-gray-800">
-                    <td className="p-4 text-right" colSpan="2">
-                      Montagem do equipamento
-                    </td>
-                    <td className="p-4 text-right">+250,00€</td>
-                  </tr>
-                )}
                 {isLowValueOrder && (
                   <tr className="bg-yellow-100 text-sm text-gray-800">
                     <td className="p-4 text-right" colSpan="2">
