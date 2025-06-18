@@ -4,24 +4,20 @@ import { Button } from '../components/ui/Button';
 import { ProductsTable } from '../components/dashboard/ProductsTable';
 import { Product } from '../../types';
 import axios from 'axios';
-import { v4 as uuidv4 } from 'uuid'; // Certifique-se de que está importado
 
 export function Products() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [termoBusca, setTermoBusca] = useState('');
-  // Adicionado novo estado para filtro de categoria
   const [filtroCategoria, setFiltroCategoria] = useState('todos');
   const [filtroEstoque, setFiltroEstoque] = useState('todos');
   const [filtroPreco, setFiltroPreco] = useState<string>('todos');
-  // Adicionado novo estado para ordenação de preço
-  const [ordenacaoPreco, setOrdenacaoPreco] = useState<string>('nenhum'); // 'nenhum', 'maior-menor'
-
+  
   // Estado para o modal de adicionar produto
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newProduct, setNewProduct] = useState<Product>({
-    id: uuidv4(), // Gerar UUID para novos produtos
+    id: 0,
     nome: '',
     categoria: '',
     preco: 0,
@@ -33,9 +29,6 @@ export function Products() {
     old_price: 0,
     rating: 0,
     status: 'ativo',
-    marca: '', // Adicionado conforme a sua DB
-    avaliacoes: 0, // Adicionado conforme a sua DB
-    caracteristicas: '', // Adicionado conforme a sua DB
   });
 
   // Estado para a mensagem de sucesso
@@ -61,12 +54,11 @@ export function Products() {
 
   const handleAddProduct = async () => {
     try {
-      const productToSend = { ...newProduct, id: uuidv4() }; // Garante um novo UUID
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/products/adicionar`, productToSend);
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/products/adicionar`, newProduct);
       setProducts((prevProducts) => [...prevProducts, response.data]);
       setIsModalOpen(false);
       setNewProduct({
-        id: uuidv4(), // Redefine com um novo UUID para o próximo produto
+        id: 0,
         nome: '',
         categoria: '',
         preco: 0,
@@ -78,12 +70,12 @@ export function Products() {
         old_price: 0,
         rating: 0,
         status: 'ativo',
-        marca: '',
-        avaliacoes: 0,
-        caracteristicas: '',
       });
 
+      // Exibir a mensagem de sucesso
       setSuccessMessage('Produto adicionado com sucesso!');
+
+      // Limpar a mensagem de sucesso após 3 segundos
       setTimeout(() => {
         setSuccessMessage(null);
       }, 3000);
@@ -93,7 +85,7 @@ export function Products() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setNewProduct((prevProduct) => ({
       ...prevProduct,
@@ -101,6 +93,7 @@ export function Products() {
     }));
   };
 
+  // Para os campos de imagens, trata-se de um array
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     const imagesArray = value.split(',');
@@ -109,9 +102,6 @@ export function Products() {
       [name]: imagesArray,
     }));
   };
-
-  // Extrair categorias únicas para o filtro
-  const categoriasUnicas = Array.from(new Set(products.map(p => p.categoria)));
 
   if (loading) {
     return <div>Carregando...</div>;
@@ -130,6 +120,7 @@ export function Products() {
         </Button>
       </div>
 
+      {/* Exibe a mensagem de sucesso */}
       {successMessage && (
         <div className="text-green-500 font-semibold p-4 bg-green-100 rounded-md">
           {successMessage}
@@ -150,21 +141,6 @@ export function Products() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4">
-            {/* Filtro por Categoria */}
-            <div className="flex items-center gap-2">
-              <Filter size={18} className="text-gray-500" />
-              <select
-                className="rounded-md border border-gray-300 py-2 px-4 focus:outline-none"
-                value={filtroCategoria}
-                onChange={(e) => setFiltroCategoria(e.target.value)}
-              >
-                <option value="todos">Todas as Categorias</option>
-                {categoriasUnicas.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
-                ))}
-              </select>
-            </div>
-
             <div className="flex items-center gap-2">
               <Filter size={18} className="text-gray-500" />
               <select
@@ -190,20 +166,6 @@ export function Products() {
                 <option value="alto">Acima de 200€</option>
               </select>
             </div>
-
-            {/* Nova ordenação por preço */}
-            <div className="flex items-center gap-2">
-              <Filter size={18} className="text-gray-500" /> {/* Reutilizando o ícone, ou poderia ser um ícone de ordenação */}
-              <select
-                className="rounded-md border border-gray-300 py-2 px-4 focus:outline-none"
-                value={ordenacaoPreco}
-                onChange={(e) => setOrdenacaoPreco(e.target.value)}
-              >
-                <option value="nenhum">Ordenar Preço</option>
-                <option value="maior-menor">Maior para Menor</option>
-                {/* <option value="menor-maior">Menor para Maior</option>  Pode adicionar se quiser */}
-              </select>
-            </div>
           </div>
         </div>
       </div>
@@ -212,10 +174,9 @@ export function Products() {
         title="Produtos"
         products={products}
         searchTerm={termoBusca}
-        category={filtroCategoria} // Passa o filtro de categoria
+        category={filtroCategoria}
         stockStatus={filtroEstoque}
         priceFilter={filtroPreco}
-        priceOrder={ordenacaoPreco} // Passa a ordem de preço
       />
 
       {/* Modal para Adicionar Novo Produto */}
@@ -302,31 +263,6 @@ export function Products() {
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded-md p-2"
               />
-              {/* Novos campos do produto */}
-              <input
-                type="text"
-                name="marca"
-                placeholder="Marca do produto"
-                value={newProduct.marca || ''}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md p-2"
-              />
-              <input
-                type="number"
-                name="avaliacoes"
-                placeholder="Número de avaliações"
-                value={newProduct.avaliacoes || ''}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md p-2"
-              />
-              <textarea
-                name="caracteristicas"
-                placeholder="Características (e.g., JSON ou lista separada por vírgulas)"
-                value={typeof newProduct.caracteristicas === 'string' ? newProduct.caracteristicas : JSON.stringify(newProduct.caracteristicas || '')}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md p-2"
-              />
-
               <div className="flex justify-end gap-4 mt-4">
                 <Button variant="ghost" onClick={() => setIsModalOpen(false)}>
                   Cancelar
