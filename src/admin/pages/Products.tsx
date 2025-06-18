@@ -98,10 +98,11 @@ export function Products() {
   // Para os campos de imagens, trata-se de um array
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    const imagesArray = value.split(',');
+    // Divide a string por vírgulas e remove espaços em branco de cada URL
+    const imagesArray = value.split(',').map(url => url.trim()).filter(url => url !== '');
     setNewProduct((prevProduct) => ({
       ...prevProduct,
-      [name]: imagesArray,
+      [name]: imagesArray, // Garante que 'imagens' seja um array de strings
     }));
   };
 
@@ -270,7 +271,7 @@ export function Products() {
               <input
                 type="text"
                 name="imagem_url"
-                placeholder="URL da imagem principal"
+                placeholder="URL da imagem principal (ex: https://www.nrenergias.pt/imagem_principal.jpg)"
                 value={newProduct.imagem_url || ''}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded-md p-2"
@@ -278,7 +279,7 @@ export function Products() {
               <input
                 type="text"
                 name="imagens"
-                placeholder="URLs das imagens (separadas por vírgula)"
+                placeholder="URLs das imagens adicionais (separadas por vírgula)"
                 value={newProduct.imagens.join(',') || ''}
                 onChange={handleImageChange}
                 className="w-full border border-gray-300 rounded-md p-2"
