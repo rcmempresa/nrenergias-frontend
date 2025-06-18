@@ -137,28 +137,35 @@ export function Products() {
             <Search className="absolute left-3 top-3 text-gray-400" size={18} />
             <input
               type="text"
-              placeholder="Buscar produtos..."
+              placeholder="Procurar produtos..."
               className="w-full rounded-md border border-gray-300 py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
               value={termoBusca}
               onChange={(e) => setTermoBusca(e.target.value)}
             />
           </div>
 
-          <div className="flex items-center gap-2">
-            <Filter size={18} className="text-gray-500" />
-            <select
-              className="rounded-md border border-gray-300 py-2 px-4 focus:outline-none"
-              value={filtroCategoria}
-              onChange={(e) => setFiltroCategoria(e.target.value)}
-            >
-              <option value="todos">Todas as Categorias</option>
-              {categoriasUnicas.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
+          <div className="flex flex-col sm:flex-row gap-4">
+          {/* Filtro por Categoria */}
+          <div className="flex flex-col"> {/* Novo div para o rótulo */}
+            <span className="text-sm font-medium text-gray-700 mb-1">Categoria</span>
+            <div className="flex items-center gap-2">
+              <Filter size={18} className="text-gray-500" />
+              <select
+                className="rounded-md border border-gray-300 py-2 px-4 focus:outline-none"
+                value={filtroCategoria}
+                onChange={(e) => setFiltroCategoria(e.target.value)}
+              >
+                <option value="todos">Todas as Categorias</option>
+                {categoriasUnicas.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4">
+          {/* Filtro por Stock */}
+          <div className="flex flex-col"> {/* Novo div para o rótulo */}
+            <span className="text-sm font-medium text-gray-700 mb-1">Stock</span>
             <div className="flex items-center gap-2">
               <Filter size={18} className="text-gray-500" />
               <select
@@ -171,6 +178,11 @@ export function Products() {
                 <option value="fora-de-estoque">Fora de Stock</option>
               </select>
             </div>
+          </div>
+
+          {/* Filtro por Preço (faixa) */}
+          <div className="flex flex-col"> {/* Novo div para o rótulo */}
+            <span className="text-sm font-medium text-gray-700 mb-1">Faixa de Preço</span>
             <div className="flex items-center gap-2">
               <Filter size={18} className="text-gray-500" />
               <select
@@ -184,15 +196,19 @@ export function Products() {
                 <option value="alto">Acima de 200€</option>
               </select>
             </div>
+          </div>
 
+          {/* Ordenação por Preço */}
+          <div className="flex flex-col"> {/* Novo div para o rótulo */}
+            <span className="text-sm font-medium text-gray-700 mb-1">Ordenar por Preço</span>
             <div className="flex items-center gap-2">
-              <Filter size={18} className="text-gray-500" /> {/* Reutilizando o ícone, ou poderia ser um ícone de ordenação */}
+              <Filter size={18} className="text-gray-500" /> {/* Reutilizando o ícone */}
               <select
                 className="rounded-md border border-gray-300 py-2 px-4 focus:outline-none"
                 value={ordenacaoPreco}
                 onChange={(e) => setOrdenacaoPreco(e.target.value)}
               >
-                <option value="nenhum">Ordenar Preço</option>
+                <option value="nenhum">Nenhum</option>
                 <option value="maior-menor">Maior para Menor</option>
                 <option value="menor-maior">Menor para Maior</option>
               </select>
