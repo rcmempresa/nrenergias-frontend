@@ -11,9 +11,9 @@ export function Layout() {
   const getPageTitle = () => {
     const path = location.pathname;
     if (path === '/admin') return 'Overview';
-    if (path.includes('/produtos')) return 'Produtos';
-    if (path.includes('/orders')) return 'Orders';
-    if (path.includes('/customers')) return 'Customers';
+    if (path.includes('/products')) return 'Produtos';
+    if (path.includes('/orders')) return 'Encomendas';
+    if (path.includes('/customers')) return 'Clientes';
     if (path.includes('/favorites')) return 'Favorites';
     if (path.includes('/shipping')) return 'Shipping';
     return 'Admin Dashboard';
