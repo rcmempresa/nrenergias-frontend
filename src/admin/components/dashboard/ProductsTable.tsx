@@ -10,9 +10,10 @@ interface ProductsTableProps {
   showActions?: boolean;
   className?: string;
   searchTerm: string;
-  category: string; // Já existe, mas será usado para filtragem
+  category: string;
   stockStatus: string;
   priceFilter: string;
+  priceOrder: string;
 }
 
 export function ProductsTable({
@@ -24,8 +25,9 @@ export function ProductsTable({
   category,
   stockStatus,
   priceFilter,
+  priceOrder
 }: ProductsTableProps) {
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('pt-PT', {
@@ -58,12 +60,12 @@ export function ProductsTable({
   };
 
   useEffect(() => {
-    let filtered = products.filter((product) => {
+    // 1. Filtragem
+    let currentFiltered = products.filter((product) => {
       const productName = product.nome ? product.nome.toLowerCase() : '';
 
       return (
         productName.includes(searchTerm.toLowerCase()) &&
-        // Esta linha já filtra pela categoria, mas agora a coluna será visível
         (category === 'todos' || product.categoria === category) &&
         (stockStatus === 'todos' ||
           (stockStatus === 'em-estoque' && product.estoque > 0) ||
@@ -75,8 +77,15 @@ export function ProductsTable({
       );
     });
 
-    setFilteredProducts(filtered);
-  }, [searchTerm, category, stockStatus, priceFilter, products]);
+    // 2. Ordenação
+    if (priceOrder === 'maior-menor') {
+      currentFiltered.sort((a, b) => b.preco - a.preco);
+    } else if (priceOrder === 'menor-maior') { // Adicionada lógica para menor-maior
+      currentFiltered.sort((a, b) => a.preco - b.preco);
+    }
+
+    setFilteredProducts(currentFiltered);
+  }, [searchTerm, category, stockStatus, priceFilter, priceOrder, products]);
 
   if (!filteredProducts.length) {
     return <div>Nenhum produto encontrado.</div>;
@@ -128,12 +137,9 @@ export function ProductsTable({
                     </div>
                     <div className="ml-4">
                       <div className="text-sm font-medium text-gray-900">{product.nome}</div>
-                      {/* Removido daqui para ter uma coluna própria */}
-                      {/* <div className="text-sm text-gray-500">{product.categoria}</div> */}
                     </div>
                   </div>
                 </td>
-                {/* Célula de dados para Categoria */}
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-900">{product.categoria}</div>
                 </td>

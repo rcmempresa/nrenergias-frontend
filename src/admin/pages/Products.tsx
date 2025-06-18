@@ -14,6 +14,7 @@ export function Products() {
   const [filtroEstoque, setFiltroEstoque] = useState('todos');
   const [filtroPreco, setFiltroPreco] = useState<string>('todos');
   const categoriasUnicas = Array.from(new Set(products.map(p => p.categoria)));
+  const [ordenacaoPreco, setOrdenacaoPreco] = useState<string>('nenhum');
   
   // Estado para o modal de adicionar produto
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -183,6 +184,19 @@ export function Products() {
                 <option value="alto">Acima de 200€</option>
               </select>
             </div>
+
+            <div className="flex items-center gap-2">
+              <Filter size={18} className="text-gray-500" /> {/* Reutilizando o ícone, ou poderia ser um ícone de ordenação */}
+              <select
+                className="rounded-md border border-gray-300 py-2 px-4 focus:outline-none"
+                value={ordenacaoPreco}
+                onChange={(e) => setOrdenacaoPreco(e.target.value)}
+              >
+                <option value="nenhum">Ordenar Preço</option>
+                <option value="maior-menor">Maior para Menor</option>
+                <option value="menor-maior">Menor para Maior</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
@@ -194,6 +208,7 @@ export function Products() {
         category={filtroCategoria}
         stockStatus={filtroEstoque}
         priceFilter={filtroPreco}
+        priceOrder={ordenacaoPreco}
       />
 
       {/* Modal para Adicionar Novo Produto */}
