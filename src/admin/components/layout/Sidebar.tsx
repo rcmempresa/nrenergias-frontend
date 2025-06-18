@@ -80,12 +80,12 @@ export function Sidebar({ isMobile, isOpen, onToggle }: SidebarProps) {
       
       <nav className="py-4 px-3">
         <div className="space-y-1">
-          <NavItem 
+          {/* <NavItem 
             to="/admin" 
             icon={<LayoutDashboard size={20} />} 
             label="Início" 
             onClick={handleMobileItemClick}
-          />
+          />*/}
           
           <div>
             <button 
@@ -127,24 +127,24 @@ export function Sidebar({ isMobile, isOpen, onToggle }: SidebarProps) {
             label="Clientes" 
             onClick={handleMobileItemClick}
           />
-          <NavItem 
+          {/*<NavItem 
             to="/admin/transactions" 
             icon={<CreditCard size={20} />} 
             label="Transações" 
             onClick={handleMobileItemClick}
-          />
-          <NavItem 
+          />*/}
+          {/*<NavItem 
             to="/admin/favorites" 
             icon={<Heart size={20} />} 
             label="Favoritos" 
             onClick={handleMobileItemClick}
-          />
-          <NavItem 
+          />*/}
+          {/*<NavItem 
             to="/admin/shipping" 
             icon={<MapPin size={20} />} 
             label="Shipping" 
             onClick={handleMobileItemClick}
-          />
+          />*/}
         </div>
       </nav>
     </aside>
