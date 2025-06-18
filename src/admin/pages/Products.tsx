@@ -132,19 +132,20 @@ export function Products() {
       )}
 
       <div className="bg-white rounded-lg shadow-sm p-6">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="relative flex-grow">
-            <Search className="absolute left-3 top-3 text-gray-400" size={18} />
-            <input
-              type="text"
-              placeholder="Procurar produtos..."
-              className="w-full rounded-md border border-gray-300 py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
-              value={termoBusca}
-              onChange={(e) => setTermoBusca(e.target.value)}
-            />
-          </div>
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="relative flex-grow">
+          <Search className="absolute left-3 top-3 text-gray-400" size={18} />
+          <input
+            type="text"
+            placeholder="Buscar produtos..."
+            className="w-full rounded-md border border-gray-300 py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
+            value={termoBusca}
+            onChange={(e) => setTermoBusca(e.target.value)}
+          />
+        </div>
 
-          <div className="flex flex-col sm:flex-row gap-4">
+        {/* Agrupamento de filtros para melhor responsividade */}
+        <div className="flex flex-col sm:flex-row gap-4">
           {/* Filtro por Categoria */}
           <div className="flex flex-col"> {/* Novo div para o rótulo */}
             <span className="text-sm font-medium text-gray-700 mb-1">Categoria</span>
@@ -216,6 +217,7 @@ export function Products() {
           </div>
         </div>
       </div>
+    </div>
 
       <ProductsTable
         title="Produtos"
