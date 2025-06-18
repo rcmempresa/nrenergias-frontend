@@ -13,6 +13,7 @@ export function Products() {
   const [filtroCategoria, setFiltroCategoria] = useState('todos');
   const [filtroEstoque, setFiltroEstoque] = useState('todos');
   const [filtroPreco, setFiltroPreco] = useState<string>('todos');
+  const categoriasUnicas = Array.from(new Set(products.map(p => p.categoria)));
   
   // Estado para o modal de adicionar produto
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -103,6 +104,8 @@ export function Products() {
     }));
   };
 
+  
+
   if (loading) {
     return <div>Carregando...</div>;
   }
@@ -138,6 +141,20 @@ export function Products() {
               value={termoBusca}
               onChange={(e) => setTermoBusca(e.target.value)}
             />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Filter size={18} className="text-gray-500" />
+            <select
+              className="rounded-md border border-gray-300 py-2 px-4 focus:outline-none"
+              value={filtroCategoria}
+              onChange={(e) => setFiltroCategoria(e.target.value)}
+            >
+              <option value="todos">Todas as Categorias</option>
+              {categoriasUnicas.map(cat => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4">
