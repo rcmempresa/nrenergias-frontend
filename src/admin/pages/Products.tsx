@@ -351,7 +351,6 @@ export function Products() {
                 className="w-full border border-gray-300 rounded-md p-2"
               />
 
-              {/* Input para upload da IMAGEM PRINCIPAL */}
               <div>
                 <label htmlFor="mainImageFile" className="block text-sm font-medium text-gray-700 mb-1">Upload Imagem Principal:</label>
                 <input
@@ -361,15 +360,6 @@ export function Products() {
                   onChange={handleMainImageFileChange}
                   className="w-full border border-gray-300 rounded-md p-2 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                   accept="image/*"
-                />
-                <p className="text-xs text-gray-500 mt-1">Ou insira a URL direta da imagem principal:</p>
-                <input
-                  type="text"
-                  name="imagem_url"
-                  placeholder="URL da imagem principal (se não fizer upload)"
-                  value={newProduct.imagem_url || ''}
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-md p-2"
                 />
               </div>
 
@@ -381,18 +371,9 @@ export function Products() {
                   id="additionalImageFiles"
                   name="additionalImageFiles"
                   onChange={handleAdditionalImageFilesChange}
-                  multiple // Permite selecionar múltiplos arquivos
+                  multiple
                   className="w-full border border-gray-300 rounded-md p-2 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                   accept="image/*"
-                />
-                <p className="text-xs text-gray-500 mt-1">Ou insira URLs adicionais (separadas por vírgula):</p>
-                <input
-                  type="text"
-                  name="imagens"
-                  placeholder="URLs das imagens adicionais (se não fizer upload)"
-                  value={newProduct.imagens.join(',') || ''}
-                  onChange={handleAdditionalImagesTextChange} // Usar o handler específico para string para array
-                  className="w-full border border-gray-300 rounded-md p-2"
                 />
               </div>
 
