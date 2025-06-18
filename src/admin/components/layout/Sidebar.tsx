@@ -66,7 +66,7 @@ export function Sidebar({ isMobile, isOpen, onToggle }: SidebarProps) {
       ${isMobile && !isOpen ? '-translate-x-full' : 'translate-x-0'}
     `}>
       <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-        <h1 className="text-xl font-bold text-blue-700">Painel do Administrador</h1>
+        <h1 className="text-xl font-bold text-blue-700">Painel de Controlo</h1>
         {isMobile && (
           <button 
             onClick={onToggle}
