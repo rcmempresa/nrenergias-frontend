@@ -10,7 +10,7 @@ interface ProductsTableProps {
   showActions?: boolean;
   className?: string;
   searchTerm: string;
-  category: string;
+  category: string; // Já existe, mas será usado para filtragem
   stockStatus: string;
   priceFilter: string;
 }
@@ -39,13 +39,11 @@ export function ProductsTable({
 
     if (confirmDelete) {
       try {
-        // Fazer a requisição para excluir o produto
         const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/products/eliminar/${productId}`, {
           method: 'DELETE',
         });
 
         if (response.ok) {
-          // Atualizar o estado removendo o produto da lista
           setFilteredProducts((prevProducts) =>
             prevProducts.filter((product) => product.id !== productId)
           );
@@ -59,14 +57,13 @@ export function ProductsTable({
     }
   };
 
-  // Filtragem dos produtos com base nos filtros
   useEffect(() => {
     let filtered = products.filter((product) => {
-      // Verificando se 'nome' existe e é uma string
       const productName = product.nome ? product.nome.toLowerCase() : '';
 
       return (
         productName.includes(searchTerm.toLowerCase()) &&
+        // Esta linha já filtra pela categoria, mas agora a coluna será visível
         (category === 'todos' || product.categoria === category) &&
         (stockStatus === 'todos' ||
           (stockStatus === 'em-estoque' && product.estoque > 0) ||
@@ -96,6 +93,10 @@ export function ProductsTable({
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Produto
+              </th>
+              {/* Nova coluna para Categoria */}
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Categoria
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Stock
@@ -127,9 +128,14 @@ export function ProductsTable({
                     </div>
                     <div className="ml-4">
                       <div className="text-sm font-medium text-gray-900">{product.nome}</div>
-                      <div className="text-sm text-gray-500">{product.categoria}</div>
+                      {/* Removido daqui para ter uma coluna própria */}
+                      {/* <div className="text-sm text-gray-500">{product.categoria}</div> */}
                     </div>
                   </div>
+                </td>
+                {/* Célula de dados para Categoria */}
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-900">{product.categoria}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className={`text-sm ${product.estoque === 0 ? 'text-red-500 font-medium' : 'text-gray-900'}`}>
@@ -166,7 +172,7 @@ export function ProductsTable({
                         size="sm"
                         className="text-red-600"
                         icon={<Trash2 size={16} />}
-                        onClick={() => handleDelete(product.id)} 
+                        onClick={() => handleDelete(product.id)}
                       >
                         Eliminar
                       </Button>
