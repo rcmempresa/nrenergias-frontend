@@ -10,9 +10,10 @@ interface ProductsTableProps {
   showActions?: boolean;
   className?: string;
   searchTerm: string;
-  category: string; // Já existe, mas será usado para filtragem
+  category: string; // Parâmetro de filtro de categoria
   stockStatus: string;
   priceFilter: string;
+  priceOrder: string; // Novo parâmetro para ordenação de preço
 }
 
 export function ProductsTable({
@@ -21,11 +22,12 @@ export function ProductsTable({
   showActions = true,
   className = '',
   searchTerm = '',
-  category,
+  category, // Usar este parâmetro para filtrar
   stockStatus,
   priceFilter,
+  priceOrder, // Usar este parâmetro para ordenar
 }: ProductsTableProps) {
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]); // Inicialize com array vazio
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('pt-PT', {
@@ -44,9 +46,11 @@ export function ProductsTable({
         });
 
         if (response.ok) {
+          // Remover da lista de produtos filtrados
           setFilteredProducts((prevProducts) =>
             prevProducts.filter((product) => product.id !== productId)
           );
+          // Opcional: Se 'products' também precisa ser atualizado, você pode chamar fetchProducts novamente em Products.tsx
         } else {
           alert('Erro ao excluir o produto');
         }
@@ -57,13 +61,14 @@ export function ProductsTable({
     }
   };
 
+  // Filtragem e Ordenação dos produtos com base nos filtros e ordenação
   useEffect(() => {
-    let filtered = products.filter((product) => {
+    let currentFiltered = products.filter((product) => {
       const productName = product.nome ? product.nome.toLowerCase() : '';
 
       return (
         productName.includes(searchTerm.toLowerCase()) &&
-        // Esta linha já filtra pela categoria, mas agora a coluna será visível
+        // FILTRO POR CATEGORIA
         (category === 'todos' || product.categoria === category) &&
         (stockStatus === 'todos' ||
           (stockStatus === 'em-estoque' && product.estoque > 0) ||
@@ -75,11 +80,19 @@ export function ProductsTable({
       );
     });
 
-    setFilteredProducts(filtered);
-  }, [searchTerm, category, stockStatus, priceFilter, products]);
+    // ORDENAÇÃO POR PREÇO
+    if (priceOrder === 'maior-menor') {
+      currentFiltered.sort((a, b) => b.preco - a.preco);
+    }
+    // Adicione mais lógicas de ordenação aqui se quiser 'menor-maior'
 
-  if (!filteredProducts.length) {
-    return <div>Nenhum produto encontrado.</div>;
+    setFilteredProducts(currentFiltered);
+    // Adicionar priceOrder às dependências para que a ordenação seja re-aplicada
+  }, [searchTerm, category, stockStatus, priceFilter, priceOrder, products]);
+
+
+  if (!filteredProducts.length && !loading) { // Adicionado !loading para evitar mensagem durante o carregamento
+    return <div className="p-6 bg-white rounded-lg shadow-sm">Nenhum produto encontrado com os filtros aplicados.</div>;
   }
 
   return (
@@ -94,7 +107,6 @@ export function ProductsTable({
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Produto
               </th>
-              {/* Nova coluna para Categoria */}
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Categoria
               </th>
@@ -128,12 +140,9 @@ export function ProductsTable({
                     </div>
                     <div className="ml-4">
                       <div className="text-sm font-medium text-gray-900">{product.nome}</div>
-                      {/* Removido daqui para ter uma coluna própria */}
-                      {/* <div className="text-sm text-gray-500">{product.categoria}</div> */}
                     </div>
                   </div>
                 </td>
-                {/* Célula de dados para Categoria */}
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-900">{product.categoria}</div>
                 </td>
