@@ -3,12 +3,12 @@ import React from 'react';
 import { Eye } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { StatusBadge } from '../ui/StatusBadge';
-import { Order } from '../../types'; // Certifique-se de que o tipo Order é importado e inclui shippingDetails
+import { Order } from '../../types';
 
 interface OrdersTableProps {
   orders: Order[];
   className?: string;
-  onViewDetails: (order: Order) => void; // ✅ Nova propriedade: função para lidar com os detalhes
+  onViewDetails: (order: Order) => void;
 }
 
 export function OrdersTable({ orders, className = '', onViewDetails }: OrdersTableProps) {
