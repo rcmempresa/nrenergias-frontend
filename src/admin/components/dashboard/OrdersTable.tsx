@@ -1,4 +1,3 @@
-// No componente OrdersTable.tsx
 import React from 'react';
 import { Eye } from 'lucide-react';
 import { Button } from '../ui/Button';
@@ -8,10 +7,9 @@ import { Order } from '../../types';
 interface OrdersTableProps {
   orders: Order[];
   className?: string;
-  onViewDetails: (order: Order) => void;
 }
 
-export function OrdersTable({ orders, className = '', onViewDetails }: OrdersTableProps) {
+export function OrdersTable({ orders, className = '' }: OrdersTableProps) {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('pt-PT', {
       style: 'currency',
@@ -33,7 +31,7 @@ export function OrdersTable({ orders, className = '', onViewDetails }: OrdersTab
       <div className="px-6 py-4 border-b border-gray-200">
         <h3 className="text-lg font-semibold text-gray-800">Encomendas Recentes</h3>
       </div>
-
+      
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -83,7 +81,6 @@ export function OrdersTable({ orders, className = '', onViewDetails }: OrdersTab
                     size="sm"
                     className="text-blue-600"
                     icon={<Eye size={16} />}
-                    onClick={() => onViewDetails(order)} // ✅ Chamar a função passada como prop
                   >
                     Detalhes
                   </Button>

@@ -5,15 +5,6 @@ export interface Order {
   total: number;
   date: string;
   items: OrderItem[];
-  shippingDetails?: ShippingDetails;
-}
-
-
-export interface ShippingDetails {
-  address: string;
-  city: string;
-  zip_code: string; 
-  country: string;
 }
 
 export interface OrderItem {
