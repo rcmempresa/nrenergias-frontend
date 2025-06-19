@@ -165,14 +165,7 @@ export function ProductsTable({
                       >
                         Editar
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-purple-600"
-                        icon={<Copy size={16} />}
-                      >
-                        Copiar
-                      </Button>
+
                       <Button
                         variant="ghost"
                         size="sm"
