@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Edit, Trash2, Copy } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { StatusBadge } from '../ui/StatusBadge';
-import { Product } from '../../types';
+import { Product } from '../../types'; // Certifique-se de que o caminho para Product está correto
+import axios from 'axios'; // Importar axios para a função handleDelete
 
 interface ProductsTableProps {
   title: string;
@@ -14,6 +15,10 @@ interface ProductsTableProps {
   stockStatus: string;
   priceFilter: string;
   priceOrder: string;
+  // NOVO: Prop para a função de edição que vem do componente pai (Products.tsx)
+  onEditProduct: (product: Product) => void;
+  // NOVO: Prop para a função de eliminação que vem do componente pai (Products.tsx)
+  onDeleteProduct: (productId: string) => void;
 }
 
 export function ProductsTable({
@@ -25,7 +30,9 @@ export function ProductsTable({
   category,
   stockStatus,
   priceFilter,
-  priceOrder
+  priceOrder,
+  onEditProduct,   // Desestruturar a nova prop
+  onDeleteProduct, // Desestruturar a nova prop
 }: ProductsTableProps) {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
 
@@ -36,25 +43,30 @@ export function ProductsTable({
     }).format(amount);
   };
 
+  // Alterada para chamar a função de eliminação passada via props
   const handleDelete = async (productId: string) => {
     const confirmDelete = window.confirm('Tem a certeza que pretende eliminar este produto?');
 
     if (confirmDelete) {
       try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/products/eliminar/${productId}`, {
-          method: 'DELETE',
-        });
+        const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/products/eliminar/${productId}`);
 
-        if (response.ok) {
-          setFilteredProducts((prevProducts) =>
-            prevProducts.filter((product) => product.id !== productId)
-          );
+        if (response.status === 200) { // Verifica o status HTTP para sucesso
+          // Chama a função do componente pai para remover o produto da lista principal
+          onDeleteProduct(productId);
+          alert('Produto eliminado com sucesso!');
         } else {
-          alert('Erro ao excluir o produto');
+          // Trata outros possíveis status de erro
+          alert(`Erro ao excluir o produto: ${response.statusText}`);
         }
       } catch (error) {
         console.error('Erro ao excluir o produto:', error);
-        alert('Erro ao excluir o produto');
+        // Verifica se é um erro de resposta HTTP
+        if (axios.isAxiosError(error) && error.response) {
+            alert(`Erro ao excluir o produto: ${error.response.data.error || error.message}`);
+        } else {
+            alert('Erro ao excluir o produto.');
+        }
       }
     }
   };
@@ -80,17 +92,23 @@ export function ProductsTable({
     // 2. Ordenação
     if (priceOrder === 'maior-menor') {
       currentFiltered.sort((a, b) => b.preco - a.preco);
-    } else if (priceOrder === 'menor-maior') { // Adicionada lógica para menor-maior
+    } else if (priceOrder === 'menor-maior') {
       currentFiltered.sort((a, b) => a.preco - b.preco);
     }
 
     setFilteredProducts(currentFiltered);
+    // Adicionar 'products' como dependência para que o filtro/ordenação seja refeito quando a lista de produtos muda no pai
   }, [searchTerm, category, stockStatus, priceFilter, priceOrder, products]);
 
-  if (!filteredProducts.length) {
-    return <div>Nenhum produto encontrado.</div>;
+  // Mensagens para feedback ao utilizador
+  if (!products.length && !searchTerm && category === 'todos' && stockStatus === 'todos' && priceFilter === 'todos') {
+    return <div className="text-center py-8 text-gray-600">Não há produtos registados.</div>;
   }
 
+  if (!filteredProducts.length && products.length > 0) {
+    return <div className="text-center py-8 text-gray-600">Nenhum produto encontrado com os filtros aplicados.</div>;
+  }
+  
   return (
     <div className={`bg-white rounded-lg shadow-sm overflow-hidden ${className}`}>
       <div className="px-6 py-4 border-b border-gray-200">
@@ -103,7 +121,6 @@ export function ProductsTable({
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Produto
               </th>
-              {/* Nova coluna para Categoria */}
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Categoria
               </th>
@@ -162,6 +179,8 @@ export function ProductsTable({
                         size="sm"
                         className="text-blue-600"
                         icon={<Edit size={16} />}
+                        // Chama a função onEditProduct passada via props
+                        onClick={() => onEditProduct(product)}
                       >
                         Editar
                       </Button>
@@ -171,6 +190,7 @@ export function ProductsTable({
                         size="sm"
                         className="text-red-600"
                         icon={<Trash2 size={16} />}
+                        // Chama a função handleDelete local
                         onClick={() => handleDelete(product.id)}
                       >
                         Eliminar
