@@ -337,7 +337,7 @@ export function Products() {
               <input
                 type="number"
                 name="preco"
-                placeholder="Preço"
+                placeholder="Preço (Ex:40.44)"
                 value={newProduct.preco || ''}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded-md p-2"
@@ -345,7 +345,7 @@ export function Products() {
               <input
                 type="number"
                 name="estoque"
-                placeholder="Stock"
+                placeholder="Stock (Ex:20)"
                 value={newProduct.estoque || ''}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded-md p-2"
@@ -394,7 +394,7 @@ export function Products() {
               <input
                 type="number"
                 name="old_price"
-                placeholder="Preço antigo"
+                placeholder="Preço antigo (Ex:39.99)"
                 value={newProduct.old_price || ''}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded-md p-2"
@@ -402,7 +402,7 @@ export function Products() {
               <input
                 type="number"
                 name="rating"
-                placeholder="Avaliação (0-5)"
+                placeholder="Avaliação (0-5,aceita números com vírgulas)"
                 value={newProduct.rating || ''}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded-md p-2"
@@ -425,7 +425,7 @@ export function Products() {
               />
               <textarea
                 name="caracteristicas"
-                placeholder="Características (ex: 'cor:azul,tamanho:M' ou JSON)"
+                placeholder="Características (Ex: {cor:azul,tamanho:M})"
                 value={typeof newProduct.caracteristicas === 'string' ? newProduct.caracteristicas : JSON.stringify(newProduct.caracteristicas || '')}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded-md p-2"
