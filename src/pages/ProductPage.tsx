@@ -147,7 +147,6 @@ const ProductPage = () => {
                     <option value="">Todas as Categorias</option>
                     <option value="Ar Condicionado">Ar Condicionado</option>
                     <option value="Câmara Segurança">Câmara de Segurança/Vídeo Porteiro</option>
-                    <option value="Câmara Segurança">Câmara de Segurança/Vídeo Porteiro</option>
                     <option value="Sistema Alarme">Sistema de Deteção de Alarme</option>
                     <option value="Sistema de Incêndios">Sistema de Deteção de Incêndios</option>
                     <option value="Switch">Reyee</option>
