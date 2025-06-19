@@ -284,6 +284,7 @@ export function Products() {
     setLoading(true);
     setError(null);
 
+    // Valida o formulário, incluindo o JSON das características
     if (!validateForm()) {
       setError('Por favor, preencha todos os campos obrigatórios corretamente.');
       setLoading(false);
@@ -293,17 +294,39 @@ export function Products() {
     try {
       const { mainImageUrl, additionalImageUrls } = await uploadImages(newProduct);
 
+      // --- TRATAMENTO PARA CARACTERÍSTICAS AQUI ---
+      let processedCaracteristicas: string | null = null;
+      if (newProduct.caracteristicas) {
+        if (typeof newProduct.caracteristicas === 'object') {
+          // Se for um objeto (como viria do backend), converte para string JSON
+          processedCaracteristicas = JSON.stringify(newProduct.caracteristicas);
+        } else if (typeof newProduct.caracteristicas === 'string' && newProduct.caracteristicas.trim() !== '') {
+          // Se for uma string não vazia, valida e usa como está
+          try {
+            // Tenta parsear para garantir que é JSON válido, depois stringify novamente
+            // Isso garante que o JSON enviado é robusto
+            processedCaracteristicas = JSON.stringify(JSON.parse(newProduct.caracteristicas));
+          } catch (e) {
+            // Se a string não for JSON válido, loga o erro e define como null
+            console.warn('Caracteristicas não é um JSON válido no frontend, enviando null:', newProduct.caracteristicas, e);
+            processedCaracteristicas = null;
+          }
+        }
+      }
+
       const productToUpdate = {
         ...newProduct,
         id: editingProduct.id, // Garante que o ID do produto original é usado
         imagem_url: mainImageUrl,
         imagens: additionalImageUrls,
-        // Garante que características seja JSON se for um objeto
-        caracteristicas: newProduct.caracteristicas // O frontend já envia como string ou JSON.stringify
+        caracteristicas: processedCaracteristicas, // Usa o valor processado
       };
 
       // Chama a rota PUT para atualizar o produto
-      const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/products/atualizar/${editingProduct.id}`, productToUpdate);
+      const response = await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/products/atualizar/${editingProduct.id}`,
+        productToUpdate
+      );
 
       setProducts((prevProducts) =>
         prevProducts.map((p) => (p.id === editingProduct.id ? response.data.produto : p))
@@ -318,7 +341,7 @@ export function Products() {
     } finally {
       setLoading(false);
     }
-  };
+};
 
   // NOVO: Função para lidar com a eliminação de um produto vinda da tabela
   const handleProductDelete = (productId: string) => {
