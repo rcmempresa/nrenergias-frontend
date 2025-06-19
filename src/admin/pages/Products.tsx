@@ -16,10 +16,12 @@ export function Products() {
   const [filtroCategoria, setFiltroCategoria] = useState('todos');
   const [filtroEstoque, setFiltroEstoque] = useState('todos');
   const [filtroPreco, setFiltroPreco] = useState<string>('todos');
-  const [ordenacaoPreco, setOrdenacaoPreco] = useState<string>('nenhum'); // 'nenhum', 'maior-menor', 'menor-maior'
+  const [ordenacaoPreco, setOrdenacaoPreco] = useState<string>('nenhum');
 
-  // Estados para o modal de adicionar produto
+  // Estados para o modal de adicionar/editar produto
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // NOVO: Estado para armazenar o produto que está a ser editado. Null se estiver a adicionar.
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newProduct, setNewProduct] = useState<Product>({
     id: uuidv4(),
     nome: '',
@@ -37,6 +39,10 @@ export function Products() {
     avaliacoes: 0,
     caracteristicas: '',
   });
+
+  // NOVO: Estado para erros de validação do formulário
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+
 
   // Estados para upload de arquivos de imagem
   const [selectedMainImage, setSelectedMainImage] = useState<File | null>(null);
@@ -66,10 +72,12 @@ export function Products() {
   // Handler genérico para inputs de texto/número/select do formulário de novo produto
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    // Atualiza newProduct (usado tanto para adicionar quanto para editar)
     setNewProduct((prevProduct) => ({
       ...prevProduct,
       [name]: name === 'preco' || name === 'estoque' || name === 'old_price' || name === 'rating' || name === 'avaliacoes' ? Number(value) : value,
     }));
+    setValidationErrors((prevErrors) => ({ ...prevErrors, [name]: '' }));
   };
 
   // Handler específico para o input de imagens adicionais (string separada por vírgulas)
@@ -80,12 +88,16 @@ export function Products() {
       ...prevProduct,
       [name]: imagesArray,
     }));
+    setValidationErrors((prevErrors) => ({ ...prevErrors, [name]: '' }));
   };
 
   // Handler para seleção de arquivo de imagem principal
   const handleMainImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setSelectedMainImage(e.target.files[0]);
+      // Limpa a URL existente se um novo arquivo for selecionado
+      setNewProduct((prev) => ({ ...prev, imagem_url: '' }));
+      setValidationErrors((prevErrors) => ({ ...prevErrors, imagem_url: '' }));
     } else {
       setSelectedMainImage(null);
     }
@@ -95,89 +107,165 @@ export function Products() {
   const handleAdditionalImageFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       setSelectedAdditionalImages(e.target.files);
+      // Limpa as URLs existentes se novos arquivos forem selecionados
+      setNewProduct((prev) => ({ ...prev, imagens: [] }));
+      setValidationErrors((prevErrors) => ({ ...prevErrors, imagens: '' }));
     } else {
       setSelectedAdditionalImages(null);
     }
   };
 
-  // Função para adicionar um novo produto, incluindo upload de imagens
+  // NOVO: Função para abrir o modal de adição
+  const openAddModal = () => {
+    setEditingProduct(null); // Garante que estamos no modo de adição
+    // Resetar newProduct para valores padrão para um novo produto
+    setNewProduct({
+      id: uuidv4(),
+      nome: '',
+      categoria: '',
+      preco: 0,
+      estoque: 0,
+      imagem_url: '',
+      imagens: [],
+      descricao: '',
+      descricao_completa: '',
+      old_price: 0,
+      rating: 0,
+      status: 'ativo',
+      marca: '',
+      avaliacoes: 0,
+      caracteristicas: '',
+    });
+    setSelectedMainImage(null);
+    setSelectedAdditionalImages(null);
+    setValidationErrors({}); // Limpar erros de validação
+    setIsModalOpen(true);
+  };
+
+  // NOVO: Função para abrir o modal de edição
+  const openEditModal = (product: Product) => {
+    setEditingProduct(product); // Define o produto que está a ser editado
+    // Preenche o formulário com os dados do produto existente
+    setNewProduct({
+      ...product,
+      // Garante que imagens seja um array de strings para o join
+      imagens: Array.isArray(product.imagens) ? product.imagens : [],
+      // Caracteristicas pode ser string ou objeto, prepara para o campo de texto
+      caracteristicas: typeof product.caracteristicas === 'object' && product.caracteristicas !== null
+        ? JSON.stringify(product.caracteristicas)
+        : product.caracteristicas || '',
+    });
+    // Limpa quaisquer arquivos de imagem selecionados previamente para um novo upload
+    setSelectedMainImage(null);
+    setSelectedAdditionalImages(null);
+    setValidationErrors({}); // Limpar erros de validação
+    setIsModalOpen(true);
+  };
+
+  // NOVO: Função para fechar o modal e resetar estados
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingProduct(null);
+    setNewProduct({ // Resetar para estado inicial de um novo produto
+      id: uuidv4(),
+      nome: '',
+      categoria: '',
+      preco: 0,
+      estoque: 0,
+      imagem_url: '',
+      imagens: [],
+      descricao: '',
+      descricao_completa: '',
+      old_price: 0,
+      rating: 0,
+      status: 'ativo',
+      marca: '',
+      avaliacoes: 0,
+      caracteristicas: '',
+    });
+    setSelectedMainImage(null);
+    setSelectedAdditionalImages(null);
+    setValidationErrors({}); // Limpar erros de validação
+  };
+
+  // NOVO: Função de validação do formulário
+  const validateForm = (): boolean => {
+    const errors: Record<string, string> = {};
+    if (!newProduct.nome.trim()) errors.nome = 'O nome do produto é obrigatório.';
+    if (!newProduct.categoria.trim()) errors.categoria = 'A categoria é obrigatória.';
+    if (newProduct.preco <= 0) errors.preco = 'O preço deve ser maior que 0.';
+    if (newProduct.estoque <= 0) errors.estoque = 'O stock deve ser maior que 0.';
+    if (!newProduct.descricao.trim()) errors.descricao = 'A descrição curta é obrigatória.';
+    if (!newProduct.descricao_completa.trim()) errors.descricao_completa = 'A descrição completa é obrigatória.';
+    if (!newProduct.marca.trim()) errors.marca = 'A marca é obrigatória.';
+    if (newProduct.rating < 0 || newProduct.rating > 5) errors.rating = 'A avaliação deve ser entre 0 e 5.';
+    if (newProduct.avaliacoes < 0) errors.avaliacoes = 'O número de avaliações não pode ser negativo.';
+
+    // Validação para imagem principal (ou upload ou URL direta)
+    if (!selectedMainImage && !newProduct.imagem_url.trim()) {
+      errors.imagem_url = 'É obrigatório selecionar uma imagem principal ou fornecer uma URL.';
+    }
+    // Você pode adicionar validação para 'caracteristicas' se for obrigatório
+    // if (!newProduct.caracteristicas.trim()) errors.caracteristicas = 'As características são obrigatórias.';
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  // Função para lidar com o upload de imagens (reutilizável)
+  const uploadImages = async (productData: Product): Promise<{ mainImageUrl: string; additionalImageUrls: string[] }> => {
+    let mainImageUrl = productData.imagem_url;
+    const additionalImageUrls: string[] = [...(Array.isArray(productData.imagens) ? productData.imagens : [])];
+
+    if (selectedMainImage) {
+      const formData = new FormData();
+      formData.append('image', selectedMainImage);
+      const uploadResponse = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/upload/image`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      mainImageUrl = uploadResponse.data.url;
+    }
+
+    if (selectedAdditionalImages && selectedAdditionalImages.length > 0) {
+      for (let i = 0; i < selectedAdditionalImages.length; i++) {
+        const file = selectedAdditionalImages[i];
+        const formData = new FormData();
+        formData.append('image', file);
+        const uploadResponse = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/upload/image`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        additionalImageUrls.push(uploadResponse.data.url);
+      }
+    }
+    return { mainImageUrl, additionalImageUrls };
+  };
+
+  // Função para adicionar um novo produto
   const handleAddProduct = async () => {
     setLoading(true);
     setError(null);
 
-    let mainImageUrl = newProduct.imagem_url; // Assume que pode vir de uma URL direta
-    const additionalImageUrls: string[] = [...newProduct.imagens]; // Começa com as URLs já existentes (se houver)
+    if (!validateForm()) {
+      setError('Por favor, preencha todos os campos obrigatórios corretamente.');
+      setLoading(false);
+      return;
+    }
 
     try {
-      // 1. Upload da Imagem Principal (se um novo arquivo foi selecionado)
-      if (selectedMainImage) {
-        const formData = new FormData();
-        formData.append('image', selectedMainImage);
+      const { mainImageUrl, additionalImageUrls } = await uploadImages(newProduct);
 
-        const uploadResponse = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/upload/image`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-        mainImageUrl = uploadResponse.data.url; // A URL da imagem salva que o backend retorna
-      }
-
-      // 2. Upload de Imagens Adicionais (se novos arquivos foram selecionados)
-      if (selectedAdditionalImages && selectedAdditionalImages.length > 0) {
-        for (let i = 0; i < selectedAdditionalImages.length; i++) {
-          const file = selectedAdditionalImages[i];
-          const formData = new FormData();
-          formData.append('image', file);
-
-          const uploadResponse = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/upload/image`, formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-          },
-        });
-          additionalImageUrls.push(uploadResponse.data.url);
-        }
-      }
-
-      // 3. Montar o objeto do produto com as URLs de imagem (obtidas do upload ou as diretas)
       const productToCreate = {
         ...newProduct,
-        id: uuidv4(), // Garante um novo UUID para o produto
-        imagem_url: mainImageUrl, // Usa a URL obtida do upload ou a URL direta
-        imagens: additionalImageUrls, // Usa as URLs obtidas dos uploads + as já existentes
+        id: uuidv4(),
+        imagem_url: mainImageUrl,
+        imagens: additionalImageUrls,
+        // Garante que características seja JSON se for um objeto
+        caracteristicas: newProduct.caracteristicas // O frontend já envia como string ou JSON.stringify
       };
 
-      // 4. Enviar o produto para o backend
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/products/adicionar`, productToCreate);
-      setProducts((prevProducts) => [...prevProducts, response.data]);
-      setIsModalOpen(false);
-
-      // 5. Resetar estados do formulário e uploads
-      setNewProduct({
-        id: uuidv4(),
-        nome: '',
-        categoria: '',
-        preco: 0,
-        estoque: 0,
-        imagem_url: '',
-        imagens: [],
-        descricao: '',
-        descricao_completa: '',
-        old_price: 0,
-        rating: 0,
-        status: 'ativo',
-        marca: '',
-        avaliacoes: 0,
-        caracteristicas: '',
-      });
-      setSelectedMainImage(null);
-      setSelectedAdditionalImages(null);
-      // Limpar os inputs de arquivo
-      const mainFileInput = document.querySelector('input[name="mainImageFile"]') as HTMLInputElement;
-      if (mainFileInput) mainFileInput.value = '';
-      const additionalFileInput = document.querySelector('input[name="additionalImageFiles"]') as HTMLInputElement;
-      if (additionalFileInput) additionalFileInput.value = '';
-
-
+      setProducts((prevProducts) => [...prevProducts, response.data.produto]); // A API retorna { produto: ... }
+      closeModal();
       setSuccessMessage('Produto adicionado com sucesso!');
       setTimeout(() => setSuccessMessage(null), 3000);
 
@@ -189,22 +277,74 @@ export function Products() {
     }
   };
 
-  // Extrair categorias únicas para o filtro
-  const categoriasUnicas = Array.from(new Set(products.map(p => p.categoria))).filter(Boolean); // filtra valores nulos/vazios
+  // NOVO: Função para atualizar um produto existente
+  const handleUpdateProduct = async () => {
+    if (!editingProduct) return; // Não deve acontecer se o modal for aberto corretamente
 
-  if (loading) {
+    setLoading(true);
+    setError(null);
+
+    if (!validateForm()) {
+      setError('Por favor, preencha todos os campos obrigatórios corretamente.');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const { mainImageUrl, additionalImageUrls } = await uploadImages(newProduct);
+
+      const productToUpdate = {
+        ...newProduct,
+        id: editingProduct.id, // Garante que o ID do produto original é usado
+        imagem_url: mainImageUrl,
+        imagens: additionalImageUrls,
+        // Garante que características seja JSON se for um objeto
+        caracteristicas: newProduct.caracteristicas // O frontend já envia como string ou JSON.stringify
+      };
+
+      // Chama a rota PUT para atualizar o produto
+      const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/products/atualizar/${editingProduct.id}`, productToUpdate);
+
+      setProducts((prevProducts) =>
+        prevProducts.map((p) => (p.id === editingProduct.id ? response.data.produto : p))
+      );
+      closeModal();
+      setSuccessMessage('Produto atualizado com sucesso!');
+      setTimeout(() => setSuccessMessage(null), 3000);
+
+    } catch (err) {
+      setError('Erro ao atualizar o produto ou fazer upload da imagem.');
+      console.error('Erro ao atualizar produto:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // NOVO: Função para lidar com a eliminação de um produto vinda da tabela
+  const handleProductDelete = (productId: string) => {
+    setProducts((prevProducts) => prevProducts.filter((product) => product.id !== productId));
+    setSuccessMessage('Produto eliminado com sucesso!');
+    setTimeout(() => setSuccessMessage(null), 3000);
+  };
+
+
+  // Extrair categorias únicas para o filtro
+  const categoriasUnicas = Array.from(new Set(products.map(p => p.categoria))).filter(Boolean);
+
+  if (loading && products.length === 0) { // Mostra carregando apenas se ainda não há produtos
     return <div className="text-center py-8">Carregando produtos...</div>;
   }
 
-  if (error) {
+  if (error && products.length === 0) { // Mostra erro apenas se ainda não há produtos
     return <div className="text-center text-red-500 py-8">{error}</div>;
   }
+
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <h1 className="text-2xl font-bold text-gray-800">Gestão de Produtos</h1>
-        <Button className="md:self-end" icon={<PlusCircle size={18} />} onClick={() => setIsModalOpen(true)}>
+        <Button className="md:self-end" icon={<PlusCircle size={18} />} onClick={openAddModal}>
           Adicionar Novo Produto
         </Button>
       </div>
@@ -214,6 +354,13 @@ export function Products() {
           {successMessage}
         </div>
       )}
+      {/* Mensagem de erro geral do formulário (se houver) */}
+      {Object.keys(validationErrors).length > 0 && error && (
+        <div className="text-red-500 font-semibold p-4 bg-red-100 rounded-md">
+          {error}
+        </div>
+      )}
+
 
       <div className="bg-white rounded-lg shadow-sm p-6">
         <div className="flex flex-col md:flex-row gap-4">
@@ -310,47 +457,65 @@ export function Products() {
         stockStatus={filtroEstoque}
         priceFilter={filtroPreco}
         priceOrder={ordenacaoPreco}
+        onEditProduct={openEditModal} // NOVO: Passa a função para a tabela
+        onDeleteProduct={handleProductDelete} // NOVO: Passa a função de eliminação
       />
 
-      {/* Modal para Adicionar Novo Produto */}
+      {/* Modal para Adicionar/Editar Produto */}
       {isModalOpen && (
         <div className="fixed inset-0 flex justify-center items-center bg-gray-500 bg-opacity-50 z-50">
-          <div className="bg-white rounded-lg p-6 w-96 max-h-[90vh] overflow-y-auto"> {/* Adicionado max-h e overflow para scroll */}
-            <h3 className="text-lg font-semibold mb-4">Adicionar Novo Produto</h3>
+          <div className="bg-white rounded-lg p-6 w-96 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-semibold mb-4">
+              {editingProduct ? 'Editar Produto' : 'Adicionar Novo Produto'}
+            </h3>
             <div className="space-y-4">
-              <input
-                type="text"
-                name="nome"
-                placeholder="Nome do produto"
-                value={newProduct.nome || ''}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md p-2"
-              />
-              <input
-                type="text"
-                name="categoria"
-                placeholder="Categoria"
-                value={newProduct.categoria || ''}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md p-2"
-              />
-              <input
-                type="number"
-                name="preco"
-                placeholder="Preço (Ex:40.44)"
-                value={newProduct.preco || ''}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md p-2"
-              />
-              <input
-                type="number"
-                name="estoque"
-                placeholder="Stock (Ex:20)"
-                value={newProduct.estoque || ''}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md p-2"
-              />
+              {/* Campos do formulário com validação e feedback visual */}
+              <div>
+                <input
+                  type="text"
+                  name="nome"
+                  placeholder="Nome do produto"
+                  value={newProduct.nome || ''}
+                  onChange={handleChange}
+                  className={`w-full border rounded-md p-2 ${validationErrors.nome ? 'border-red-500' : 'border-gray-300'}`}
+                />
+                {validationErrors.nome && <p className="text-red-500 text-xs mt-1">{validationErrors.nome}</p>}
+              </div>
+              <div>
+                <input
+                  type="text"
+                  name="categoria"
+                  placeholder="Categoria"
+                  value={newProduct.categoria || ''}
+                  onChange={handleChange}
+                  className={`w-full border rounded-md p-2 ${validationErrors.categoria ? 'border-red-500' : 'border-gray-300'}`}
+                />
+                {validationErrors.categoria && <p className="text-red-500 text-xs mt-1">{validationErrors.categoria}</p>}
+              </div>
+              <div>
+                <input
+                  type="number"
+                  name="preco"
+                  placeholder="Preço (Ex:40.44)"
+                  value={newProduct.preco || ''}
+                  onChange={handleChange}
+                  className={`w-full border rounded-md p-2 ${validationErrors.preco ? 'border-red-500' : 'border-gray-300'}`}
+                />
+                {validationErrors.preco && <p className="text-red-500 text-xs mt-1">{validationErrors.preco}</p>}
+              </div>
+              <div>
+                <input
+                  type="number"
+                  name="estoque"
+                  placeholder="Stock (Ex:20)"
+                  value={newProduct.estoque || ''}
+                  onChange={handleChange}
+                  className={`w-full border rounded-md p-2 ${validationErrors.estoque ? 'border-red-500' : 'border-gray-300'}`}
+                />
+                {validationErrors.estoque && <p className="text-red-500 text-xs mt-1">{validationErrors.estoque}</p>}
+              </div>
 
+              {/* Imagem Principal */}
               <div>
                 <label htmlFor="mainImageFile" className="block text-sm font-medium text-gray-700 mb-1">Upload Imagem Principal:</label>
                 <input
@@ -358,12 +523,26 @@ export function Products() {
                   id="mainImageFile"
                   name="mainImageFile"
                   onChange={handleMainImageFileChange}
-                  className="w-full border border-gray-300 rounded-md p-2 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  className={`w-full border rounded-md p-2 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 ${validationErrors.imagem_url ? 'border-red-500' : 'border-gray-300'}`}
                   accept="image/*"
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  {selectedMainImage ? `Arquivo selecionado: ${selectedMainImage.name}` :
+                    (newProduct.imagem_url && !selectedMainImage ? `URL atual: ${newProduct.imagem_url.substring(0, 40)}...` : 'Nenhum arquivo ou URL selecionado.')}
+                </p>
+                <input
+                  type="text"
+                  name="imagem_url"
+                  placeholder="URL da imagem principal (se não fizer upload)"
+                  value={!selectedMainImage ? (newProduct.imagem_url || '') : ''} // Desativa se arquivo for selecionado
+                  onChange={handleChange}
+                  disabled={!!selectedMainImage} // Desativa se arquivo for selecionado
+                  className={`w-full border rounded-md p-2 ${validationErrors.imagem_url ? 'border-red-500' : 'border-gray-300'}`}
+                />
+                {validationErrors.imagem_url && <p className="text-red-500 text-xs mt-1">{validationErrors.imagem_url}</p>}
               </div>
 
-              {/* Input para upload de IMAGENS ADICIONAIS */}
+              {/* Imagens Adicionais */}
               <div>
                 <label htmlFor="additionalImageFiles" className="block text-sm font-medium text-gray-700 mb-1">Upload Imagens Adicionais:</label>
                 <input
@@ -372,80 +551,124 @@ export function Products() {
                   name="additionalImageFiles"
                   onChange={handleAdditionalImageFilesChange}
                   multiple
-                  className="w-full border border-gray-300 rounded-md p-2 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  className={`w-full border rounded-md p-2 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 ${validationErrors.imagens ? 'border-red-500' : 'border-gray-300'}`}
                   accept="image/*"
                 />
+                 <p className="text-xs text-gray-500 mt-1">
+                    {selectedAdditionalImages?.length > 0
+                    ? `${selectedAdditionalImages.length} arquivo(s) selecionado(s).`
+                    : (newProduct.imagens.length > 0 && !selectedAdditionalImages
+                        ? `URLs atuais: ${newProduct.imagens.map(url => url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.'))).join(', ').substring(0, 60)}...` // Mostra parte do nome do arquivo
+                        : 'Nenhum arquivo ou URL selecionado.')}
+                </p>
+                <input
+                  type="text"
+                  name="imagens"
+                  placeholder="URLs das imagens adicionais (separadas por vírgula, se não fizer upload)"
+                  value={!selectedAdditionalImages ? (newProduct.imagens.join(',') || '') : ''} // Desativa se arquivos forem selecionados
+                  onChange={handleAdditionalImagesTextChange}
+                  disabled={!!selectedAdditionalImages?.length} // Desativa se arquivos forem selecionados
+                  className={`w-full border rounded-md p-2 ${validationErrors.imagens ? 'border-red-500' : 'border-gray-300'}`}
+                />
+                {validationErrors.imagens && <p className="text-red-500 text-xs mt-1">{validationErrors.imagens}</p>}
               </div>
 
-              <textarea
-                name="descricao"
-                placeholder="Descrição curta"
-                value={newProduct.descricao || ''}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md p-2"
-              />
-              <textarea
-                name="descricao_completa"
-                placeholder="Descrição completa"
-                value={newProduct.descricao_completa || ''}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md p-2"
-              />
-              <input
-                type="number"
-                name="old_price"
-                placeholder="Preço antigo (Ex:39.99)"
-                value={newProduct.old_price || ''}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md p-2"
-              />
-              <input
-                type="number"
-                name="rating"
-                placeholder="Avaliação (0-5,aceita números com vírgulas)"
-                value={newProduct.rating || ''}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md p-2"
-              />
-              <input
-                type="text"
-                name="marca"
-                placeholder="Marca do produto"
-                value={newProduct.marca || ''}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md p-2"
-              />
-              <input
-                type="number"
-                name="avaliacoes"
-                placeholder="Número de avaliações"
-                value={newProduct.avaliacoes || ''}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md p-2"
-              />
-              <textarea
-                name="caracteristicas"
-                placeholder="Características (Ex: {cor:azul,tamanho:M})"
-                value={typeof newProduct.caracteristicas === 'string' ? newProduct.caracteristicas : JSON.stringify(newProduct.caracteristicas || '')}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md p-2"
-              />
-              <select
-                name="status"
-                value={newProduct.status}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md p-2"
-              >
-                <option value="ativo">Ativo</option>
-                <option value="inativo">Inativo</option>
-              </select>
+              <div>
+                <textarea
+                  name="descricao"
+                  placeholder="Descrição curta"
+                  value={newProduct.descricao || ''}
+                  onChange={handleChange}
+                  className={`w-full border rounded-md p-2 ${validationErrors.descricao ? 'border-red-500' : 'border-gray-300'}`}
+                />
+                {validationErrors.descricao && <p className="text-red-500 text-xs mt-1">{validationErrors.descricao}</p>}
+              </div>
+              <div>
+                <textarea
+                  name="descricao_completa"
+                  placeholder="Descrição completa"
+                  value={newProduct.descricao_completa || ''}
+                  onChange={handleChange}
+                  className={`w-full border rounded-md p-2 ${validationErrors.descricao_completa ? 'border-red-500' : 'border-gray-300'}`}
+                />
+                {validationErrors.descricao_completa && <p className="text-red-500 text-xs mt-1">{validationErrors.descricao_completa}</p>}
+              </div>
+              <div>
+                <input
+                  type="number"
+                  name="old_price"
+                  placeholder="Preço antigo (Ex:39.99)"
+                  value={newProduct.old_price || ''}
+                  onChange={handleChange}
+                  className={`w-full border rounded-md p-2 ${validationErrors.old_price ? 'border-red-500' : 'border-gray-300'}`}
+                />
+                {validationErrors.old_price && <p className="text-red-500 text-xs mt-1">{validationErrors.old_price}</p>}
+              </div>
+              <div>
+                <input
+                  type="number"
+                  name="rating"
+                  placeholder="Avaliação (0-5, aceita números com vírgulas)"
+                  value={newProduct.rating || ''}
+                  onChange={handleChange}
+                  className={`w-full border rounded-md p-2 ${validationErrors.rating ? 'border-red-500' : 'border-gray-300'}`}
+                />
+                {validationErrors.rating && <p className="text-red-500 text-xs mt-1">{validationErrors.rating}</p>}
+              </div>
+              <div>
+                <input
+                  type="text"
+                  name="marca"
+                  placeholder="Marca do produto"
+                  value={newProduct.marca || ''}
+                  onChange={handleChange}
+                  className={`w-full border rounded-md p-2 ${validationErrors.marca ? 'border-red-500' : 'border-gray-300'}`}
+                />
+                {validationErrors.marca && <p className="text-red-500 text-xs mt-1">{validationErrors.marca}</p>}
+              </div>
+              <div>
+                <input
+                  type="number"
+                  name="avaliacoes"
+                  placeholder="Número de avaliações"
+                  value={newProduct.avaliacoes || ''}
+                  onChange={handleChange}
+                  className={`w-full border rounded-md p-2 ${validationErrors.avaliacoes ? 'border-red-500' : 'border-gray-300'}`}
+                />
+                {validationErrors.avaliacoes && <p className="text-red-500 text-xs mt-1">{validationErrors.avaliacoes}</p>}
+              </div>
+              <div>
+                <textarea
+                  name="caracteristicas"
+                  placeholder="Características (Ex: {cor:azul,tamanho:M})"
+                  value={typeof newProduct.caracteristicas === 'string' ? newProduct.caracteristicas : JSON.stringify(newProduct.caracteristicas || '')}
+                  onChange={handleChange}
+                  className={`w-full border rounded-md p-2 ${validationErrors.caracteristicas ? 'border-red-500' : 'border-gray-300'}`}
+                />
+                {validationErrors.caracteristicas && <p className="text-red-500 text-xs mt-1">{validationErrors.caracteristicas}</p>}
+              </div>
+              <div>
+                <select
+                  name="status"
+                  value={newProduct.status}
+                  onChange={handleChange}
+                  className={`w-full border rounded-md p-2 ${validationErrors.status ? 'border-red-500' : 'border-gray-300'}`}
+                >
+                  <option value="ativo">Ativo</option>
+                  <option value="inativo">Inativo</option>
+                </select>
+                {validationErrors.status && <p className="text-red-500 text-xs mt-1">{validationErrors.status}</p>}
+              </div>
 
               <div className="flex justify-end gap-4 mt-4">
-                <Button variant="ghost" onClick={() => setIsModalOpen(false)}>
+                <Button variant="ghost" onClick={closeModal}> {/* Usa closeModal */}
                   Cancelar
                 </Button>
-                <Button onClick={handleAddProduct} disabled={loading}>
-                  {loading ? 'Adicionando...' : 'Adicionar Produto'}
+                <Button
+                  onClick={editingProduct ? handleUpdateProduct : handleAddProduct} // Condicional para chamar a função correta
+                  disabled={loading}
+                >
+                  {loading ? (editingProduct ? 'Atualizando...' : 'Adicionando...') : (editingProduct ? 'Atualizar Produto' : 'Adicionar Produto')}
                 </Button>
               </div>
             </div>
