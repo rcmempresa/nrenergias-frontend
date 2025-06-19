@@ -13,7 +13,7 @@ export function Orders() {
   const fetchOrders = async () => {
     const [ordersRes, usersRes] = await Promise.all([
       fetch(`${import.meta.env.VITE_BACKEND_URL}/api/encomendas/listar`),
-      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users/listar`), // Supomos que tens esta rota
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users/listar`),
     ]);
   
     const [ordersData, usersData] = await Promise.all([
@@ -31,7 +31,7 @@ export function Orders() {
           name: user?.nome ?? 'Sem Nome',
           email: user?.email ?? 'Sem Email',
         },
-        status: item.order_status,
+        status: item.payment_status,
         total: item.total_amount,
         date: item.created_at,
       };
