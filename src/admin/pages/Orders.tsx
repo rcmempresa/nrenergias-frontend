@@ -66,7 +66,7 @@ export function Orders() {
             <Search className="absolute left-3 top-3 text-gray-400" size={18} />
             <input
               type="text"
-              placeholder="Search orders by ID or customer..."
+              placeholder="Procurar encomendas por ID e NOME ID..."
               className="w-full rounded-md border border-gray-300 py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
