@@ -553,15 +553,6 @@ export function Products() {
                   {selectedMainImage ? `Arquivo selecionado: ${selectedMainImage.name}` :
                     (newProduct.imagem_url && !selectedMainImage ? `URL atual: ${newProduct.imagem_url.substring(0, 40)}...` : 'Nenhum arquivo ou URL selecionado.')}
                 </p>
-                <input
-                  type="text"
-                  name="imagem_url"
-                  placeholder="URL da imagem principal (se não fizer upload)"
-                  value={!selectedMainImage ? (newProduct.imagem_url || '') : ''} // Desativa se arquivo for selecionado
-                  onChange={handleChange}
-                  disabled={!!selectedMainImage} // Desativa se arquivo for selecionado
-                  className={`w-full border rounded-md p-2 ${validationErrors.imagem_url ? 'border-red-500' : 'border-gray-300'}`}
-                />
                 {validationErrors.imagem_url && <p className="text-red-500 text-xs mt-1">{validationErrors.imagem_url}</p>}
               </div>
 
@@ -584,15 +575,6 @@ export function Products() {
                         ? `URLs atuais: ${newProduct.imagens.map(url => url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.'))).join(', ').substring(0, 60)}...` // Mostra parte do nome do arquivo
                         : 'Nenhum arquivo ou URL selecionado.')}
                 </p>
-                <input
-                  type="text"
-                  name="imagens"
-                  placeholder="URLs das imagens adicionais (separadas por vírgula, se não fizer upload)"
-                  value={!selectedAdditionalImages ? (newProduct.imagens.join(',') || '') : ''} // Desativa se arquivos forem selecionados
-                  onChange={handleAdditionalImagesTextChange}
-                  disabled={!!selectedAdditionalImages?.length} // Desativa se arquivos forem selecionados
-                  className={`w-full border rounded-md p-2 ${validationErrors.imagens ? 'border-red-500' : 'border-gray-300'}`}
-                />
                 {validationErrors.imagens && <p className="text-red-500 text-xs mt-1">{validationErrors.imagens}</p>}
               </div>
 
