@@ -15,7 +15,7 @@ export function Orders() {
   const [priceSortOrder, setPriceSortOrder] = useState<'none' | 'desc' | 'asc'>('none'); // 'desc' para maior para menor, 'asc' para menor para maior
 
   // ⚠️ Agora apenas 'pending' e 'paid' são opções de status visíveis no filtro
-  const statuses = ['pending', 'paid']; // Removido 'shipped' e 'delivered'
+  const statuses = ['pago', 'pendente']; // Removido 'shipped' e 'delivered'
 
   // ⚠️ Exemplo simples de "mock" para transformar user_id -> customer.name/email
   const fetchOrders = async () => {
