@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Search, Filter, ArrowDown, ArrowUp, CalendarCheck } from 'lucide-react'; // Mudei os ícones para Preço e adicionei CalendarCheck
 import { OrdersTable } from '../components/dashboard/OrdersTable';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/Dialog'; // Assumindo que você tem um componente Dialog/Modal
-import { Button } from '../ui/Button'; // Importe o Button se for usá-lo no modal
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../components/ui/Dialog';// Assumindo que você tem um componente Dialog/Modal
+import { Button } from '../components/ui/Button'; // Importe o Button se for usá-lo no modal
 
 export function Orders() {
   const [orders, setOrders] = useState<Order[]>([]);
