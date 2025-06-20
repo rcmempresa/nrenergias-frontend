@@ -5,13 +5,25 @@ import { CustomersTable } from '../components/dashboard/CustomersTable';
 export function Customers() {
   const [customers, setCustomers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Fetch dos dados da API
     const fetchCustomers = async () => {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users/listar`);
-      const data = await response.json();
-      setCustomers(data);
+      try {
+        setIsLoading(true);
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users/listar`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setCustomers(data);
+      } catch (error) {
+        setError(error);
+        console.error("Erro ao buscar clientes:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchCustomers();
@@ -41,9 +53,20 @@ export function Customers() {
         </div>
       </div>
       
-      <CustomersTable customers={filteredCustomers} />
+      {isLoading ? (
+        <div className="text-center text-gray-600">Carregando clientes...</div>
+      ) : error ? (
+        <div className="text-center text-red-600">Erro ao carregar clientes: {error.message}</div>
+      ) : filteredCustomers.length === 0 && searchTerm !== '' ? (
+        <div className="text-center text-gray-600">Nenhum cliente encontrado para "{searchTerm}".</div>
+      ) : filteredCustomers.length === 0 ? (
+        <div className="text-center text-gray-600">Não há clientes registados.</div>
+      ) : (
+        <CustomersTable
+          customers={filteredCustomers}
+          // As props onViewProfile, onSendEmail e onBanCustomer foram removidas daqui
+        />
+      )}
     </div>
   );
 }
-
-

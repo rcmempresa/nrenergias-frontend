@@ -1,11 +1,12 @@
 import React from 'react';
-import { User, Mail, Ban } from 'lucide-react';
+import { Mail } from 'lucide-react'; // Remove User e Ban
 import { Button } from '../ui/Button';
 import { Customer } from '../../types';
 
 interface CustomersTableProps {
   customers: Customer[];
   className?: string;
+  // onSendEmail não é mais necessário como prop, pois a ação será local
 }
 
 export function CustomersTable({ customers, className = '' }: CustomersTableProps) {
@@ -17,7 +18,7 @@ export function CustomersTable({ customers, className = '' }: CustomersTableProp
   };
 
   const formatDate = (dateString: string) => {
-    if (!dateString) return 'Sem data'; // ou ''
+    if (!dateString) return 'Sem data';
     
     const date = new Date(dateString);
     if (isNaN(date.getTime())) {
@@ -31,6 +32,10 @@ export function CustomersTable({ customers, className = '' }: CustomersTableProp
     }).format(date);
   };
 
+  // Nova função para lidar com o clique do email
+  const handleSendEmail = (email: string) => {
+    window.location.href = `mailto:${email}`;
+  };
 
   return (
     <div className={`bg-white rounded-lg shadow-sm overflow-hidden ${className}`}>
@@ -65,7 +70,8 @@ export function CustomersTable({ customers, className = '' }: CustomersTableProp
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
                     <div className="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
-                      <User size={20} />
+                      {/* O ícone User pode ser removido se não for mais usado visualmente */}
+                      <Mail size={20} /> {/* Podemos manter o Mail aqui ou remover se não for necessário */}
                     </div>
                     <div className="ml-4">
                       <div className="text-sm font-medium text-gray-900">{customer.nome}</div>
@@ -87,27 +93,13 @@ export function CustomersTable({ customers, className = '' }: CustomersTableProp
                     <Button
                       variant="outline"
                       size="sm"
-                      className="text-blue-600"
-                      icon={<User size={16} />}
-                    >
-                      Profile
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
                       className="text-purple-600"
                       icon={<Mail size={16} />}
+                      onClick={() => handleSendEmail(customer.email)}
                     >
                       Email
                     </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-red-600"
-                      icon={<Ban size={16} />}
-                    >
-                      Ban
-                    </Button>
+
                   </div>
                 </td>
               </tr>
