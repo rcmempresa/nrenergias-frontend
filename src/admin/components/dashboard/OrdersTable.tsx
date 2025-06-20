@@ -83,7 +83,7 @@ export function OrdersTable({ orders, className = '', onDetailsClick }: OrdersTa
                     size="sm"
                     className="text-blue-600"
                     icon={<Eye size={16} />}
-                    onClick={() => onDetailsClick(order.id)} {/* Chama a função passada como prop */}
+                    onClick={() => onDetailsClick(order.id)}
                   >
                     Detalhes
                   </Button>
