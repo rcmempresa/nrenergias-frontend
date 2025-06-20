@@ -7,9 +7,11 @@ import { Order } from '../../types';
 interface OrdersTableProps {
   orders: Order[];
   className?: string;
+  // Nova prop: uma função que recebe o ID da encomenda
+  onDetailsClick: (orderId: string) => void;
 }
 
-export function OrdersTable({ orders, className = '' }: OrdersTableProps) {
+export function OrdersTable({ orders, className = '', onDetailsClick }: OrdersTableProps) {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('pt-PT', {
       style: 'currency',
@@ -52,8 +54,8 @@ export function OrdersTable({ orders, className = '' }: OrdersTableProps) {
                 Data
               </th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
+                Ações
+              </th> {/* Mudei "Actions" para "Ações" para consistência */}
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -81,6 +83,7 @@ export function OrdersTable({ orders, className = '' }: OrdersTableProps) {
                     size="sm"
                     className="text-blue-600"
                     icon={<Eye size={16} />}
+                    onClick={() => onDetailsClick(order.id)} {/* Chama a função passada como prop */}
                   >
                     Detalhes
                   </Button>

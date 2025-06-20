@@ -7,6 +7,13 @@ export interface Order {
   items: OrderItem[];
 }
 
+export interface ShippingDetails {
+  address: string;
+  city: string;
+  zip_code: string;
+  phone: string;
+}
+
 export interface OrderItem {
   id: string;
   productId: string;
