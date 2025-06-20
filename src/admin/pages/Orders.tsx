@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Search, Filter, ArrowDown, ArrowUp, CalendarCheck, X } from 'lucide-react'; // Adicionei 'X' para o botão de fechar
+import { Search, Filter, ArrowDown, ArrowUp, CalendarCheck, X } from 'lucide-react';
 import { OrdersTable } from '../components/dashboard/OrdersTable';
-// import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../components/ui/Dialog'; // REMOVIDO
-// import { Button } from '../components/ui/Button'; // REMOVIDO, a menos que você use o Button em outro lugar
+
 
 export function Orders() {
   const [orders, setOrders] = useState<Order[]>([]);

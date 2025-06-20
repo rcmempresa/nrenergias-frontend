@@ -1,7 +1,7 @@
 export interface Order {
   id: string;
   customer: Customer;
-  status: 'pending' | 'paid' | 'shipped' | 'delivered';
+  status: 'pendente' | 'pago';
   total: number;
   date: string;
   items: OrderItem[];
