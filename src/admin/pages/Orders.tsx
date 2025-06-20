@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Search, Filter, ArrowDown, ArrowUp, CalendarCheck } from 'lucide-react'; // Mudei os ícones para Preço e adicionei CalendarCheck
+import { Search, Filter, ArrowDown, ArrowUp, CalendarCheck, X } from 'lucide-react'; // Adicionei 'X' para o botão de fechar
 import { OrdersTable } from '../components/dashboard/OrdersTable';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../../components/ui/Dialog';// Assumindo que você tem um componente Dialog/Modal
-import { Button } from '../components/ui/Button'; // Importe o Button se for usá-lo no modal
+// import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../components/ui/Dialog'; // REMOVIDO
+// import { Button } from '../components/ui/Button'; // REMOVIDO, a menos que você use o Button em outro lugar
 
 export function Orders() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -11,66 +11,86 @@ export function Orders() {
   const [dateFilter, setDateFilter] = useState('');
   const [priceSortOrder, setPriceSortOrder] = useState<'none' | 'desc' | 'asc'>('none');
 
-  // --- Novos estados para o modal de detalhes do endereço ---
+  // Estados para o modal de detalhes do endereço
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedOrderAddress, setSelectedOrderAddress] = useState<string | null>(null);
   const [isLoadingAddress, setIsLoadingAddress] = useState(false);
-  // --- Fim dos novos estados ---
 
   const statuses = ['pago', 'pendente'];
 
   const fetchOrders = async () => {
+    // ... (sua lógica existente para buscar encomendas e usuários)
     const [ordersRes, usersRes] = await Promise.all([
-      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/encomendas/listar`),
-      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users/listar`),
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/encomendas/listar`),
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users/listar`),
     ]);
 
     const [ordersData, usersData] = await Promise.all([
-      ordersRes.json(),
-      usersRes.json(),
+        ordersRes.json(),
+        usersRes.json(),
     ]);
 
     const usersMap = new Map(usersData.map((u: any) => [u.id, u]));
 
     const mappedOrders = ordersData.map((item: any) => {
-      const user = usersMap.get(item.user_id);
-      return {
-        id: item.id.toString(),
-        customer: {
-          name: user?.nome ?? 'Sem Nome',
-          email: user?.email ?? 'Sem Email',
-        },
-        status: item.payment_status,
-        total: item.total_amount,
-        date: item.created_at,
-      };
+        const user = usersMap.get(item.user_id);
+        return {
+            id: item.id.toString(),
+            customer: {
+                name: user?.nome ?? 'Sem Nome',
+                email: user?.email ?? 'Sem Email',
+            },
+            status: item.payment_status,
+            total: item.total_amount,
+            date: item.created_at,
+        };
     });
 
     setOrders(mappedOrders);
   };
 
-  // --- Nova função para buscar o endereço de envio ---
   const fetchShippingAddress = async (orderId: string) => {
     setIsLoadingAddress(true);
-    setSelectedOrderAddress(null); // Limpa o endereço anterior
+    setSelectedOrderAddress(null);
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/encomendas/${orderId}/endereco`);
       if (!response.ok) {
         throw new Error('Falha ao buscar detalhes do endereço de envio.');
       }
       const data = await response.json();
-      // Assumindo que 'data' é { address: "..." }
       setSelectedOrderAddress(data.address || 'Endereço não disponível.');
-      setIsDetailsModalOpen(true); // Abre o modal após buscar o endereço
+      setIsDetailsModalOpen(true); // Abre o modal
+      // Adiciona/remove classes para evitar scroll do corpo da página quando o modal está aberto
+      document.body.style.overflow = 'hidden';
     } catch (error) {
       console.error('Erro ao buscar endereço de envio:', error);
       setSelectedOrderAddress('Erro ao carregar o endereço.');
-      setIsDetailsModalOpen(true); // Abre o modal mesmo com erro para mostrar a mensagem
+      setIsDetailsModalOpen(true); // Abre o modal mesmo com erro
+      document.body.style.overflow = 'hidden';
     } finally {
       setIsLoadingAddress(false);
     }
   };
-  // --- Fim da nova função ---
+
+  // Efeito para limpar o overflow do body quando o componente desmonta ou o modal fecha
+  useEffect(() => {
+    return () => {
+      document.body.style.overflow = ''; // Garante que o scroll volta ao normal ao desmontar
+    };
+  }, []); // Vazio para rodar uma vez na montagem/desmontagem
+
+  // Lógica para fechar o modal e restaurar o scroll
+  const handleCloseModal = () => {
+    setIsDetailsModalOpen(false);
+    document.body.style.overflow = '';
+  };
+
+  // Lógica para fechar ao clicar no overlay
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      handleCloseModal();
+    }
+  };
 
 
   useEffect(() => {
@@ -135,8 +155,7 @@ export function Orders() {
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Usando CalendarCheck para o filtro de data */}
-            <CalendarCheck size={18} className="text-gray-500" /> 
+            <CalendarCheck size={18} className="text-gray-500" />
             <input
               type="date"
               className="rounded-md border border-gray-300 py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
@@ -161,30 +180,58 @@ export function Orders() {
         </div>
       </div>
 
-      {/* Passa a função fetchShippingAddress como prop */}
       <OrdersTable orders={filteredAndSortedOrders} onDetailsClick={fetchShippingAddress} />
 
-      {/* --- Modal de Detalhes do Endereço --- */}
-      <Dialog open={isDetailsModalOpen} onOpenChange={setIsDetailsModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Detalhes do Endereço de Envio</DialogTitle>
-            <DialogDescription>
-              Informações sobre o endereço de envio da encomenda selecionada.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            {isLoadingAddress ? (
-              <p className="text-gray-600">A carregar endereço...</p>
-            ) : (
-              <p className="text-gray-800 font-medium whitespace-pre-wrap">{selectedOrderAddress}</p>
-            )}
+      {/* --- Modal de Detalhes do Endereço (Inlined) --- */}
+      {isDetailsModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          onClick={handleOverlayClick}
+        >
+          <div
+            className="relative z-50 bg-white p-6 rounded-lg shadow-xl w-full max-w-sm md:max-w-md lg:max-w-lg animate-in fade-in zoom-in-95 data-[state=open]:slide-in-from-bottom-2"
+            onMouseDown={e => e.stopPropagation()}
+            onMouseUp={e => e.stopPropagation()}
+          >
+            {/* Header do Modal */}
+            <div className="flex flex-col space-y-1.5 text-center sm:text-left">
+              <h2 className="text-lg font-semibold leading-none tracking-tight">Detalhes do Endereço de Envio</h2>
+              <p className="text-sm text-gray-500">
+                Informações sobre o endereço de envio da encomenda selecionada.
+              </p>
+            </div>
+
+            {/* Conteúdo do Modal */}
+            <div className="py-4">
+              {isLoadingAddress ? (
+                <p className="text-gray-600">A carregar endereço...</p>
+              ) : (
+                <p className="text-gray-800 font-medium whitespace-pre-wrap">{selectedOrderAddress}</p>
+              )}
+            </div>
+
+            {/* Rodapé/Botão de Fechar */}
+            <div className="flex justify-end pt-4 border-t border-gray-100">
+              <button
+                onClick={handleCloseModal}
+                className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2"
+              >
+                Fechar
+              </button>
+            </div>
+
+            {/* Botão X para fechar */}
+            <button
+              onClick={handleCloseModal}
+              className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
+            >
+              <X size={16} /> {/* Ícone X */}
+              <span className="sr-only">Fechar</span>
+            </button>
           </div>
-          <div className="flex justify-end pt-4 border-t border-gray-100">
-            <Button onClick={() => setIsDetailsModalOpen(false)}>Fechar</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
+      {/* --- Fim do Modal Inlined --- */}
     </div>
   );
 }
