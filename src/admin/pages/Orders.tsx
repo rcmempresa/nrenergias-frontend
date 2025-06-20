@@ -1,7 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Search, Filter, ArrowDown, ArrowUp, CalendarCheck, X } from 'lucide-react';
 import { OrdersTable } from '../components/dashboard/OrdersTable';
+// Removidos os imports do Dialog, já que agora está inlined.
+// Importe o Button se for usá-lo em outros locais na página.
 
+// Define um tipo para os detalhes do endereço que vêm da API
+interface ShippingAddressDetails {
+  address: string;
+  city: string;
+  zip_code: string;
+  phone: string;
+  // Adicione outros campos se a sua API os retornar (ex: country, state)
+}
 
 export function Orders() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -10,39 +20,39 @@ export function Orders() {
   const [dateFilter, setDateFilter] = useState('');
   const [priceSortOrder, setPriceSortOrder] = useState<'none' | 'desc' | 'asc'>('none');
 
-  // Estados para o modal de detalhes do endereço
+  // --- Novo tipo para o estado do endereço selecionado ---
+  const [selectedShippingDetails, setSelectedShippingDetails] = useState<ShippingAddressDetails | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
-  const [selectedOrderAddress, setSelectedOrderAddress] = useState<string | null>(null);
   const [isLoadingAddress, setIsLoadingAddress] = useState(false);
+  // --- Fim dos novos estados ---
 
   const statuses = ['pago', 'pendente'];
 
   const fetchOrders = async () => {
-    // ... (sua lógica existente para buscar encomendas e usuários)
     const [ordersRes, usersRes] = await Promise.all([
-        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/encomendas/listar`),
-        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users/listar`),
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/encomendas/listar`),
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users/listar`),
     ]);
 
     const [ordersData, usersData] = await Promise.all([
-        ordersRes.json(),
-        usersRes.json(),
+      ordersRes.json(),
+      usersRes.json(),
     ]);
 
     const usersMap = new Map(usersData.map((u: any) => [u.id, u]));
 
     const mappedOrders = ordersData.map((item: any) => {
-        const user = usersMap.get(item.user_id);
-        return {
-            id: item.id.toString(),
-            customer: {
-                name: user?.nome ?? 'Sem Nome',
-                email: user?.email ?? 'Sem Email',
-            },
-            status: item.payment_status,
-            total: item.total_amount,
-            date: item.created_at,
-        };
+      const user = usersMap.get(item.user_id);
+      return {
+        id: item.id.toString(),
+        customer: {
+          name: user?.nome ?? 'Sem Nome',
+          email: user?.email ?? 'Sem Email',
+        },
+        status: item.payment_status,
+        total: item.total_amount,
+        date: item.created_at,
+      };
     });
 
     setOrders(mappedOrders);
@@ -50,47 +60,48 @@ export function Orders() {
 
   const fetchShippingAddress = async (orderId: string) => {
     setIsLoadingAddress(true);
-    setSelectedOrderAddress(null);
+    setSelectedShippingDetails(null); // Limpa os detalhes anteriores
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/encomendas/listar/${orderId}/endereco`);
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/encomendas/${orderId}/endereco`);
       if (!response.ok) {
         throw new Error('Falha ao buscar detalhes do endereço de envio.');
       }
-      const data = await response.json();
-      setSelectedOrderAddress(data.address || 'Endereço não disponível.');
-      setIsDetailsModalOpen(true); // Abre o modal
-      // Adiciona/remove classes para evitar scroll do corpo da página quando o modal está aberto
+      const data: ShippingAddressDetails = await response.json(); // Tipa a resposta
+      setSelectedShippingDetails(data); // Armazena o objeto completo
+      setIsDetailsModalOpen(true);
       document.body.style.overflow = 'hidden';
     } catch (error) {
       console.error('Erro ao buscar endereço de envio:', error);
-      setSelectedOrderAddress('Erro ao carregar o endereço.');
-      setIsDetailsModalOpen(true); // Abre o modal mesmo com erro
+      // Aqui, você pode definir um objeto de erro ou uma mensagem para exibir
+      setSelectedShippingDetails({
+        address: 'Erro ao carregar o endereço.',
+        city: '',
+        zip_code: '',
+        phone: ''
+      });
+      setIsDetailsModalOpen(true);
       document.body.style.overflow = 'hidden';
     } finally {
       setIsLoadingAddress(false);
     }
   };
 
-  // Efeito para limpar o overflow do body quando o componente desmonta ou o modal fecha
   useEffect(() => {
     return () => {
-      document.body.style.overflow = ''; // Garante que o scroll volta ao normal ao desmontar
+      document.body.style.overflow = '';
     };
-  }, []); // Vazio para rodar uma vez na montagem/desmontagem
+  }, []);
 
-  // Lógica para fechar o modal e restaurar o scroll
   const handleCloseModal = () => {
     setIsDetailsModalOpen(false);
     document.body.style.overflow = '';
   };
 
-  // Lógica para fechar ao clicar no overlay
   const handleOverlayClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
       handleCloseModal();
     }
   };
-
 
   useEffect(() => {
     fetchOrders();
@@ -196,16 +207,31 @@ export function Orders() {
             <div className="flex flex-col space-y-1.5 text-center sm:text-left">
               <h2 className="text-lg font-semibold leading-none tracking-tight">Detalhes do Endereço de Envio</h2>
               <p className="text-sm text-gray-500">
-                Informações sobre o endereço de envio da encomenda selecionada.
+                Informações completas sobre o endereço de envio da encomenda.
               </p>
             </div>
 
-            {/* Conteúdo do Modal */}
-            <div className="py-4">
+            {/* Conteúdo do Modal - AGORA EXIBE TODOS OS CAMPOS */}
+            <div className="py-4 space-y-2"> {/* Adicionado space-y-2 para espaçamento */}
               {isLoadingAddress ? (
                 <p className="text-gray-600">A carregar endereço...</p>
+              ) : selectedShippingDetails ? (
+                <>
+                  <p className="text-gray-800 font-medium">
+                    <span className="font-semibold">Endereço:</span> {selectedShippingDetails.address}
+                  </p>
+                  <p className="text-gray-800 font-medium">
+                    <span className="font-semibold">Cidade:</span> {selectedShippingDetails.city}
+                  </p>
+                  <p className="text-gray-800 font-medium">
+                    <span className="font-semibold">Código Postal:</span> {selectedShippingDetails.zip_code}
+                  </p>
+                  <p className="text-gray-800 font-medium">
+                    <span className="font-semibold">Telefone:</span> {selectedShippingDetails.phone}
+                  </p>
+                </>
               ) : (
-                <p className="text-gray-800 font-medium whitespace-pre-wrap">{selectedOrderAddress}</p>
+                <p className="text-gray-600">Nenhum detalhe de endereço disponível.</p>
               )}
             </div>
 
@@ -224,7 +250,7 @@ export function Orders() {
               onClick={handleCloseModal}
               className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
             >
-              <X size={16} /> {/* Ícone X */}
+              <X size={16} />
               <span className="sr-only">Fechar</span>
             </button>
           </div>
