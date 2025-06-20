@@ -62,7 +62,7 @@ export function Orders() {
     setIsLoadingAddress(true);
     setSelectedShippingDetails(null); // Limpa os detalhes anteriores
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/encomendas/${orderId}/endereco`);
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/encomendas/listar/${orderId}/endereco`);
       if (!response.ok) {
         throw new Error('Falha ao buscar detalhes do endereço de envio.');
       }
