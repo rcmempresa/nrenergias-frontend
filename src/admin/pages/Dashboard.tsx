@@ -20,16 +20,6 @@ import {
 export function Dashboard() {
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <CategoryChart 
-          data={categoryData}
-          title="Sales by Category"
-        />
-        <CategoryChart 
-          data={regionData}
-          title="Orders by Region"
-        />
-      </div>
 
       <ProductsTable 
         products={bestSellingProducts}
