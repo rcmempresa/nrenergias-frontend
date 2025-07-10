@@ -16,7 +16,7 @@ export function Layout() {
     if (path.includes('/customers')) return 'Clientes';
     if (path.includes('/favorites')) return 'Favorites';
     if (path.includes('/shipping')) return 'Shipping';
-    return 'Admin Dashboard';
+    return 'Painel de Controlo';
   };
 
   const toggleSidebar = () => {
