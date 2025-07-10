@@ -20,7 +20,6 @@ export function Products() {
 
   // Estados para o modal de adicionar/editar produto
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // NOVO: Estado para armazenar o produto que está a ser editado. Null se estiver a adicionar.
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newProduct, setNewProduct] = useState<Product>({
     id: uuidv4(),
@@ -40,9 +39,8 @@ export function Products() {
     caracteristicas: '',
   });
 
-  // NOVO: Estado para erros de validação do formulário
+  // Estado para erros de validação do formulário
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-
 
   // Estados para upload de arquivos de imagem
   const [selectedMainImage, setSelectedMainImage] = useState<File | null>(null);
@@ -72,7 +70,6 @@ export function Products() {
   // Handler genérico para inputs de texto/número/select do formulário de novo produto
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    // Atualiza newProduct (usado tanto para adicionar quanto para editar)
     setNewProduct((prevProduct) => ({
       ...prevProduct,
       [name]: name === 'preco' || name === 'estoque' || name === 'old_price' || name === 'rating' || name === 'avaliacoes' ? Number(value) : value,
@@ -95,7 +92,6 @@ export function Products() {
   const handleMainImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setSelectedMainImage(e.target.files[0]);
-      // Limpa a URL existente se um novo arquivo for selecionado
       setNewProduct((prev) => ({ ...prev, imagem_url: '' }));
       setValidationErrors((prevErrors) => ({ ...prevErrors, imagem_url: '' }));
     } else {
@@ -107,7 +103,6 @@ export function Products() {
   const handleAdditionalImageFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       setSelectedAdditionalImages(e.target.files);
-      // Limpa as URLs existentes se novos arquivos forem selecionados
       setNewProduct((prev) => ({ ...prev, imagens: [] }));
       setValidationErrors((prevErrors) => ({ ...prevErrors, imagens: '' }));
     } else {
@@ -115,10 +110,9 @@ export function Products() {
     }
   };
 
-  // NOVO: Função para abrir o modal de adição
+  // Função para abrir o modal de adição
   const openAddModal = () => {
-    setEditingProduct(null); // Garante que estamos no modo de adição
-    // Resetar newProduct para valores padrão para um novo produto
+    setEditingProduct(null);
     setNewProduct({
       id: uuidv4(),
       nome: '',
@@ -138,35 +132,31 @@ export function Products() {
     });
     setSelectedMainImage(null);
     setSelectedAdditionalImages(null);
-    setValidationErrors({}); // Limpar erros de validação
+    setValidationErrors({});
     setIsModalOpen(true);
   };
 
-  // NOVO: Função para abrir o modal de edição
+  // Função para abrir o modal de edição
   const openEditModal = (product: Product) => {
-    setEditingProduct(product); // Define o produto que está a ser editado
-    // Preenche o formulário com os dados do produto existente
+    setEditingProduct(product);
     setNewProduct({
       ...product,
-      // Garante que imagens seja um array de strings para o join
       imagens: Array.isArray(product.imagens) ? product.imagens : [],
-      // Caracteristicas pode ser string ou objeto, prepara para o campo de texto
       caracteristicas: typeof product.caracteristicas === 'object' && product.caracteristicas !== null
         ? JSON.stringify(product.caracteristicas)
         : product.caracteristicas || '',
     });
-    // Limpa quaisquer arquivos de imagem selecionados previamente para um novo upload
     setSelectedMainImage(null);
     setSelectedAdditionalImages(null);
-    setValidationErrors({}); // Limpar erros de validação
+    setValidationErrors({});
     setIsModalOpen(true);
   };
 
-  // NOVO: Função para fechar o modal e resetar estados
+  // Função para fechar o modal e resetar estados
   const closeModal = () => {
     setIsModalOpen(false);
     setEditingProduct(null);
-    setNewProduct({ // Resetar para estado inicial de um novo produto
+    setNewProduct({
       id: uuidv4(),
       nome: '',
       categoria: '',
@@ -185,10 +175,10 @@ export function Products() {
     });
     setSelectedMainImage(null);
     setSelectedAdditionalImages(null);
-    setValidationErrors({}); // Limpar erros de validação
+    setValidationErrors({});
   };
 
-  // NOVO: Função de validação do formulário
+  // Função de validação do formulário
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {};
     if (!newProduct.nome.trim()) errors.nome = 'O nome do produto é obrigatório.';
@@ -201,12 +191,9 @@ export function Products() {
     if (newProduct.rating < 0 || newProduct.rating > 5) errors.rating = 'A avaliação deve ser entre 0 e 5.';
     if (newProduct.avaliacoes < 0) errors.avaliacoes = 'O número de avaliações não pode ser negativo.';
 
-    // Validação para imagem principal (ou upload ou URL direta)
     if (!selectedMainImage && !newProduct.imagem_url.trim()) {
       errors.imagem_url = 'É obrigatório selecionar uma imagem principal ou fornecer uma URL.';
     }
-    // Você pode adicionar validação para 'caracteristicas' se for obrigatório
-    // if (!newProduct.caracteristicas.trim()) errors.caracteristicas = 'As características são obrigatórias.';
 
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
@@ -259,12 +246,11 @@ export function Products() {
         id: uuidv4(),
         imagem_url: mainImageUrl,
         imagens: additionalImageUrls,
-        // Garante que características seja JSON se for um objeto
-        caracteristicas: newProduct.caracteristicas // O frontend já envia como string ou JSON.stringify
+        caracteristicas: newProduct.caracteristicas
       };
 
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/products/adicionar`, productToCreate);
-      setProducts((prevProducts) => [...prevProducts, response.data.produto]); // A API retorna { produto: ... }
+      setProducts((prevProducts) => [...prevProducts, response.data.produto]);
       closeModal();
       setSuccessMessage('Produto adicionado com sucesso!');
       setTimeout(() => setSuccessMessage(null), 3000);
@@ -277,14 +263,13 @@ export function Products() {
     }
   };
 
-  // NOVO: Função para atualizar um produto existente
+  // Função para atualizar um produto existente
   const handleUpdateProduct = async () => {
-    if (!editingProduct) return; // Não deve acontecer se o modal for aberto corretamente
+    if (!editingProduct) return;
 
     setLoading(true);
     setError(null);
 
-    // Valida o formulário, incluindo o JSON das características
     if (!validateForm()) {
       setError('Por favor, preencha todos os campos obrigatórios corretamente.');
       setLoading(false);
@@ -294,20 +279,14 @@ export function Products() {
     try {
       const { mainImageUrl, additionalImageUrls } = await uploadImages(newProduct);
 
-      // --- TRATAMENTO PARA CARACTERÍSTICAS AQUI ---
       let processedCaracteristicas: string | null = null;
       if (newProduct.caracteristicas) {
         if (typeof newProduct.caracteristicas === 'object') {
-          // Se for um objeto (como viria do backend), converte para string JSON
           processedCaracteristicas = JSON.stringify(newProduct.caracteristicas);
         } else if (typeof newProduct.caracteristicas === 'string' && newProduct.caracteristicas.trim() !== '') {
-          // Se for uma string não vazia, valida e usa como está
           try {
-            // Tenta parsear para garantir que é JSON válido, depois stringify novamente
-            // Isso garante que o JSON enviado é robusto
             processedCaracteristicas = JSON.stringify(JSON.parse(newProduct.caracteristicas));
           } catch (e) {
-            // Se a string não for JSON válido, loga o erro e define como null
             console.warn('Caracteristicas não é um JSON válido no frontend, enviando null:', newProduct.caracteristicas, e);
             processedCaracteristicas = null;
           }
@@ -316,13 +295,12 @@ export function Products() {
 
       const productToUpdate = {
         ...newProduct,
-        id: editingProduct.id, // Garante que o ID do produto original é usado
+        id: editingProduct.id,
         imagem_url: mainImageUrl,
         imagens: additionalImageUrls,
-        caracteristicas: processedCaracteristicas, // Usa o valor processado
+        caracteristicas: processedCaracteristicas,
       };
 
-      // Chama a rota PUT para atualizar o produto
       const response = await axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/products/atualizar/${editingProduct.id}`,
         productToUpdate
@@ -343,7 +321,7 @@ export function Products() {
     }
 };
 
-  // NOVO: Função para lidar com a eliminação de um produto vinda da tabela
+  // Função para lidar com a eliminação de um produto vinda da tabela
   const handleProductDelete = (productId: string) => {
     setProducts((prevProducts) => prevProducts.filter((product) => product.id !== productId));
     setSuccessMessage('Produto eliminado com sucesso!');
@@ -351,14 +329,15 @@ export function Products() {
   };
 
 
-  // Extrair categorias únicas para o filtro
+  // Extrair categorias únicas para o filtro E para o datalist
+  // Use um useEffect para recalcular isso apenas quando `products` mudar, se necessário
   const categoriasUnicas = Array.from(new Set(products.map(p => p.categoria))).filter(Boolean);
 
-  if (loading && products.length === 0) { // Mostra carregando apenas se ainda não há produtos
+  if (loading && products.length === 0) {
     return <div className="text-center py-8">Carregando produtos...</div>;
   }
 
-  if (error && products.length === 0) { // Mostra erro apenas se ainda não há produtos
+  if (error && products.length === 0) {
     return <div className="text-center text-red-500 py-8">{error}</div>;
   }
 
@@ -377,13 +356,11 @@ export function Products() {
           {successMessage}
         </div>
       )}
-      {/* Mensagem de erro geral do formulário (se houver) */}
       {Object.keys(validationErrors).length > 0 && error && (
         <div className="text-red-500 font-semibold p-4 bg-red-100 rounded-md">
           {error}
         </div>
       )}
-
 
       <div className="bg-white rounded-lg shadow-sm p-6">
         <div className="flex flex-col md:flex-row gap-4">
@@ -480,8 +457,8 @@ export function Products() {
         stockStatus={filtroEstoque}
         priceFilter={filtroPreco}
         priceOrder={ordenacaoPreco}
-        onEditProduct={openEditModal} // NOVO: Passa a função para a tabela
-        onDeleteProduct={handleProductDelete} // NOVO: Passa a função de eliminação
+        onEditProduct={openEditModal}
+        onDeleteProduct={handleProductDelete}
       />
 
       {/* Modal para Adicionar/Editar Produto */}
@@ -512,8 +489,15 @@ export function Products() {
                   value={newProduct.categoria || ''}
                   onChange={handleChange}
                   className={`w-full border rounded-md p-2 ${validationErrors.categoria ? 'border-red-500' : 'border-gray-300'}`}
+                  list="category-options" {/* Adicione esta linha */}
                 />
                 {validationErrors.categoria && <p className="text-red-500 text-xs mt-1">{validationErrors.categoria}</p>}
+                {/* Adicione o datalist aqui */}
+                <datalist id="category-options">
+                  {categoriasUnicas.map((category, index) => (
+                    <option key={index} value={category} />
+                  ))}
+                </datalist>
               </div>
               <div>
                 <input
@@ -572,7 +556,7 @@ export function Products() {
                     {selectedAdditionalImages?.length > 0
                     ? `${selectedAdditionalImages.length} arquivo(s) selecionado(s).`
                     : (newProduct.imagens.length > 0 && !selectedAdditionalImages
-                        ? `URLs atuais: ${newProduct.imagens.map(url => url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.'))).join(', ').substring(0, 60)}...` // Mostra parte do nome do arquivo
+                        ? `URLs atuais: ${newProduct.imagens.map(url => url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.'))).join(', ').substring(0, 60)}...`
                         : 'Nenhum arquivo ou URL selecionado.')}
                 </p>
                 {validationErrors.imagens && <p className="text-red-500 text-xs mt-1">{validationErrors.imagens}</p>}
@@ -666,11 +650,11 @@ export function Products() {
               </div>
 
               <div className="flex justify-end gap-4 mt-4">
-                <Button variant="ghost" onClick={closeModal}> {/* Usa closeModal */}
+                <Button variant="ghost" onClick={closeModal}>
                   Cancelar
                 </Button>
                 <Button
-                  onClick={editingProduct ? handleUpdateProduct : handleAddProduct} // Condicional para chamar a função correta
+                  onClick={editingProduct ? handleUpdateProduct : handleAddProduct}
                   disabled={loading}
                 >
                   {loading ? (editingProduct ? 'Atualizando...' : 'Adicionando...') : (editingProduct ? 'Atualizar Produto' : 'Adicionar Produto')}
