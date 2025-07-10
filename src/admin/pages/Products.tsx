@@ -489,7 +489,7 @@ export function Products() {
                   value={newProduct.categoria || ''}
                   onChange={handleChange}
                   className={`w-full border rounded-md p-2 ${validationErrors.categoria ? 'border-red-500' : 'border-gray-300'}`}
-                  list="category-options" {/* Adicione esta linha */}
+                  list="category-options"
                 />
                 {validationErrors.categoria && <p className="text-red-500 text-xs mt-1">{validationErrors.categoria}</p>}
                 {/* Adicione o datalist aqui */}
