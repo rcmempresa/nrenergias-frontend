@@ -44,7 +44,7 @@ export function Customers() {
             <Search className="absolute left-3 top-3 text-gray-400" size={18} />
             <input
               type="text"
-              placeholder="Buscar clientes..."
+              placeholder="Procurar clientes..."
               className="w-full rounded-md border border-gray-300 py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -64,7 +64,6 @@ export function Customers() {
       ) : (
         <CustomersTable
           customers={filteredCustomers}
-          // As props onViewProfile, onSendEmail e onBanCustomer foram removidas daqui
         />
       )}
     </div>
