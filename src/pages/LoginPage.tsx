@@ -31,10 +31,10 @@ const LoginPage = () => {
     const data = await response.json();
 
     localStorage.setItem('token', data.token);
-    localStorage.setItem('email', email); // guardar o email também
+    localStorage.setItem('email', email);
 
     // Redireciona só se for o email autorizado
-    if (email === 'geral@nrenergias.pt') {
+    if (email === 'nrenergias@gmail.com') {
       navigate('/admin');
     } else {
       navigate('/');
