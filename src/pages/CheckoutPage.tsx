@@ -209,7 +209,7 @@ const CheckoutPage = () => {
                     <td className="p-4 text-right" colSpan="2">
                       Montagem do equipamento
                     </td>
-                    <td className="p-4 text-right">+250,00€</td>
+                    <td className="p-4 text-right">+400,00€</td>
                   </tr>
                 )}
                 {isLowValueOrder && (
