@@ -58,7 +58,7 @@ const CartPage = () => {
   useEffect(() => {
     let total = cartItems.reduce((acc, item) => acc + parseFloat(item.preco_total), 0);
     if (montagem) {
-      total += 250; 
+      total += 400; 
     }
     setTotalPrice(total);
   }, [cartItems, montagem]);
@@ -243,7 +243,7 @@ const CartPage = () => {
                   <td className="p-4 text-right" colSpan="3">
                     Montagem do equipamento (até 3 metros de tubo de cobre)
                   </td>
-                  <td className="p-4 text-right">+250,00€</td>
+                  <td className="p-4 text-right">+400,00€</td>
                   <td>
                     {/* Checkbox para a montagem */}
                     <input
