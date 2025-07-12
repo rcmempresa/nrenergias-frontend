@@ -36,6 +36,7 @@ const LoginPage = () => {
     // Redireciona só se for o email autorizado
     if (email === 'nrenergias@gmail.com') {
       navigate('/admin');
+      navigate(0);
     } else {
       navigate('/');
     }
