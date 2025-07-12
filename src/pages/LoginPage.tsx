@@ -11,33 +11,40 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    
-    setError('');
-  
-    try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, senha }),
-      });
-  
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || 'Erro ao fazer login');
-      }
-  
-      // Captura o token da resposta e armazena no localStorage
+  e.preventDefault();
+  setError('');
+
+  try {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, senha }),
+    });
+
+    if (!response.ok) {
       const data = await response.json();
-      localStorage.setItem('token', data.token);
-  
-      navigate('/'); // Redireciona para a página inicial ou área autenticada
-    } catch (error) {
-      setError(error.message || 'Erro de conexão com o servidor');
+      throw new Error(data.message || 'Erro ao fazer login');
     }
-  };
+
+    const data = await response.json();
+
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('email', email); // guardar o email também
+
+    // Redireciona só se for o email autorizado
+    if (email === 'geral@nrenergias.pt') {
+      navigate('/admin');
+    } else {
+      navigate('/');
+    }
+
+  } catch (error) {
+    setError(error.message || 'Erro de conexão com o servidor');
+  }
+};
+
   
   
 

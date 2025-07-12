@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import { motion, useScroll, useSpring } from 'framer-motion';
+import { Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -69,7 +70,16 @@ function App() {
 
 
         {/* Rotas admin aninhadas */}
-        <Route path="/admin" element={<Layout />}>
+        <Route
+              path="/admin"
+              element={
+                localStorage.getItem('email') === 'geral@nrenergias.pt' ? (
+                  <Layout />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            >
           <Route index element={<Dashboard />} />
           <Route path="products" element={<Products />} />
           <Route path="orders" element={<Orders />} />
