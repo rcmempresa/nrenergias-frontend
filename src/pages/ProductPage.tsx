@@ -145,12 +145,21 @@ const ProductPage = () => {
                     onChange={(e) => setCategory(e.target.value)}
                   >
                     <option value="">Todas as Categorias</option>
-                    <option value="Ar Condicionado">Ar Condicionado</option>
-                    <option value="Câmara Segurança">Câmara de Segurança/Vídeo Porteiro</option>
+                    <option value="Ar Condicionado">Climatização</option>
+                    <option value="Câmara Segurança">Sistemas de Segurança</option>
                     <option value="Sistema Alarme">Sistema de Deteção de Alarme</option>
                     <option value="Sistema de Incêndios">Sistema de Deteção de Incêndios</option>
-                    <option value="Switch">Reyee</option>
+                    <option value="Switch">Telecomunicações</option>
                     <option value="Bombas de Calor">Bombas de Calor</option>
+                    <option value="TV Satélite e Terrestres">TV Satélite e Terrestres</option>
+                    <option value="Fichas e Cabos">Fichas e Cabos</option>
+                    <option value="Iluminação">Iluminação</option>
+                    <option value="Ferramentas">Ferramentas</option>
+                    <option value="Baterias e Pilhas">Baterias e Pilhas</option>
+                    <option value="Components p/Eletrodomésticos">Components p/Eletrodomésticos</option>
+                    <option value="Fontes de Alimentaçaõ">Fontes de Alimentação</option>
+                    <option value="Material Elétrico">Material Elétrico</option>
+                    <option value="Domótica e Smart Home">Domótica e Smart Home</option>
                   </select>
                 </div>
                 <div>
