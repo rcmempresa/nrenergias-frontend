@@ -38,7 +38,7 @@ const Footer = () => {
         <div>
           <h3 className="text-md font-semibold mb-3">Contactos</h3>
           <ul className="space-y-1 text-sm">
-            <li>Telefone: 291 110 483</li> 
+            <li>Telefone: 291 110 486</li> 
             <li>Email: geral@nrenergias.pt</li>
             <li>Morada: Estrada Padre Silvano Ernesto Jardim, Porto Santo</li>
             <li>Horário: 9h - 18h (dias úteis)</li>

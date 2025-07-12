@@ -78,7 +78,7 @@ const Header = () => {
       <div className="hidden md:flex justify-between items-center py-2 px-6 text-sm bg-gray-100">
         <div className="flex space-x-4">
           <span>📍 Estrada Padre Ernesto e Jardim Rc 16, 9400-120 Porto Santo</span>
-          <span>📞 +(351)291 110 483</span>
+          <span>📞 +(351)291 110 486</span>
         </div>
         <div className="flex space-x-4">
           <select className="bg-transparent border-none outline-none cursor-pointer">

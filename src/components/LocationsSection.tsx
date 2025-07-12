@@ -19,7 +19,7 @@ const LocationsSection: React.FC = () => {
       name: 'Loja Porto Santo',
       address: 'Estrada Padre Ernesto e Jardim Rc 16, 9400-120 Porto Santo',
       hours: 'Segunda a Sábado: 09h00 - 18h00',
-      phone: '+(351)291 110 483',
+      phone: '+(351)291 110 486',
       image: 'https://images.pexels.com/photos/3855623/pexels-photo-3855623.jpeg?auto=compress&cs=tinysrgb&w=1600'
     }
   ];
