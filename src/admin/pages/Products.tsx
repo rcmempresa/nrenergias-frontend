@@ -387,6 +387,15 @@ export function Products() {
                   onChange={(e) => setFiltroCategoria(e.target.value)}
                 >
                   <option value="todos">Todas as Categorias</option>
+                  <option value="TV Satélite e Terrestre">TV Satétile e Terrestre</option>
+                  <option value="Fichas e Cabos">Fichas e Cabos</option>
+                  <option value="Iluminação">Iluminação</option>
+                  <option value="Ferramentas">Ferramentas</option>
+                  <option value="Baterias e Pilhas">Baterias e Pilhas</option>
+                  <option value="Componentes p/ Eletrodomésticos">Componentes p/ Eletrodomésticos</option>
+                  <option value="Fontes de Alimentação">Fontes de Alimentação</option>
+                  <option value="Material eléctrico">Material eléctrico</option>
+                  <option value="Domótica e Smart Home">Domótica e Smart Home</option>
                   {categoriasUnicas.map(cat => (
                     <option key={cat} value={cat}>{cat}</option>
                   ))}
