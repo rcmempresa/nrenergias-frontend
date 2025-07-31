@@ -491,23 +491,31 @@ export function Products() {
                 {validationErrors.nome && <p className="text-red-500 text-xs mt-1">{validationErrors.nome}</p>}
               </div>
               <div>
-                <input
-                  type="text"
-                  name="categoria"
-                  placeholder="Categoria"
-                  value={newProduct.categoria || ''}
-                  onChange={handleChange}
-                  className={`w-full border rounded-md p-2 ${validationErrors.categoria ? 'border-red-500' : 'border-gray-300'}`}
-                  list="category-options"
-                />
-                {validationErrors.categoria && <p className="text-red-500 text-xs mt-1">{validationErrors.categoria}</p>}
-                {/* Adicione o datalist aqui */}
-                <datalist id="category-options">
-                  {categoriasUnicas.map((category, index) => (
-                    <option key={index} value={category} />
-                  ))}
-                </datalist>
-              </div>
+                  <label htmlFor="categoria-input" className="block text-sm font-medium text-gray-700 mb-1">
+                    Categoria
+                  </label>
+                  <input
+                    type="text"
+                    id="categoria-input" // Add an ID for better accessibility with the label
+                    name="categoria"
+                    placeholder="Categoria"
+                    value={newProduct.categoria || ''}
+                    onChange={handleChange}
+                    className={`w-full border rounded-md p-2 ${validationErrors.categoria ? 'border-red-500' : 'border-gray-300'}`}
+                    list="category-options" // This links the input to the datalist
+                  />
+                  {validationErrors.categoria && (
+                    <p className="text-red-500 text-xs mt-1">{validationErrors.categoria}</p>
+                  )}
+
+                  {/* O datalist deve ser colocado aqui, associado ao input pelo atributo 'list' */}
+                  <datalist id="category-options">
+                    {/* Mapeia as categorias únicas para opções do datalist */}
+                    {categoriasUnicas.map((category, index) => (
+                      <option key={index} value={category} />
+                    ))}
+                  </datalist>
+                </div>
               <div>
                 <input
                   type="number"
