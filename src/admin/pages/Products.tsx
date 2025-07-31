@@ -491,31 +491,41 @@ export function Products() {
                 {validationErrors.nome && <p className="text-red-500 text-xs mt-1">{validationErrors.nome}</p>}
               </div>
               <div>
-                  <label htmlFor="categoria-input" className="block text-sm font-medium text-gray-700 mb-1">
-                    Categoria
-                  </label>
-                  <input
-                    type="text"
-                    id="categoria-input" // Add an ID for better accessibility with the label
-                    name="categoria"
-                    placeholder="Categoria"
-                    value={newProduct.categoria || ''}
-                    onChange={handleChange}
-                    className={`w-full border rounded-md p-2 ${validationErrors.categoria ? 'border-red-500' : 'border-gray-300'}`}
-                    list="category-options" // This links the input to the datalist
-                  />
-                  {validationErrors.categoria && (
-                    <p className="text-red-500 text-xs mt-1">{validationErrors.categoria}</p>
-                  )}
-
-                  {/* O datalist deve ser colocado aqui, associado ao input pelo atributo 'list' */}
-                  <datalist id="category-options">
-                    {/* Mapeia as categorias únicas para opções do datalist */}
-                    {categoriasUnicas.map((category, index) => (
-                      <option key={index} value={category} />
-                    ))}
-                  </datalist>
-                </div>
+                <label htmlFor="categoria-select" className="block text-sm font-medium text-gray-700 mb-1">
+                  Categoria
+                </label>
+                <select
+                  id="categoria-select" // Adicione um ID para acessibilidade com o label
+                  name="categoria"
+                  value={newProduct.categoria || ''} // O valor selecionado será newProduct.categoria
+                  onChange={handleChange} // A função handleChange atualizará o estado
+                  className={`w-full border rounded-md p-2 ${validationErrors.categoria ? 'border-red-500' : 'border-gray-300'}`}
+                >
+                  {/* Opção padrão para "Selecionar Categoria" ou similar */}
+                  <option value="">Selecione uma Categoria</option> {/* Adicione esta opção para um estado inicial claro */}
+                  {/* Categorias predefinidas */}
+                  <option value="TV Satélite e Terrestre">TV Satélite e Terrestre</option>
+                  <option value="Fichas e Cabos">Fichas e Cabos</option>
+                  <option value="Iluminação">Iluminação</option>
+                  <option value="Ferramentas">Ferramentas</option>
+                  <option value="Baterias e Pilhas">Baterias e Pilhas</option>
+                  <option value="Componentes p/ Eletrodomésticos">Componentes p/ Eletrodomésticos</option>
+                  <option value="Fontes de Alimentação">Fontes de Alimentação</option>
+                  <option value="Material eléctrico">Material eléctrico</option>
+                  <option value="Domótica e Smart Home">Domótica e Smart Home</option>
+                  
+                  {/* Categorias únicas dinâmicas */}
+                  {categoriasUnicas.map((cat) => (
+                    // Certifique-se de que 'cat' não está duplicado nas opções predefinidas, se houver
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+                {validationErrors.categoria && (
+                  <p className="text-red-500 text-xs mt-1">{validationErrors.categoria}</p>
+                )}
+              </div>
               <div>
                 <input
                   type="number"
