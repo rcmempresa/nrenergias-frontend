@@ -141,7 +141,7 @@ const ServicesPage = () => {
         <title>Serviços | NRenergias</title>
         <meta name="description" content="Explore os serviços da NRenergias — montagem, eletricidade, assistência técnica e muito mais. Profissionais qualificados ao seu dispor." />
         <meta name="keywords" content="serviços, montagem, eletricidade, assistência, NRenergias, Porto Santo" />
-        <link rel="canonical" href="https://nrenergias.pt/servicos" />
+        <link rel="canonical" href="https://loja.nrtechsolucion.pt/servicos" />
       </Helmet>
       <Header />
       <div className="container mx-auto px-4 py-8">

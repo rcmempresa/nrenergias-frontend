@@ -102,7 +102,7 @@ const ProductPage = () => {
         <title>Produtos Eletrónicos | NRenergias</title>
         <meta name="description" content="Explore a seleção de produtos eletrónicos da NRenergias — desde cabos de carregamento e câmaras de vigilância até ar condicionados e soluções solares. Tecnologia e sustentabilidade ao seu alcance, com entrega em todo o país." />
         <meta name="keywords" content="produtos eletrónicos, cabos de carregamento, ar condicionado, câmara de vigilância, NRenergias, Porto Santo, painéis solares, sustentabilidade, Portugal" />
-        <link rel="canonical" href="https://nrenergias.pt/produtos" />
+        <link rel="canonical" href="https://loja.nrtechsolucion.pt/produtos" />
       </Helmet>
       <Header />
       <div className="container mx-auto px-4 py-8">

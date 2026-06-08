@@ -185,7 +185,7 @@ const CartPage = () => {
         <title>Carrinho | NRenergias</title>
         <meta name="description" content="Entre em contacto com a NRenergias — estamos disponíveis para esclarecer dúvidas, fornecer orçamentos e ajudar na escolha dos melhores produtos eletrónicos e soluções sustentáveis. Atendimento em todo o país." />
         <meta name="keywords" content="carrinho NRenergias, finalização de compra, checkout, produtos eletrónicos, soluções sustentáveis, energia solar, pagamento seguro, Portugal"/>
-        <link rel="canonical" href="https://nrenergias.pt/carrinho" />
+        <link rel="canonical" href="https://loja.nrtechsolucion.pt/carrinho" />
       </Helmet>
       <Header />
       <div className=" mt-60 container mx-auto p-8 bg-white rounded-lg shadow-md mt-20">

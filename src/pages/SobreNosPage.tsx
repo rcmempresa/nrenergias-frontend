@@ -42,7 +42,7 @@ const SobreNosPage = () => {
         <title>Sobre a NRenergias | Produtos Eletrónicos em Portugal</title>
         <meta name="description" content="Conheça a história da NRenergias — especialistas em equipamentos eletrónicos e sustentabilidade. Fundada por Nuno Robinson no Porto Santo, com atuação em todo o país." />
         <meta name="keywords" content="produtos eletrónicos, cabos de carregamento, ar condicionado, câmara de vigilância, NRenergias, Porto Santo, painéis solares, sustentabilidade, Portugal" />
-        <link rel="canonical" href="https://nrenergias.pt/sobre-nos" />
+        <link rel="canonical" href="https://loja.nrtechsolucion.pt/sobre-nos" />
       </Helmet>
 
       <Header />

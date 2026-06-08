@@ -61,7 +61,7 @@ export default function ContactPage() {
         <title>Contactos | NRenergias</title>
         <meta name="description" content="Entre em contacto com a NRenergias — estamos disponíveis para esclarecer dúvidas, fornecer orçamentos e ajudar na escolha dos melhores produtos eletrónicos e soluções sustentáveis. Atendimento em todo o país." />
         <meta name="keywords" content="contactos NRenergias, assistência, suporte técnico, informações, Porto Santo, produtos eletrónicos, sustentabilidade, energia solar, Portugal" />
-        <link rel="canonical" href="https://nrenergias.pt/contacto" />
+        <link rel="canonical" href="https://loja.nrtechsolucion.pt/contacto" />
       </Helmet>
       <Header />
       <div className="max-w-7xl mx-auto px-4 py-12">
