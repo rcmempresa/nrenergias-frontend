@@ -144,7 +144,7 @@ const PrivacidadePage = () => {
                   Se tiver alguma dúvida sobre esta Política de Privacidade ou as nossas práticas de privacidade, por favor contacte-nos em:
                 </p>
                 <p className="font-medium">
-                  Email: geral@nrenergias.pt<br />
+                  Email: geral@nrtechsolucion.pt<br />
                   Telefone: +(351)291 110 483<br />
                   Endereço: Estrada Padre Ernesto e Jardim Rc 16, 9400-120 Porto Santo
                 </p>

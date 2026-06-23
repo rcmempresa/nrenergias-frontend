@@ -30,7 +30,7 @@ const faqs = [
   {
     question: "Como posso entrar em contato para suporte?",
     answer:
-      "Pode entrar em contato conosco pelo e-mail geral@nrenergias.pt ou pelo chat disponível no nosso site. Nossa equipe está pronta para ajudar!",
+      "Pode entrar em contato conosco pelo e-mail geral@nrtechsolucion.pt ou pelo chat disponível no nosso site. Nossa equipe está pronta para ajudar!",
   },
 ];
 

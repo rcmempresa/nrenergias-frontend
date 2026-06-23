@@ -137,7 +137,7 @@ export default function ContactPage() {
                 <Mail className="w-6 h-6 text-blue-600" />
                 <div>
                   <h3 className="font-medium">Email</h3>
-                  <p className="text-gray-600">geral@nrenergias.pt</p>
+                  <p className="text-gray-600">geral@nrtechsolucion.pt</p>
                 </div>
               </div>
               <div className="flex items-start space-x-4">

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaFacebookF } from 'react-icons/fa';
-import logo from '/logotipo.png'; // ajusta o caminho se necessário
+import logo from '/imagens/nrtechsolucion.jpeg';
 
 const Footer = () => {
   return (
@@ -39,7 +39,7 @@ const Footer = () => {
           <h3 className="text-md font-semibold mb-3">Contactos</h3>
           <ul className="space-y-1 text-sm">
             <li>Telefone: 291 110 486</li> 
-            <li>Email: geral@nrenergias.pt</li>
+            <li>Email: geral@nrtechsolucion.pt</li>
             <li>Morada: Estrada Padre Silvano Ernesto Jardim, Porto Santo</li>
             <li>Horário: 9h - 18h (dias úteis)</li>
           </ul>

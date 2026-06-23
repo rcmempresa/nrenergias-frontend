@@ -184,7 +184,7 @@ const CookiesPage = () => {
                   Para questões relacionadas com esta política de cookies, pode contactar-nos:
                 </p>
                 <p className="font-medium">
-                  Email: geral@nrenergias.pt<br />
+                  Email: geral@nrtechsolucion.pt<br />
                   Telefone: +(351)291 110 483<br />
                   Endereço: Estrada Padre Ernesto e Jardim Rc 16, 9400-120 Porto Santo
                 </p>
