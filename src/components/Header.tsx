@@ -100,7 +100,7 @@ const Header = () => {
         <div className="flex justify-between items-center">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-1">
-            <img src="/imagens/nrtechsolucion.jpeg" alt="NRTechSolucion" className="h-12" />
+            <img src="/imagens/nrtechsolucion.jpeg" alt="NRTechSolucion" className="h-24" />
           </Link>
 
           {/* Mobile Menu Button */}
