@@ -57,7 +57,7 @@ export function StatsSection() {
                   <img
                     src={logo}
                     alt={`Partner ${index + 1}`}
-                    className="h-6 md:h-8 lg:h-10 object-contain grayscale hover:grayscale-0 transition-all"
+                    className="h-16 md:h-20 lg:h-24 object-contain grayscale hover:grayscale-0 transition-all"
                   />
                 </motion.div>
               );
