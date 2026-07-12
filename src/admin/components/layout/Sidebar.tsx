@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, ShoppingBag, Users, Package, CreditCard, Heart, MapPin, ChevronDown, ChevronUp, Menu, X } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Users, Package, CreditCard, Heart, MapPin, ChevronDown, ChevronUp, Menu, X, Tag } from 'lucide-react';
 
 interface SidebarProps {
   isMobile: boolean;
@@ -101,8 +101,8 @@ export function Sidebar({ isMobile, isOpen, onToggle }: SidebarProps) {
             
             {isProductsOpen && (
               <div className="pl-10 pr-4 py-1 space-y-1">
-                <NavLink 
-                  to="/admin/products" 
+                <NavLink
+                  to="/admin/products"
                   onClick={handleMobileItemClick}
                   className={({ isActive }) => `
                     block py-2 px-3 rounded-md transition-colors
@@ -110,6 +110,16 @@ export function Sidebar({ isMobile, isOpen, onToggle }: SidebarProps) {
                   `}
                 >
                   Todos os Produtos
+                </NavLink>
+                <NavLink
+                  to="/admin/categories"
+                  onClick={handleMobileItemClick}
+                  className={({ isActive }) => `
+                    block py-2 px-3 rounded-md transition-colors
+                    ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-100'}
+                  `}
+                >
+                  Categorias
                 </NavLink>
               </div>
             )}

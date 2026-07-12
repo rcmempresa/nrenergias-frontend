@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, PlusCircle } from 'lucide-react';
+import { Search, Filter, PlusCircle, X, Plus } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { ProductsTable } from '../components/dashboard/ProductsTable';
 import { Product } from '../../types';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 
+interface Category {
+  id: number;
+  nome: string;
+}
+
 export function Products() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,6 +48,9 @@ export function Products() {
   // Estado para erros de validação do formulário
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
+  // Estado para a lista de características (dinâmica, user-friendly)
+  const [caracteristicasList, setCaracteristicasList] = useState<string[]>(['']);
+
   // Estados para upload de arquivos de imagem
   const [selectedMainImage, setSelectedMainImage] = useState<File | null>(null);
   const [selectedAdditionalImages, setSelectedAdditionalImages] = useState<FileList | null>(null);
@@ -52,7 +61,7 @@ export function Products() {
   // Buscar produtos da API
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/products`);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/products?admin=true`);
       setProducts(response.data);
     } catch (err) {
       setError('Erro ao carregar os produtos.');
@@ -62,9 +71,19 @@ export function Products() {
     }
   };
 
-  // Chama a função de fetch ao montar o componente
+  // Buscar categorias da API
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/categories`);
+      setCategories(response.data);
+    } catch (err) {
+      console.error('Erro ao buscar categorias:', err);
+    }
+  };
+
   useEffect(() => {
     fetchProducts();
+    fetchCategories();
   }, []);
 
   // Handler genérico para inputs de texto/número/select do formulário de novo produto
@@ -110,6 +129,31 @@ export function Products() {
     }
   };
 
+  // Helpers para a lista de características
+  const parseCaracteristicas = (val: any): string[] => {
+    if (Array.isArray(val) && val.length > 0) return val.map(String);
+    if (typeof val === 'string' && val.trim()) {
+      try {
+        const parsed = JSON.parse(val);
+        if (Array.isArray(parsed)) return parsed.map(String);
+        if (typeof parsed === 'object') return Object.entries(parsed).map(([k, v]) => `${k}: ${v}`);
+      } catch {
+        return val.split('\n').map(s => s.trim()).filter(Boolean);
+      }
+    }
+    return [''];
+  };
+
+  const handleCaracteristicaChange = (index: number, value: string) => {
+    setCaracteristicasList(prev => prev.map((item, i) => i === index ? value : item));
+  };
+
+  const addCaracteristica = () => setCaracteristicasList(prev => [...prev, '']);
+
+  const removeCaracteristica = (index: number) => {
+    setCaracteristicasList(prev => prev.length === 1 ? [''] : prev.filter((_, i) => i !== index));
+  };
+
   // Função para abrir o modal de adição
   const openAddModal = () => {
     setEditingProduct(null);
@@ -130,6 +174,7 @@ export function Products() {
       avaliacoes: 0,
       caracteristicas: '',
     });
+    setCaracteristicasList(['']);
     setSelectedMainImage(null);
     setSelectedAdditionalImages(null);
     setValidationErrors({});
@@ -142,10 +187,9 @@ export function Products() {
     setNewProduct({
       ...product,
       imagens: Array.isArray(product.imagens) ? product.imagens : [],
-      caracteristicas: typeof product.caracteristicas === 'object' && product.caracteristicas !== null
-        ? JSON.stringify(product.caracteristicas)
-        : product.caracteristicas || '',
+      caracteristicas: '',
     });
+    setCaracteristicasList(parseCaracteristicas(product.caracteristicas));
     setSelectedMainImage(null);
     setSelectedAdditionalImages(null);
     setValidationErrors({});
@@ -173,6 +217,7 @@ export function Products() {
       avaliacoes: 0,
       caracteristicas: '',
     });
+    setCaracteristicasList(['']);
     setSelectedMainImage(null);
     setSelectedAdditionalImages(null);
     setValidationErrors({});
@@ -246,7 +291,7 @@ export function Products() {
         id: uuidv4(),
         imagem_url: mainImageUrl,
         imagens: additionalImageUrls,
-        caracteristicas: newProduct.caracteristicas
+        caracteristicas: caracteristicasList.filter(c => c.trim() !== ''),
       };
 
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/products/adicionar`, productToCreate);
@@ -279,26 +324,12 @@ export function Products() {
     try {
       const { mainImageUrl, additionalImageUrls } = await uploadImages(newProduct);
 
-      let processedCaracteristicas: string | null = null;
-      if (newProduct.caracteristicas) {
-        if (typeof newProduct.caracteristicas === 'object') {
-          processedCaracteristicas = JSON.stringify(newProduct.caracteristicas);
-        } else if (typeof newProduct.caracteristicas === 'string' && newProduct.caracteristicas.trim() !== '') {
-          try {
-            processedCaracteristicas = JSON.stringify(JSON.parse(newProduct.caracteristicas));
-          } catch (e) {
-            console.warn('Caracteristicas não é um JSON válido no frontend, enviando null:', newProduct.caracteristicas, e);
-            processedCaracteristicas = null;
-          }
-        }
-      }
-
       const productToUpdate = {
         ...newProduct,
         id: editingProduct.id,
         imagem_url: mainImageUrl,
         imagens: additionalImageUrls,
-        caracteristicas: processedCaracteristicas,
+        caracteristicas: caracteristicasList.filter(c => c.trim() !== ''),
       };
 
       const response = await axios.put(
@@ -329,9 +360,10 @@ export function Products() {
   };
 
 
-  // Extrair categorias únicas para o filtro E para o datalist
-  // Use um useEffect para recalcular isso apenas quando `products` mudar, se necessário
-  const categoriasUnicas = Array.from(new Set(products.map(p => p.categoria))).filter(Boolean);
+  // Categorias dos produtos que não estão na lista da BD (para não duplicar no datalist)
+  const categoriasUnicas = Array.from(new Set(products.map(p => p.categoria)))
+    .filter(Boolean)
+    .filter(cat => !categories.some(c => c.nome === cat));
 
   if (loading && products.length === 0) {
     return <div className="text-center py-8">Carregando produtos...</div>;
@@ -387,15 +419,9 @@ export function Products() {
                   onChange={(e) => setFiltroCategoria(e.target.value)}
                 >
                   <option value="todos">Todas as Categorias</option>
-                  <option value="TV Satélite e Terrestre">TV Satétile e Terrestre</option>
-                  <option value="Fichas e Cabos">Fichas e Cabos</option>
-                  <option value="Iluminação">Iluminação</option>
-                  <option value="Ferramentas">Ferramentas</option>
-                  <option value="Baterias e Pilhas">Baterias e Pilhas</option>
-                  <option value="Componentes p/ Eletrodomésticos">Componentes p/ Eletrodomésticos</option>
-                  <option value="Fontes de Alimentação">Fontes de Alimentação</option>
-                  <option value="Material eléctrico">Material eléctrico</option>
-                  <option value="Domótica e Smart Home">Domótica e Smart Home</option>
+                  {categories.map(cat => (
+                    <option key={cat.id} value={cat.nome}>{cat.nome}</option>
+                  ))}
                   {categoriasUnicas.map(cat => (
                     <option key={cat} value={cat}>{cat}</option>
                   ))}
@@ -491,37 +517,46 @@ export function Products() {
                 {validationErrors.nome && <p className="text-red-500 text-xs mt-1">{validationErrors.nome}</p>}
               </div>
               <div>
-                <label htmlFor="categoria-select" className="block text-sm font-medium text-gray-700 mb-1">
-                  Categoria
+                <label htmlFor="categoria-input" className="block text-sm font-medium text-gray-700 mb-1">
+                  Categoria <span className="text-gray-400 font-normal">(selecione ou escreva uma nova)</span>
                 </label>
-                <select
-                  id="categoria-select" // Adicione um ID para acessibilidade com o label
-                  name="categoria"
-                  value={newProduct.categoria || ''} // O valor selecionado será newProduct.categoria
-                  onChange={handleChange} // A função handleChange atualizará o estado
-                  className={`w-full border rounded-md p-2 ${validationErrors.categoria ? 'border-red-500' : 'border-gray-300'}`}
-                >
-                  {/* Opção padrão para "Selecionar Categoria" ou similar */}
-                  <option value="">Selecione uma Categoria</option> {/* Adicione esta opção para um estado inicial claro */}
-                  {/* Categorias predefinidas */}
-                  <option value="TV Satélite e Terrestre">TV Satélite e Terrestre</option>
-                  <option value="Fichas e Cabos">Fichas e Cabos</option>
-                  <option value="Iluminação">Iluminação</option>
-                  <option value="Ferramentas">Ferramentas</option>
-                  <option value="Baterias e Pilhas">Baterias e Pilhas</option>
-                  <option value="Componentes p/ Eletrodomésticos">Componentes p/ Eletrodomésticos</option>
-                  <option value="Fontes de Alimentação">Fontes de Alimentação</option>
-                  <option value="Material eléctrico">Material eléctrico</option>
-                  <option value="Domótica e Smart Home">Domótica e Smart Home</option>
-                  
-                  {/* Categorias únicas dinâmicas */}
-                  {categoriasUnicas.map((cat) => (
-                    // Certifique-se de que 'cat' não está duplicado nas opções predefinidas, se houver
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
+                <div className="flex gap-2">
+                  <input
+                    id="categoria-input"
+                    type="text"
+                    name="categoria"
+                    list="categorias-list"
+                    value={newProduct.categoria || ''}
+                    onChange={handleChange}
+                    placeholder="Selecione ou escreva uma categoria..."
+                    autoComplete="off"
+                    className={`flex-1 border rounded-md p-2 ${validationErrors.categoria ? 'border-red-500' : 'border-gray-300'}`}
+                  />
+                  {newProduct.categoria && !categories.some(c => c.nome === newProduct.categoria) && (
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        try {
+                          const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/categories/adicionar`, { nome: newProduct.categoria });
+                          setCategories(prev => [...prev, res.data].sort((a, b) => a.nome.localeCompare(b.nome)));
+                        } catch (e: any) {
+                          alert(e.response?.data?.error || 'Erro ao guardar categoria.');
+                        }
+                      }}
+                      className="px-3 py-2 bg-green-600 text-white text-xs rounded-md hover:bg-green-700 whitespace-nowrap"
+                    >
+                      + Guardar categoria
+                    </button>
+                  )}
+                </div>
+                <datalist id="categorias-list">
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.nome} />
                   ))}
-                </select>
+                  {categoriasUnicas.map((cat) => (
+                    <option key={cat} value={cat} />
+                  ))}
+                </datalist>
                 {validationErrors.categoria && (
                   <p className="text-red-500 text-xs mt-1">{validationErrors.categoria}</p>
                 )}
@@ -580,10 +615,10 @@ export function Products() {
                   accept="image/*"
                 />
                  <p className="text-xs text-gray-500 mt-1">
-                    {selectedAdditionalImages?.length > 0
+                    {selectedAdditionalImages && selectedAdditionalImages.length > 0
                     ? `${selectedAdditionalImages.length} arquivo(s) selecionado(s).`
                     : (newProduct.imagens.length > 0 && !selectedAdditionalImages
-                        ? `URLs atuais: ${newProduct.imagens.map(url => url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.'))).join(', ').substring(0, 60)}...`
+                        ? `URLs atuais: ${newProduct.imagens.map((url: string) => url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.'))).join(', ').substring(0, 60)}...`
                         : 'Nenhum arquivo ou URL selecionado.')}
                 </p>
                 {validationErrors.imagens && <p className="text-red-500 text-xs mt-1">{validationErrors.imagens}</p>}
@@ -654,14 +689,36 @@ export function Products() {
                 {validationErrors.avaliacoes && <p className="text-red-500 text-xs mt-1">{validationErrors.avaliacoes}</p>}
               </div>
               <div>
-                <textarea
-                  name="caracteristicas"
-                  placeholder="Características (Ex: {cor:azul,tamanho:M})"
-                  value={typeof newProduct.caracteristicas === 'string' ? newProduct.caracteristicas : JSON.stringify(newProduct.caracteristicas || '')}
-                  onChange={handleChange}
-                  className={`w-full border rounded-md p-2 ${validationErrors.caracteristicas ? 'border-red-500' : 'border-gray-300'}`}
-                />
-                {validationErrors.caracteristicas && <p className="text-red-500 text-xs mt-1">{validationErrors.caracteristicas}</p>}
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Características <span className="text-gray-400 font-normal">(uma por linha)</span>
+                </label>
+                <div className="space-y-2">
+                  {caracteristicasList.map((item, index) => (
+                    <div key={index} className="flex gap-2 items-center">
+                      <input
+                        type="text"
+                        value={item}
+                        onChange={(e) => handleCaracteristicaChange(index, e.target.value)}
+                        placeholder={`Ex: Potência: 2000W`}
+                        className="flex-1 border border-gray-300 rounded-md p-2 text-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeCaracteristica(index)}
+                        className="text-gray-400 hover:text-red-500 flex-shrink-0"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={addCaracteristica}
+                  className="mt-2 flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
+                >
+                  <Plus size={14} /> Adicionar característica
+                </button>
               </div>
               <div>
                 <select

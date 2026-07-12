@@ -12,6 +12,7 @@ export function Layout() {
     const path = location.pathname;
     if (path === '/admin') return 'Overview';
     if (path.includes('/products')) return 'Produtos';
+    if (path.includes('/categories')) return 'Categorias';
     if (path.includes('/orders')) return 'Encomendas';
     if (path.includes('/customers')) return 'Clientes';
     if (path.includes('/favorites')) return 'Favorites';

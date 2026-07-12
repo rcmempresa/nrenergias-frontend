@@ -8,13 +8,13 @@ import { Link } from 'react-router-dom';
 const Hero = () => {
   return (
     <div 
-      className="relative bg-cover bg-center text-center py-20 "
-      style={{ backgroundImage: 'url(https://cdn-dynmedia-1.microsoft.com/is/image/microsoftcorp/surface-laptop-7th-edition-noncolor-poster-tablet_tbmnl_pt-pt?scl=1' }} // Nova imagem de fundo
+      className="relative bg-cover text-center py-20 "
+      style={{ backgroundImage: 'url(/nrenergias_loja.jpeg)', backgroundPosition: 'center 30%' }}
     >
     
       {/* Hero Section com animação */}
       <motion.h1
-      className="mt-20 text-5xl md:text-6xl font-extrabold text-white mb-4 drop-shadow-lg"
+      className="mt-4 text-5xl md:text-6xl font-extrabold text-white mb-4 drop-shadow-lg"
       initial={{ opacity: 0, y: -50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 1 }}

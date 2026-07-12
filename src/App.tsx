@@ -32,6 +32,7 @@ import { Orders } from './admin/pages/Orders';
 import { Customers } from './admin/pages/Customers';
 import { Favorites } from './admin/pages/Favorites';
 import { Shipping } from './admin/pages/Shipping';
+import { Categories } from './admin/pages/Categories';
 
 function App() {
   const { scrollYProgress } = useScroll();
@@ -82,6 +83,7 @@ function App() {
             >
           <Route index element={<Dashboard />} />
           <Route path="products" element={<Products />} />
+          <Route path="categories" element={<Categories />} />
           <Route path="orders" element={<Orders />} />
           <Route path="customers" element={<Customers />} />
           <Route path="favorites" element={<Favorites />} />
