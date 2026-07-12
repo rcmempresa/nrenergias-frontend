@@ -34,7 +34,7 @@ const LoginPage = () => {
     localStorage.setItem('email', email);
 
     // Redireciona só se for o email autorizado
-    if (email === 'nrenergias@gmail.com') {
+    if (email === 'nrtechsolucion@gmail.com') {
       navigate('/admin');
       navigate(0);
     } else {

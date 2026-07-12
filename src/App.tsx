@@ -74,7 +74,7 @@ function App() {
         <Route
               path="/admin"
               element={
-                localStorage.getItem('email') === 'nrenergias@gmail.com' ? (
+                localStorage.getItem('email') === 'nrtechsolucion@gmail.com' ? (
                   <Layout />
                 ) : (
                   <Navigate to="/login" />

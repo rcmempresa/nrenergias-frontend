@@ -43,7 +43,7 @@ const PrivacidadePage = () => {
             <div className="p-8">
               <div className="prose prose-lg max-w-none">
                 <p>
-                  A nrenergias valoriza a sua privacidade e está empenhada em proteger os seus dados pessoais. Esta Política de Privacidade descreve como recolhemos, utilizamos e partilhamos as suas informações quando utiliza os nossos serviços.
+                  A nrtechsolucion valoriza a sua privacidade e está empenhada em proteger os seus dados pessoais. Esta Política de Privacidade descreve como recolhemos, utilizamos e partilhamos as suas informações quando utiliza os nossos serviços.
                 </p>
 
                 <h2>1. Informações que Recolhemos</h2>
@@ -89,7 +89,7 @@ const PrivacidadePage = () => {
                 <ul>
                   <li><strong>Fornecedores de Serviços:</strong> Empresas que nos ajudam a fornecer e melhorar os nossos serviços (processamento de pagamentos, análise de dados, entrega de emails, hospedagem, etc.).</li>
                   <li><strong>Parceiros Comerciais:</strong> Empresas com as quais colaboramos para oferecer produtos ou serviços conjuntos.</li>
-                  <li><strong>Afiliadas:</strong> Empresas que são propriedade ou controladas pela nrenergias.</li>
+                  <li><strong>Afiliadas:</strong> Empresas que são propriedade ou controladas pela nrtechsolucion.</li>
                   <li><strong>Conformidade Legal:</strong> Quando acreditamos de boa fé que a divulgação é necessária para cumprir a lei, proteger os nossos direitos, ou proteger a segurança de outros.</li>
                   <li><strong>Transações Comerciais:</strong> Em conexão com uma transação comercial, como uma fusão, aquisição, ou venda de ativos.</li>
                 </ul>

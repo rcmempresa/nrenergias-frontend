@@ -37,17 +37,17 @@ const TermosPage = () => {
             <div className="p-8">
               <div className="prose prose-lg max-w-none">
                 <p>
-                  Bem-vindo aos Termos e Condições da nrenergias. Ao aceder e utilizar os nossos serviços, concorda com estes termos. Por favor, leia-os atentamente.
+                  Bem-vindo aos Termos e Condições da nrtechsolucion. Ao aceder e utilizar os nossos serviços, concorda com estes termos. Por favor, leia-os atentamente.
                 </p>
 
                 <h2 className="text-xl font-semibold mt-8 mb-4">1. Aceitação dos Termos</h2>
                 <p>
-                  Ao aceder ou utilizar os serviços da nrenergias, incluindo o nosso website, aplicações, APIs, e quaisquer outros serviços oferecidos (coletivamente, os "Serviços"), concorda em ficar vinculado a estes Termos e Condições ("Termos"). Se não concordar com estes Termos, não deverá aceder ou utilizar os nossos Serviços.
+                  Ao aceder ou utilizar os serviços da nrtechsolucion, incluindo o nosso website, aplicações, APIs, e quaisquer outros serviços oferecidos (coletivamente, os "Serviços"), concorda em ficar vinculado a estes Termos e Condições ("Termos"). Se não concordar com estes Termos, não deverá aceder ou utilizar os nossos Serviços.
                 </p>
 
                 <h2 className="text-xl font-semibold mt-8 mb-4">2. Descrição dos Serviços</h2>
                 <p>
-                  A nrenergias fornece soluções de automação e integração para empresas, incluindo mas não limitado a:
+                  A nrtechsolucion fornece soluções de automação e integração para empresas, incluindo mas não limitado a:
                 </p>
                 <ul className="list-disc pl-6 mb-4">
                   <li>Plataformas personalizadas para agendamentos</li>
@@ -64,7 +64,7 @@ const TermosPage = () => {
                   Para utilizar determinados Serviços, poderá ser necessário criar uma conta. Ao registar-se, concorda em fornecer informações precisas, atuais e completas. É responsável por manter a confidencialidade da sua palavra-passe e por todas as atividades que ocorram na sua conta.
                 </p>
                 <p>
-                  Deverá notificar-nos imediatamente de qualquer utilização não autorizada da sua conta ou de qualquer outra violação de segurança. A nrenergias não será responsável por quaisquer perdas resultantes da utilização não autorizada da sua conta.
+                  Deverá notificar-nos imediatamente de qualquer utilização não autorizada da sua conta ou de qualquer outra violação de segurança. A nrtechsolucion não será responsável por quaisquer perdas resultantes da utilização não autorizada da sua conta.
                 </p>
 
                 <h2 className="text-xl font-semibold mt-8 mb-4">4. Pagamentos e Faturação</h2>
@@ -77,7 +77,7 @@ const TermosPage = () => {
 
                 <h2 className="text-xl font-semibold mt-8 mb-4">5. Propriedade Intelectual</h2>
                 <p>
-                  Os Serviços e todo o conteúdo, características e funcionalidades, incluindo mas não limitado a todo o texto, gráficos, logótipos, ícones e imagens, bem como a sua seleção e disposição, são propriedade da nrenergias, dos seus licenciadores ou outros fornecedores e estão protegidos por leis de direitos de autor, marcas registadas, patentes, segredos comerciais e outras leis de propriedade intelectual.
+                  Os Serviços e todo o conteúdo, características e funcionalidades, incluindo mas não limitado a todo o texto, gráficos, logótipos, ícones e imagens, bem como a sua seleção e disposição, são propriedade da nrtechsolucion, dos seus licenciadores ou outros fornecedores e estão protegidos por leis de direitos de autor, marcas registadas, patentes, segredos comerciais e outras leis de propriedade intelectual.
                 </p>
                 <p>
                   É-lhe concedida uma licença limitada, não exclusiva e não transferível para aceder e utilizar os Serviços para fins comerciais internos, sujeita a estes Termos.
@@ -85,7 +85,7 @@ const TermosPage = () => {
 
                 <h2 className="text-xl font-semibold mt-8 mb-4">6. Conteúdo do Utilizador</h2>
                 <p>
-                  Ao submeter, publicar ou exibir conteúdo nos Serviços ("Conteúdo do Utilizador"), concede à nrenergias uma licença mundial, não exclusiva, isenta de royalties para utilizar, reproduzir, adaptar, publicar, traduzir e distribuir o seu Conteúdo do Utilizador em qualquer meio existente ou futuro.
+                  Ao submeter, publicar ou exibir conteúdo nos Serviços ("Conteúdo do Utilizador"), concede à nrtechsolucion uma licença mundial, não exclusiva, isenta de royalties para utilizar, reproduzir, adaptar, publicar, traduzir e distribuir o seu Conteúdo do Utilizador em qualquer meio existente ou futuro.
                 </p>
                 <p>
                   Declara e garante que: (i) possui ou controla todos os direitos sobre o Conteúdo do Utilizador que publica; (ii) o Conteúdo do Utilizador é preciso e não enganoso; e (iii) a utilização e publicação do Conteúdo do Utilizador não viola estes Termos ou quaisquer leis aplicáveis.
@@ -106,7 +106,7 @@ const TermosPage = () => {
 
                 <h2 className="text-xl font-semibold mt-8 mb-4">8. Limitação de Responsabilidade</h2>
                 <p>
-                  Em nenhuma circunstância a nrenergias, os seus diretores, funcionários, parceiros, agentes, fornecedores ou afiliados serão responsáveis por quaisquer danos indiretos, incidentais, especiais, consequenciais ou punitivos, incluindo sem limitação, perda de lucros, dados, uso, boa vontade, ou outras perdas intangíveis, resultantes de:
+                  Em nenhuma circunstância a nrtechsolucion, os seus diretores, funcionários, parceiros, agentes, fornecedores ou afiliados serão responsáveis por quaisquer danos indiretos, incidentais, especiais, consequenciais ou punitivos, incluindo sem limitação, perda de lucros, dados, uso, boa vontade, ou outras perdas intangíveis, resultantes de:
                 </p>
                 <ul className="list-disc pl-6 mb-4">
                   <li>O seu acesso ou utilização ou incapacidade de aceder ou utilizar os Serviços</li>
@@ -117,7 +117,7 @@ const TermosPage = () => {
 
                 <h2 className="text-xl font-semibold mt-8 mb-4">9. Indemnização</h2>
                 <p>
-                  Concorda em defender, indemnizar e isentar a nrenergias, os seus diretores, funcionários, parceiros, agentes, contratados, licenciadores, fornecedores de serviços e subcontratados de e contra quaisquer reclamações, responsabilidades, danos, julgamentos, prémios, perdas, custos, despesas ou honorários (incluindo honorários razoáveis de advogados) resultantes da sua violação destes Termos ou do seu uso dos Serviços.
+                  Concorda em defender, indemnizar e isentar a nrtechsolucion, os seus diretores, funcionários, parceiros, agentes, contratados, licenciadores, fornecedores de serviços e subcontratados de e contra quaisquer reclamações, responsabilidades, danos, julgamentos, prémios, perdas, custos, despesas ou honorários (incluindo honorários razoáveis de advogados) resultantes da sua violação destes Termos ou do seu uso dos Serviços.
                 </p>
 
                 <h2 className="text-xl font-semibold mt-8 mb-4">10. Rescisão</h2>
